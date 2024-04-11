@@ -1,0 +1,67 @@
+/* https://docs.oracle.com/cd/E17802_01/javafx/javafx/1.3/docs/api/javafx.scene/doc-files/cssref.html */
+
+.bad-input {
+	-fx-background-color: red,linear-gradient(to bottom, derive(red,60%) 5%,derive(red,90%) 40%);
+}
+
+tooltip.bad-input {
+    -fx-background-color: FF4A4A;
+}
+
+.button, .text-field, .combo-box, .choice-box, .tab, .menu-button, .spinner {
+    -fx-background-radius: 0;
+}
+
+
+.split-pane {
+    -fx-background-insets: -1, -1;
+    /*-fx-padding: 0;
+    -fx-box-border: transparent;*/
+ }
+
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    /* https://gist.github.com/maxd/63691840fc372f22f470 */
+    -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-background;
+    -fx-background-insets: 0 1 1 0, 1 2 1 1, 2 3 1 2;
+}
+/*
+.tab-pane:left *.tab-label {
+    -fx-rotate: 90;
+}
+*/
+
+.text-input:readonly {
+    -fx-background-color: #c4c4c4;
+}
+
+.spinner .text-input:readonly {
+    -fx-background-color: transparent;
+}
+
+.progress-indicator .percentage {
+   -fx-fill:null;
+}
+
+.progress-bar > .bar, .progress-bar > .track {
+    -fx-background-radius: 0;
+}
+
+.blue-tab-pane .tab .tab-label {
+    -fx-text-fill: white;
+}
+.blue-tab-pane .tab-header-area .tab-header-background {
+    -fx-effect: null;
+}
+
+
+.white-tab-pane .tab .tab-label {
+    -fx-text-fill: black;
+}
+.white-tab-pane .tab-header-area .tab-header-background {
+    -fx-effect: null;
+}
+
+.portfolio-management-tab-pane .tab-header-area {
+    -fx-padding: 0 0 0 330;
+}

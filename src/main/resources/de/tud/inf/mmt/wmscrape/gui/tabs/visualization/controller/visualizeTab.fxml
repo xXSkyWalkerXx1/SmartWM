@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.visualization.controller.VisualizationTabController">
+    <top>
+        <VBox>
+            <HBox>
+                <padding>
+                    <Insets left="5" right="5"/>
+                </padding>
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="5" bottom="5" left="5" right="5"/>
+                    </padding>
+                    <Label>
+                        <padding>
+                            <Insets right="3"/>
+                        </padding>
+                        Normalisieren:
+                    </Label>
+                    <CheckBox fx:id="normalizeCheckbox" selected="true"/>
+                </HBox>
+                <Separator orientation="VERTICAL"/>
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="5" bottom="5" left="5" right="5"/>
+                    </padding>
+                    <Label>
+                        <padding>
+                            <Insets right="3"/>
+                        </padding>
+                        Startdatum:
+                    </Label>
+                    <DatePicker fx:id="startDatePicker"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="5" bottom="5" left="5" right="5"/>
+                    </padding>
+                    <Label>
+                        <padding>
+                            <Insets right="3"/>
+                        </padding>
+                        Enddatum:
+                    </Label>
+                    <DatePicker fx:id="endDatePicker"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="5" bottom="5" left="5" right="5"/>
+                    </padding>
+                    <Button onAction="#resetDatePicker">Zurücksetzen</Button>
+                </HBox>
+                <Separator orientation="VERTICAL"/>
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="5" bottom="5" left="5" right="5"/>
+                    </padding>
+                    <Button onAction="#openColumnRelationWindow" alignment="CENTER_RIGHT">Spaltenzuordnung anpassen</Button>
+                </HBox>
+                <Separator orientation="VERTICAL"/>
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="5" bottom="5" left="5" right="5"/>
+                    </padding>
+                    <Button onAction="#openNewWindow" alignment="CENTER_RIGHT">&#10697;
+                    </Button>
+                </HBox>
+            </HBox>
+            <Separator/>
+        </VBox>
+    </top>
+    <center>
+        <TabPane fx:id="tabPane" side="LEFT" tabClosingPolicy="UNAVAILABLE" tabMinHeight="40.0" tabMinWidth="145.0">
+        </TabPane>
+    </center>
+</BorderPane>
