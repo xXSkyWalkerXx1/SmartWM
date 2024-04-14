@@ -1,6 +1,6 @@
 # Übersicht
 
-Dies ist der praktische Teil der Bachelorarbeit von Jonas Hönisch, aufbauend auf der Arbeit von Felix Rülke.
+Dies ist der praktische Teil der Bachelorarbeit von Leander Sömisch aufbauend auf den Arbeiten von Niklas Görg, Jonas Hönisch und Felix Rülke.
 
 ## Vorraussetzungen
 

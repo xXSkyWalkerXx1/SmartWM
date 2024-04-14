@@ -126,7 +126,9 @@ public abstract class WebsiteHandler extends Service<Void> {
             options.setBinary(firefoxBinary);
             options.setLogLevel(FirefoxDriverLogLevel.FATAL);
 
-            if (headless) options.setHeadless(true);
+            if (headless) {
+                options.addArguments("--headless=new");
+            };
 
             driver = new FirefoxDriver(options);
             waitForWsElements(true);
