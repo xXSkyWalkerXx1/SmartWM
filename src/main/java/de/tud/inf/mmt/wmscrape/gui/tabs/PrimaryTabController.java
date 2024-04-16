@@ -44,9 +44,9 @@ public class PrimaryTabController {
     @Autowired
     private VisualizationTabController visualizationTabController;
 
-    PortfolioManagementTabManager portfolioManagementTabManager = new PortfolioManagementTabManager();
-    @Autowired
-    private PortfolioManagementTabController portfolioManagementTabController = new PortfolioManagementTabController(portfolioManagementTabManager);
+    private final PortfolioManagementTabManager portfolioManagementTabManager = new PortfolioManagementTabManager();
+
+    private final PortfolioManagementTabController portfolioManagementTabController = new PortfolioManagementTabController(portfolioManagementTabManager);
 
     /**
      * called when loading the fxml file
