@@ -1,18 +1,29 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.historic.data;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 import org.springframework.lang.NonNull;
 
-import java.util.List;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import static de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.HistoricWebsiteTabController.addTypeToChoiceBox;
+import static de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentTypes.*;
+import static de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentTypes.IDENT_TYPE_DEACTIVATED;
+
 
 /***
- * Represents the data-container for each securities-type in the website-configuration.
+ * Represents the container with data for each securities-type in the website-configuration.
  */
-public class SecuritiesTypeDataContainer {
+public class SecuritiesTypeDataContainer implements Initializable {
 
     private final SecuritiesType type;
 
-    private IdentType
+    @FXML
+    private ChoiceBox<IdentType>
             idTypeHistoryCourse,
             idTypeDateFromDay,
             idTypeDateFromMonth,
@@ -24,7 +35,8 @@ public class SecuritiesTypeDataContainer {
             idTypeButtonNextPage,
             idTypeCountPages;
 
-    private String
+    @FXML
+    private TextField
             idContentHistoryCourse,
             idContentDateFromDay,
             idContentDateFromMonth,
@@ -44,26 +56,18 @@ public class SecuritiesTypeDataContainer {
         this.type = type;
     }
 
-    /***
-     * Maps the type, given by the excel-sheet, to an instance of {@link SecuritiesType}.
-     * @param type A = Aktie, BZR = Bezugsrechte; FA = Aktienfond; FAD = deutsche Aktienfonds, FAA = ausländischer FA;
-     *             FAE = europäische FA, FV = Gemischte Fond; FVE = europäische FV; FVA = internationale FV;
-     *             FG = Geldmarktfond; FGD = deutsche FG, FGE = europäische FG, FGA = ausländische FG,
-     *             FIM = Immobilienfond; FR = Rentenfond / O = Obligationen; FRD = deutesche FR, FRA = Internat. FR,
-     *             HF = Hedg, S = Spezialitäten, R = festferzinsliche Wertpapiere; RD = deutsche R, RA = ausländische R,
-     *             Rst = Rohstoffe, Z = Zertifikate
-     * @// TODO: 22.05.2024 Implement mapping of the other types!
-     */
-    public SecuritiesTypeDataContainer(@NonNull String type){
-        switch (type){
-            case "Z" -> this.type = SecuritiesType.CERTIFICATE;
-            case "Rst" -> this.type = SecuritiesType.RESOURCE;
-            case "A" -> this.type = SecuritiesType.SHARE;
-            default -> throw new IllegalArgumentException(String.format(
-                    "Der Wertpapier-Typ %s kann nicht gemappt werden.",
-                    type
-            ));
-        }
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        addTypeToChoiceBox(idTypeHistoryCourse, IDENT_TYPE_DEACTIVATED);
+        addTypeToChoiceBox(idTypeDateFromDay, IDENT_TYPE_SIMPLE);
+        addTypeToChoiceBox(idTypeDateFromMonth, IDENT_TYPE_SIMPLE);
+        addTypeToChoiceBox(idTypeDateFromYear, IDENT_TYPE_SIMPLE);
+        addTypeToChoiceBox(idTypeDateToDay, IDENT_TYPE_SIMPLE);
+        addTypeToChoiceBox(idTypeDateToMonth, IDENT_TYPE_SIMPLE);
+        addTypeToChoiceBox(idTypeDateToYear, IDENT_TYPE_SIMPLE);
+        addTypeToChoiceBox(idTypeButtonLoad, IDENT_TYPE_DEACTIVATED);
+        addTypeToChoiceBox(idTypeButtonNextPage, IDENT_TYPE_DEACTIVATED);
+        addTypeToChoiceBox(idTypeCountPages, IDENT_TYPE_DEACTIVATED);
     }
 
     // region Getters
@@ -71,174 +75,167 @@ public class SecuritiesTypeDataContainer {
         return type;
     }
 
-    // region Identification-Types
     public IdentType getIdTypeHistoryCourse() {
-        return idTypeHistoryCourse;
+        return idTypeHistoryCourse.getValue();
     }
 
     public IdentType getIdTypeDateFromDay() {
-        return idTypeDateFromDay;
+        return idTypeDateFromDay.getValue();
     }
 
     public IdentType getIdTypeDateFromMonth() {
-        return idTypeDateFromMonth;
+        return idTypeDateFromMonth.getValue();
     }
 
     public IdentType getIdTypeDateFromYear() {
-        return idTypeDateFromYear;
+        return idTypeDateFromYear.getValue();
     }
 
     public IdentType getIdTypeDateToDay() {
-        return idTypeDateToDay;
+        return idTypeDateToDay.getValue();
     }
 
     public IdentType getIdTypeDateToMonth() {
-        return idTypeDateToMonth;
+        return idTypeDateToMonth.getValue();
     }
 
     public IdentType getIdTypeDateToYear() {
-        return idTypeDateToYear;
+        return idTypeDateToYear.getValue();
     }
 
     public IdentType getIdTypeButtonLoad() {
-        return idTypeButtonLoad;
+        return idTypeButtonLoad.getValue();
     }
 
     public IdentType getIdTypeButtonNextPage() {
-        return idTypeButtonNextPage;
+        return idTypeButtonNextPage.getValue();
     }
 
     public IdentType getIdTypeCountPages() {
-        return idTypeCountPages;
+        return idTypeCountPages.getValue();
     }
-    // endregion
 
-    // region Identification-Contents
     public String getIdContentHistoryCourse() {
-        return idContentHistoryCourse;
+        return idContentHistoryCourse.getText();
     }
 
     public String getIdContentDateFromDay() {
-        return idContentDateFromDay;
+        return idContentDateFromDay.getText();
     }
 
     public String getIdContentDateFromMonth() {
-        return idContentDateFromMonth;
+        return idContentDateFromMonth.getText();
     }
 
     public String getIdContentDateFromYear() {
-        return idContentDateFromYear;
+        return idContentDateFromYear.getText();
     }
 
     public String getIdContentDateToDay() {
-        return idContentDateToDay;
+        return idContentDateToDay.getText();
     }
 
     public String getIdContentDateToMonth() {
-        return idContentDateToMonth;
+        return idContentDateToMonth.getText();
     }
 
     public String getIdContentDateToYear() {
-        return idContentDateToYear;
+        return idContentDateToYear.getText();
     }
 
     public String getIdContentButtonLoad() {
-        return idContentButtonLoad;
+        return idContentButtonLoad.getText();
     }
 
     public String getIdContentButtonNextPage() {
-        return idContentButtonNextPage;
+        return idContentButtonNextPage.getText();
     }
 
     public String getIdContentCountPages() {
-        return idContentCountPages;
+        return idContentCountPages.getText();
     }
-    // endregion
     // endregion
 
     // region Setters
-    // region Identification-Types
     public void setIdTypeHistoryCourse(IdentType idTypeHistoryCourse) {
-        this.idTypeHistoryCourse = idTypeHistoryCourse;
+        this.idTypeHistoryCourse.setValue(idTypeHistoryCourse);
     }
 
     public void setIdTypeDateFromDay(IdentType idTypeDateFromDay) {
-        this.idTypeDateFromDay = idTypeDateFromDay;
+        this.idTypeDateFromDay.setValue(idTypeDateFromDay);
     }
 
     public void setIdTypeDateFromMonth(IdentType idTypeDateFromMonth) {
-        this.idTypeDateFromMonth = idTypeDateFromMonth;
+        this.idTypeDateFromMonth.setValue(idTypeDateFromMonth);
     }
 
     public void setIdTypeDateFromYear(IdentType idTypeDateFromYear) {
-        this.idTypeDateFromYear = idTypeDateFromYear;
+        this.idTypeDateFromYear.setValue(idTypeDateFromYear);
     }
 
     public void setIdTypeDateToDay(IdentType idTypeDateToDay) {
-        this.idTypeDateToDay = idTypeDateToDay;
+        this.idTypeDateToDay.setValue(idTypeDateToDay);
     }
 
     public void setIdTypeDateToMonth(IdentType idTypeDateToMonth) {
-        this.idTypeDateToMonth = idTypeDateToMonth;
+        this.idTypeDateToMonth.setValue(idTypeDateToMonth);
     }
 
     public void setIdTypeDateToYear(IdentType idTypeDateToYear) {
-        this.idTypeDateToYear = idTypeDateToYear;
+        this.idTypeDateToYear.setValue(idTypeDateToYear);
     }
 
     public void setIdTypeButtonLoad(IdentType idTypeButtonLoad) {
-        this.idTypeButtonLoad = idTypeButtonLoad;
+        this.idTypeButtonLoad.setValue(idTypeButtonLoad);
     }
 
     public void setIdTypeButtonNextPage(IdentType idTypeButtonNextPage) {
-        this.idTypeButtonNextPage = idTypeButtonNextPage;
+        this.idTypeButtonNextPage.setValue(idTypeButtonNextPage);
     }
 
     public void setIdTypeCountPages(IdentType idTypeCountPages) {
-        this.idTypeCountPages = idTypeCountPages;
+        this.idTypeCountPages.setValue(idTypeCountPages);
     }
-    // endregion
-    // region Identification-Contents
+
     public void setIdContentHistoryCourse(String idContentHistoryCourse) {
-        this.idContentHistoryCourse = idContentHistoryCourse;
+        this.idContentHistoryCourse.setText(idContentHistoryCourse);
     }
 
     public void setIdContentDateFromDay(String idContentDateFromDay) {
-        this.idContentDateFromDay = idContentDateFromDay;
+        this.idContentDateFromDay.setText(idContentDateFromDay);
     }
 
     public void setIdContentDateFromMonth(String idContentDateFromMonth) {
-        this.idContentDateFromMonth = idContentDateFromMonth;
+        this.idContentDateFromMonth.setText(idContentDateFromMonth);
     }
 
     public void setIdContentDateFromYear(String idContentDateFromYear) {
-        this.idContentDateFromYear = idContentDateFromYear;
+        this.idContentDateFromYear.setText(idContentDateFromYear);
     }
 
     public void setIdContentDateToDay(String idContentDateToDay) {
-        this.idContentDateToDay = idContentDateToDay;
+        this.idContentDateToDay.setText(idContentDateToDay);
     }
 
     public void setIdContentDateToMonth(String idContentDateToMonth) {
-        this.idContentDateToMonth = idContentDateToMonth;
+        this.idContentDateToMonth.setText(idContentDateToMonth);
     }
 
     public void setIdContentDateToYear(String idContentDateToYear) {
-        this.idContentDateToYear = idContentDateToYear;
+        this.idContentDateToYear.setText(idContentDateToYear);
     }
 
     public void setIdContentButtonLoad(String idContentButtonLoad) {
-        this.idContentButtonLoad = idContentButtonLoad;
+        this.idContentButtonLoad.setText(idContentButtonLoad);
     }
 
     public void setIdContentButtonNextPage(String idContentButtonNextPage) {
-        this.idContentButtonNextPage = idContentButtonNextPage;
+        this.idContentButtonNextPage.setText(idContentButtonNextPage);
     }
 
     public void setIdContentCountPages(String idContentCountPages) {
-        this.idContentCountPages = idContentCountPages;
+        this.idContentCountPages.setText(idContentCountPages);
     }
-    // endregion
     // endregion
 
     /***
@@ -271,7 +268,37 @@ public class SecuritiesTypeDataContainer {
     /***
      * @return True, if the string is null, empty or blank.
      */
-    private boolean isStringEmpty(String string){
-        return string == null || string.isEmpty() || string.isBlank();
+    private boolean isStringEmpty(@NonNull TextField inputField){
+        String input = inputField.getText();
+        return input == null || input.isEmpty() || input.isBlank();
+    }
+
+    /***
+     * Clear content of all choice-boxes and text-fields.
+     */
+    public void clearAll(){
+        // clear choice-boxes
+        idTypeHistoryCourse.setValue(null);
+        idTypeDateFromDay.setValue(null);
+        idTypeDateFromMonth.setValue(null);
+        idTypeDateFromYear.setValue(null);
+        idTypeDateToDay.setValue(null);
+        idTypeDateToMonth.setValue(null);
+        idTypeDateToYear.setValue(null);
+        idTypeButtonLoad.setValue(null);
+        idTypeButtonNextPage.setValue(null);
+        idTypeCountPages.setValue(null);
+
+        // clear text-fields
+        idContentHistoryCourse.clear();
+        idContentDateFromDay.clear();
+        idContentDateFromMonth.clear();
+        idContentDateFromYear.clear();
+        idContentDateToDay.clear();
+        idContentDateToMonth.clear();
+        idContentDateToYear.clear();
+        idContentButtonLoad.clear();
+        idContentButtonNextPage.clear();
+        idContentCountPages.clear();
     }
 }
