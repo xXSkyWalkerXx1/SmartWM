@@ -1,13 +1,17 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller;
 
+import de.tud.inf.mmt.wmscrape.WMScrape;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.website.HistoricWebsiteTestPopupController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.website.NewHistoricWebsitePopupController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeDataContainer;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.gui.WebsiteManager;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -15,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentTypes.*;
@@ -53,35 +60,12 @@ public class HistoricWebsiteTabController {
     @FXML private TextField searchIdentField;
     @FXML private ChoiceBox<IdentType> searchButtonIdentChoiceBox;
     @FXML private TextField searchButtonIdentField;
-    @FXML private ChoiceBox<IdentType> historicLinkIdentChoiceBox;
-    @FXML private TextField historicLinkIdentField;
-
-    @FXML private ChoiceBox<IdentType> dateFromDayIdentChoiceBox;
-    @FXML private TextField dateFromDayIdentField;
-    @FXML private ChoiceBox<IdentType> dateFromMonthIdentChoiceBox;
-    @FXML private TextField dateFromMonthIdentField;
-    @FXML private ChoiceBox<IdentType> dateFromYearIdentChoiceBox;
-    @FXML private TextField dateFromYearIdentField;
 
     @FXML private TextField dateFromField;
     @FXML private TextField dateUntilField;
 
-    @FXML private ChoiceBox<IdentType> dateUntilDayIdentChoiceBox;
-    @FXML private TextField dateUntilDayIdentField;
-    @FXML private ChoiceBox<IdentType> dateUntilMonthIdentChoiceBox;
-    @FXML private TextField dateUntilMonthIdentField;
-    @FXML private ChoiceBox<IdentType> dateUntilYearIdentChoiceBox;
-    @FXML private TextField dateUntilYearIdentField;
-
-    @FXML private ChoiceBox<IdentType> loadButtonIdentChoiceBox;
-    @FXML private TextField loadButtonIdentField;
-
-    @FXML private ChoiceBox<IdentType> nextPageButtonIdentChoiceBox;
-    @FXML private TextField nextPageButtonIdentField;
-
-    @FXML private ChoiceBox<IdentType> pageCountIdentChoiceBox;
-    @FXML private TextField pageCountIdentField;
-
+    @FXML private VBox securitiesTypesTitledPaneList;
+    private final List<SecuritiesTypeDataContainer> securitiesTypeDataContainers = new ArrayList<>();
 
     private ObservableList<Website> websiteObservableList;
     private boolean inlineValidation = false;
@@ -95,21 +79,24 @@ public class HistoricWebsiteTabController {
     @Autowired
     private HistoricWebsiteTestPopupController historicWebsiteTestPopupController;
 
-    public HistoricWebsiteTabController() {
-    }
+    public HistoricWebsiteTabController() {}
 
     /**
      * called when loading the fxml file
      */
     @FXML
     private void initialize() {
-
         setRightPanelBoxVisible(false);
         websiteObservableList = websiteManager.initWebsiteList(websiteList, true);
         websiteList.getSelectionModel().selectedItemProperty().addListener(
                 (ov, oldWs, newWs) -> loadSpecificWebsite(newWs));
 
-        // add listener for inline validation
+        // add titled-panes for each securities-type
+        for (SecuritiesType type : SecuritiesType.values()){
+            securitiesTypesTitledPaneList.getChildren().add(createTitledPaneSecuritiesType(type));
+        }
+
+        // set listener for validation
         urlField.textProperty().addListener((o,ov,nv) -> emptyValidator(urlField));
         usernameField.textProperty().addListener((o,ov,nv) -> emptyValidator(usernameField));
         passwordField.textProperty().addListener((o,ov,nv) -> emptyValidator(passwordField));
@@ -119,49 +106,21 @@ public class HistoricWebsiteTabController {
         logoutIdentField.textProperty().addListener((o,ov,nv) -> escapeValidator(logoutIdentField));
         cookieConfigIdentField.textProperty().addListener((o, ov, nv) -> escapeValidator(cookieConfigIdentField));
         notificationDeclineIdentField.textProperty().addListener((o,ov,nv) -> escapeValidator(notificationDeclineIdentField));
-
         informationUrlField.textProperty().addListener((o, ov, nv) -> validUrlField(informationUrlField));
         searchIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(searchIdentField, false));
         searchButtonIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(searchButtonIdentField, false));
-        historicLinkIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(historicLinkIdentField, false));
 
-        dateFromDayIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(dateFromDayIdentField, false));
-        dateFromMonthIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(dateFromMonthIdentField, true));
-        dateFromYearIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(dateFromYearIdentField, true));
-
-        dateUntilDayIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(dateUntilDayIdentField, false));
-        dateUntilMonthIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(dateUntilMonthIdentField, true));
-        dateUntilYearIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(dateUntilYearIdentField, true));
-
-        loadButtonIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(loadButtonIdentField, false));
-
-        nextPageButtonIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(nextPageButtonIdentField, true));
-        pageCountIdentField.textProperty().addListener((o, ov, nv) -> validIdentField(pageCountIdentField, true));
-
-        // set choicebox options
+        // add choice-options
         addTypeToChoiceBox(usernameIdentChoiceBox, IDENT_TYPE_DEACTIVATED);
         addTypeToChoiceBox(passwordIdentChoiceBox, IDENT_TYPE_DEACTIVATED);
         addTypeToChoiceBox(loginIdentChoiceBox, IDENT_TYPE_DEACTIVATED_ENTER);
         addTypeToChoiceBox(logoutIdentChoiceBox, IDENT_TYPE_DEACTIVATED_URL);
         addTypeToChoiceBox(cookieConfigIdentChoiceBox, IDENT_TYPE_DEACTIVATED);
         addTypeToChoiceBox(notificationDeclineIdentChoiceBox, IDENT_TYPE_DEACTIVATED);
-
         addTypeToChoiceBox(searchButtonIdentChoiceBox, IDENT_TYPE_DEACTIVATED_ENTER);
         addTypeToChoiceBox(searchIdentChoiceBox, IDENT_TYPE_DEACTIVATED_ENTER);
-        addTypeToChoiceBox(historicLinkIdentChoiceBox, IDENT_TYPE_DEACTIVATED);
 
-        addTypeToChoiceBox(dateFromDayIdentChoiceBox, IDENT_TYPE_SIMPLE);
-        addTypeToChoiceBox(dateFromMonthIdentChoiceBox, IDENT_TYPE_SIMPLE);
-        addTypeToChoiceBox(dateFromYearIdentChoiceBox, IDENT_TYPE_SIMPLE);
-        addTypeToChoiceBox(dateUntilDayIdentChoiceBox, IDENT_TYPE_SIMPLE);
-        addTypeToChoiceBox(dateUntilMonthIdentChoiceBox, IDENT_TYPE_SIMPLE);
-        addTypeToChoiceBox(dateUntilYearIdentChoiceBox, IDENT_TYPE_SIMPLE);
-
-        addTypeToChoiceBox(loadButtonIdentChoiceBox, IDENT_TYPE_DEACTIVATED);
-
-        addTypeToChoiceBox(nextPageButtonIdentChoiceBox, IDENT_TYPE_DEACTIVATED);
-        addTypeToChoiceBox(pageCountIdentChoiceBox, IDENT_TYPE_DEACTIVATED);
-
+        // handle deselecting
         addDeselectListener(usernameIdentChoiceBox);
         addDeselectListener(passwordIdentChoiceBox);
 
@@ -170,8 +129,7 @@ public class HistoricWebsiteTabController {
             if(nv == IdentType.ENTER) loginIdentField.setText("-");
         });
 
-
-
+        // set initial configuration to show
         websiteList.getSelectionModel().selectFirst();
     }
 
@@ -182,6 +140,24 @@ public class HistoricWebsiteTabController {
                 "Neue Webseite anlegen",
                 websiteList,
                 true, newHistoricWebsitePopupController, false);
+    }
+
+    private TitledPane createTitledPaneSecuritiesType(SecuritiesType type){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(WMScrape.class.getResource(
+                    "gui/tabs/historic/controller/historicWebsitesSecuritiesType.fxml"
+            ));
+            fxmlLoader.setControllerFactory(param -> new SecuritiesTypeDataContainer(type));
+
+            securitiesTypeDataContainers.add(fxmlLoader.getController());
+
+            TitledPane titledPane = fxmlLoader.load();
+            titledPane.setText(type.getDisplayText());
+            return titledPane;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @FXML
@@ -288,34 +264,10 @@ public class HistoricWebsiteTabController {
         searchButtonIdentField.clear();
         searchButtonIdentChoiceBox.setValue(null);
 
-        historicLinkIdentField.clear();
-        historicLinkIdentChoiceBox.setValue(null);
-
-        dateFromDayIdentField.clear();
-        dateFromMonthIdentField.clear();
-        dateFromYearIdentField.clear();
-        dateFromDayIdentChoiceBox.setValue(null);
-        dateFromMonthIdentChoiceBox.setValue(null);
-        dateFromYearIdentChoiceBox.setValue(null);
-
-        dateUntilDayIdentField.clear();
-        dateUntilMonthIdentField.clear();
-        dateUntilYearIdentField.clear();
-
         dateFromField.clear();
         dateUntilField.clear();
 
-        dateUntilDayIdentChoiceBox.setValue(null);
-        dateUntilMonthIdentChoiceBox.setValue(null);
-        dateUntilYearIdentChoiceBox.setValue(null);
-
-        loadButtonIdentField.clear();
-        loadButtonIdentChoiceBox.setValue(null);
-
-        nextPageButtonIdentField.clear();
-        pageCountIdentField.clear();
-        nextPageButtonIdentChoiceBox.setValue(null);
-        pageCountIdentChoiceBox.setValue(null);
+        securitiesTypeDataContainers.forEach(SecuritiesTypeDataContainer::clearAll);
     }
 
     private void clearTopFields() {
@@ -352,31 +304,11 @@ public class HistoricWebsiteTabController {
         website.setSearchButtonIdent(searchButtonIdentField.getText());
         website.setSearchButtonIdentType(searchButtonIdentChoiceBox.getValue());
         website.setSearchFieldIdent(searchIdentField.getText());
-        website.setHistoricLinkIdentType(historicLinkIdentChoiceBox.getValue());
-        website.setHistoricLinkIdent(historicLinkIdentField.getText());
-        website.setDateFromDayIdentType(dateFromDayIdentChoiceBox.getValue());
-        website.setDateFromDayIdent(dateFromDayIdentField.getText());
-        website.setDateFromMonthIdentType(dateFromMonthIdentChoiceBox.getValue());
-        website.setDateFromMonthIdent(dateFromMonthIdentField.getText());
-        website.setDateFromYearIdentType(dateFromYearIdentChoiceBox.getValue());
-        website.setDateFromYearIdent(dateFromYearIdentField.getText());
 
         website.setDateFrom(dateFromField.getText());
         website.setDateUntil(dateUntilField.getText());
 
-        website.setDateUntilDayIdentType(dateUntilDayIdentChoiceBox.getValue());
-        website.setDateUntilDayIdent(dateUntilDayIdentField.getText());
-        website.setDateUntilMonthIdentType(dateUntilMonthIdentChoiceBox.getValue());
-        website.setDateUntilMonthIdent(dateUntilMonthIdentField.getText());
-        website.setDateUntilYearIdentType(dateUntilYearIdentChoiceBox.getValue());
-        website.setDateUntilYearIdent(dateUntilYearIdentField.getText());
-        website.setLoadButtonIdentType(loadButtonIdentChoiceBox.getValue());
-        website.setLoadButtonIdent(loadButtonIdentField.getText());
-
-        website.setNextPageButtonIdentType(nextPageButtonIdentChoiceBox.getValue());
-        website.setNextPageButtonIdent(nextPageButtonIdentField.getText());
-        website.setPageCountIdentType(pageCountIdentChoiceBox.getValue());
-        website.setPageCountIdent(pageCountIdentField.getText());
+        // ToDo: implement for TitledPanes
     }
 
     public void selectWebsite(Website website) {
@@ -425,29 +357,11 @@ public class HistoricWebsiteTabController {
         searchIdentField.setText(website.getSearchFieldIdent());
         searchButtonIdentChoiceBox.setValue(website.getSearchButtonIdentType());
         searchButtonIdentField.setText(website.getSearchButtonIdent());
-        historicLinkIdentChoiceBox.setValue(website.getHistoricLinkIdentType());
-        historicLinkIdentField.setText(website.getHistoricLinkIdent());
-        dateFromDayIdentChoiceBox.setValue(website.getDateFromDayIdentType());
-        dateFromMonthIdentChoiceBox.setValue(website.getDateFromMonthIdentType());
-        dateFromYearIdentChoiceBox.setValue(website.getDateFromYearIdentType());
-        dateFromDayIdentField.setText(website.getDateFromDayIdent());
-        dateFromMonthIdentField.setText(website.getDateFromMonthIdent());
-        dateFromYearIdentField.setText(website.getDateFromYearIdent());
+
         dateFromField.setText(website.getDateFrom());
         dateUntilField.setText(website.getDateUntil());
-        dateUntilDayIdentChoiceBox.setValue(website.getDateUntilDayIdentType());
-        dateUntilMonthIdentChoiceBox.setValue(website.getDateUntilMonthIdentType());
-        dateUntilYearIdentChoiceBox.setValue(website.getDateUntilYearIdentType());
-        dateUntilDayIdentField.setText(website.getDateUntilDayIdent());
-        dateUntilMonthIdentField.setText(website.getDateUntilMonthIdent());
-        dateUntilYearIdentField.setText(website.getDateUntilYearIdent());
-        loadButtonIdentChoiceBox.setValue(website.getLoadButtonIdentType());
-        loadButtonIdentField.setText(website.getLoadButtonIdent());
 
-        nextPageButtonIdentChoiceBox.setValue(website.getNextPageButtonIdentType());
-        nextPageButtonIdentField.setText(website.getNextPageButtonIdent());
-        pageCountIdentChoiceBox.setValue(website.getPageCountIdentType());
-        pageCountIdentField.setText(website.getPageCountIdent());
+        // ToDo: implement for TitledPanes
 
         // just here to remove eventually existing error style attributes
         isValidInput();
@@ -472,17 +386,6 @@ public class HistoricWebsiteTabController {
         valid &= escapeValidator(cookieConfigIdentField);
         valid &= validUrlField(informationUrlField);
         valid &= validIdentField(searchIdentField, false);
-        valid &= validIdentField(historicLinkIdentField, false);
-        valid &= validIdentField(dateFromDayIdentField, false);
-        valid &= validIdentField(dateFromMonthIdentField, true);
-        valid &= validIdentField(dateFromYearIdentField, true);
-        valid &= validIdentField(dateUntilDayIdentField, false);
-        valid &= validIdentField(dateUntilMonthIdentField, true);
-        valid &= validIdentField(dateUntilYearIdentField, true);
-        valid &= validIdentField(loadButtonIdentField, false);
-
-        valid &= validIdentField(nextPageButtonIdentField, true);
-        valid &= validIdentField(pageCountIdentField, true);
 
         return valid;
     }
@@ -524,7 +427,7 @@ public class HistoricWebsiteTabController {
         choiceBox.getSelectionModel().selectedItemProperty().addListener((o, ov, nv) -> deselectOnDeactivated(ov, nv));
     }
 
-    private void addTypeToChoiceBox(ChoiceBox<IdentType> choiceBox, IdentType[] identType) {
+    public static void addTypeToChoiceBox(ChoiceBox<IdentType> choiceBox, IdentType[] identType) {
         choiceBox.getItems().addAll(identType);
     }
 
@@ -552,10 +455,12 @@ public class HistoricWebsiteTabController {
             passwordIdentField.setText("-");
             loginIdentField.setText("-");
 
-            nextPageButtonIdentChoiceBox.setValue(IdentType.DEAKTIVIERT);
-            nextPageButtonIdentField.setText("-");
-            pageCountIdentChoiceBox.setValue(IdentType.DEAKTIVIERT);
-            pageCountIdentField.setText("-");
+            for (SecuritiesTypeDataContainer dataContainer : securitiesTypeDataContainers){
+                dataContainer.setIdTypeButtonNextPage(IdentType.DEAKTIVIERT);
+                dataContainer.setIdContentButtonNextPage("-");
+                dataContainer.setIdTypeCountPages(IdentType.DEAKTIVIERT);
+                dataContainer.setIdContentCountPages("-");
+            }
 
             setEditable(false);
         } else if (oldIdentType == IdentType.DEAKTIVIERT) {
