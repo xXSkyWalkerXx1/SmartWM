@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<TitledPane contentDisplay="CENTER" expanded="false" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeDataContainer">
+   <content>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="6.0">
+         <children>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Historische-Link" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeHistoryCourse" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentHistoryCourse" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Datums-Feld ab (Tag)" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeDateFromDay" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentDateFromDay" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Datums-Feld ab (Monat)" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeDateFromMonth" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentDateFromMonth" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Datums-Feld ab (Jahr)" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeDateFromYear" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentDateFromYear" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Datums-Feld bis (Tag)" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeDateToDay" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentDateToDay" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Datums-Feld bis (Monat)" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeDateToMonth" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentDateToMonth" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Datums-Feld bis (Jahr)" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeDateToYear" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentDateToYear" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Lade-Button" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeButtonLoad" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentButtonLoad" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Nächste Seite Button" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeButtonNextPage" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentButtonNextPage" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="130.0">
+                     <children>
+                        <Label text="Seitenanzahl-Feld" />
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="idTypeCountPages" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+                  <TextField fx:id="idContentCountPages" prefWidth="300.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </content>
+   <font>
+      <Font name="System Bold" size="11.0" />
+   </font>
+</TitledPane>
