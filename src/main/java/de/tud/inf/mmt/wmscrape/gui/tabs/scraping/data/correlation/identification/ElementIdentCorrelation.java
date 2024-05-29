@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.dynamicdb.VisualDatatype;
 import de.tud.inf.mmt.wmscrape.dynamicdb.course.CourseColumn;
 import de.tud.inf.mmt.wmscrape.dynamicdb.stock.StockColumn;
 import de.tud.inf.mmt.wmscrape.dynamicdb.watchlist.WatchListColumn;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,6 +42,17 @@ public class ElementIdentCorrelation {
     @JoinColumn(name = "course_column_id", referencedColumnName = "id", updatable = false)
     private CourseColumn courseColumn;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "securities_type", nullable = false)
+    private SecuritiesType securitiesType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "table_iden_type", nullable = false)
+    private IdentType tableIdenType = IdentType.ID;
+
+    @Column(columnDefinition = "TEXT", name = "table_ident")
+    private String tableIdent;
+
     @Column(name = "ident_type", columnDefinition = "TEXT", nullable = false)
     @Enumerated(EnumType.STRING)
     private IdentType _identType = IdentType.DEAKTIVIERT;
@@ -75,19 +87,7 @@ public class ElementIdentCorrelation {
     @Transient
     private boolean isChanged = false;
 
-
-    /**
-     * called after entity creation by hibernate (loading from the database)
-     * updates the property values to those from the database
-     */
-    @PostLoad
-    private void setPropertiesFromPersistence() {
-        identType.set(_identType.name());
-        identification.set(_identification);
-        regex.set(_regex);
-        initListener();
-    }
-
+    // region Constructors
     /**
      * only used by hibernate. do not save an instance without setting the necessary fields
      */
@@ -140,6 +140,43 @@ public class ElementIdentCorrelation {
         this.columnDatatype = datatype;
         this.dbTableName = dbTableName;
         this.visualDatatype = DbTableManger.translateVisualDatatype(datatype);
+    }
+    // endregion
+
+    /**
+     * called after entity creation by hibernate (loading from the database)
+     * updates the property values to those from the database
+     */
+    @PostLoad
+    private void setPropertiesFromPersistence() {
+        identType.set(_identType.name());
+        identification.set(_identification);
+        regex.set(_regex);
+        initListener();
+    }
+
+    public SecuritiesType getSecuritiesType() {
+        return securitiesType;
+    }
+
+    public void setSecuritiesType(SecuritiesType securitiesType) {
+        this.securitiesType = securitiesType;
+    }
+
+    public IdentType getTableIdenType() {
+        return tableIdenType;
+    }
+
+    public void setTableIdenType(IdentType tableIdenType) {
+        this.tableIdenType = tableIdenType;
+    }
+
+    public String getTableIdent() {
+        return tableIdent;
+    }
+
+    public void setTableIdent(String tableIdent) {
+        this.tableIdent = tableIdent;
     }
 
     public IdentType getIdentType() {
