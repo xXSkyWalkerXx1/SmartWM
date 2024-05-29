@@ -155,6 +155,46 @@ public class SecuritiesTypeDataContainer implements Initializable {
     public String getIdContentCountPages() {
         return idContentCountPages.getText();
     }
+
+    public TextField getFieldHistoryCourse() {
+        return idContentHistoryCourse;
+    }
+
+    public TextField getFieldDateFromDay() {
+        return idContentDateFromDay;
+    }
+
+    public TextField getFieldDateFromMonth() {
+        return idContentDateFromMonth;
+    }
+
+    public TextField getFieldDateFromYear() {
+        return idContentDateFromYear;
+    }
+
+    public TextField getFieldDateToDay() {
+        return idContentDateToDay;
+    }
+
+    public TextField getFieldDateToMonth() {
+        return idContentDateToMonth;
+    }
+
+    public TextField getFieldDateToYear() {
+        return idContentDateToYear;
+    }
+
+    public TextField getFieldButtonLoad() {
+        return idContentButtonLoad;
+    }
+
+    public TextField getFieldButtonNextPage() {
+        return idContentButtonNextPage;
+    }
+
+    public TextField getFieldCountPages() {
+        return idContentCountPages;
+    }
     // endregion
 
     // region Setters
@@ -246,7 +286,7 @@ public class SecuritiesTypeDataContainer implements Initializable {
     /***
      * @return True, if all contents are complete or no content is completed.
      */
-    public boolean isInputValid(){
+    public boolean areInputsCompletedOrEmpty(){
         boolean isAllCompleted = !isStringEmpty(idContentHistoryCourse)
                 && !isStringEmpty(idContentDateFromDay)
                 && !isStringEmpty(idContentDateFromMonth)
