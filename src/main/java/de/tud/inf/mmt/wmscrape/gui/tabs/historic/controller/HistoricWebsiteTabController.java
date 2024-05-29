@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.website.HistoricWebs
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.website.NewHistoricWebsitePopupController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeDataContainer;
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.gui.WebsiteManager;
@@ -17,6 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
@@ -189,24 +191,29 @@ public class HistoricWebsiteTabController {
 
     @FXML
     private void handleSaveButton() {
-
+        // validate inputs
         if(noWebsiteSelected()) return;
         inlineValidation = true;
         if(!isValidInput()) return;
 
-
+        // save and refresh
         Website website = websiteList.getSelectionModel().getSelectedItem();
-
         setFieldDataToWebsite(website);
-
         websiteManager.saveWebsite(website);
 
+        // show dialog
         Alert alert = new Alert(
                 Alert.AlertType.INFORMATION,
                 "Die Webseitenkonfiguration wurde gespeichert.",
                 ButtonType.OK);
         alert.setHeaderText("Daten gespeichert!");
         PrimaryTabManager.setAlertPosition(alert , urlField);
+        alert.showAndWait();
+    }
+
+    private void showAlertDialog(Alert.AlertType alertType, String title, String msg){
+        Alert alert = new Alert(alertType, msg, ButtonType.OK);
+        alert.setHeaderText(title);
         alert.showAndWait();
     }
 
@@ -280,7 +287,7 @@ public class HistoricWebsiteTabController {
         logoutIdentField.clear();
     }
 
-    private void setFieldDataToWebsite(Website website) {
+    private void setFieldDataToWebsite(@NonNull Website website) {
         website.setLoginUrl(urlField.getText());
         website.setUsername(usernameField.getText());
         website.setPassword(passwordField.getText());
@@ -308,7 +315,25 @@ public class HistoricWebsiteTabController {
         website.setDateFrom(dateFromField.getText());
         website.setDateUntil(dateUntilField.getText());
 
-        // ToDo: implement for TitledPanes
+        for (var dataContainer : securitiesTypeDataContainers){
+            // if everything or none is filled in only then we save it
+            if (dataContainer.areInputsCompletedOrEmpty()){
+                HistoricWebsiteIdentifiers typeIdents = new HistoricWebsiteIdentifiers();
+                typeIdents.setWebsiteId(website.getId());
+                dataContainer.writeTo(typeIdents);
+                website.addSecuritiestypeIdentifiers(typeIdents);
+            } else {
+                showAlertDialog(
+                        Alert.AlertType.WARNING,
+                        String.format(
+                                "Eingaben zu %s nicht gültig und werden daher ignoriert.\n" +
+                                        "Erlaubt ist nur komplett oder gar nicht ausfüllen!",
+                                dataContainer.getType()
+                        ),
+                        "Ungültige Eingabe"
+                );
+            }
+        }
     }
 
     public void selectWebsite(Website website) {
@@ -361,7 +386,11 @@ public class HistoricWebsiteTabController {
         dateFromField.setText(website.getDateFrom());
         dateUntilField.setText(website.getDateUntil());
 
-        // ToDo: implement for TitledPanes
+        for (var typeIdents : website.getHistoricWebsiteIdentifiers()){
+            for (var dataContainer : securitiesTypeDataContainers){
+                if (typeIdents.getSecuritiesType().equals(dataContainer.getType())) dataContainer.writeFrom(typeIdents);
+            }
+        }
 
         // just here to remove eventually existing error style attributes
         isValidInput();
@@ -376,17 +405,30 @@ public class HistoricWebsiteTabController {
 
     private boolean isValidInput() {
         // evaluate all to highlight all
-        boolean valid = validUrlField(urlField);
-        valid &= emptyValidator(usernameField);
-        valid &= emptyValidator(passwordField);
-        valid &= validIdentField(usernameIdentField, true);
-        valid &= validIdentField(passwordIdentField, true);
-        valid &= validIdentField(loginIdentField, true);
-        valid &= escapeValidator(logoutIdentField);
-        valid &= escapeValidator(cookieConfigIdentField);
-        valid &= validUrlField(informationUrlField);
-        valid &= validIdentField(searchIdentField, false);
+        boolean valid = validUrlField(urlField)
+                && emptyValidator(usernameField)
+                && emptyValidator(passwordField)
+                && validIdentField(usernameIdentField, true)
+                && validIdentField(passwordIdentField, true)
+                && validIdentField(loginIdentField, true)
+                && escapeValidator(logoutIdentField)
+                && escapeValidator(cookieConfigIdentField)
+                && validUrlField(informationUrlField)
+                && validIdentField(searchIdentField, false);
 
+        for (var typeIdents : securitiesTypeDataContainers){
+            if (!typeIdents.areInputsCompletedOrEmpty()) continue;
+            valid &= validIdentField(typeIdents.getFieldHistoryCourse(), false)
+                    && validIdentField(typeIdents.getFieldDateFromDay(), false)
+                    && validIdentField(typeIdents.getFieldDateFromMonth(), true)
+                    && validIdentField(typeIdents.getFieldDateFromYear(), true)
+                    && validIdentField(typeIdents.getFieldDateToDay(), false)
+                    && validIdentField(typeIdents.getFieldDateToMonth(), true)
+                    && validIdentField(typeIdents.getFieldDateToYear(), true)
+                    && validIdentField(typeIdents.getFieldButtonLoad(), false)
+                    && validIdentField(typeIdents.getFieldButtonNextPage(), true)
+                    && validIdentField(typeIdents.getFieldCountPages(), true);
+        }
         return valid;
     }
 
