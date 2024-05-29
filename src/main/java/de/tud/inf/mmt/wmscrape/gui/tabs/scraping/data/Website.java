@@ -23,6 +23,9 @@ public class Website extends WebRepresentation<WebsiteElement>{
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private final List<WebsiteElement> websiteElements = new ArrayList<>();
 
+    @OneToMany(mappedBy = "website", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private final List<HistoricWebsiteIdentifiers> historicWebsiteIdentifiers = new ArrayList<>();
+
     @Column(nullable = false, updatable = false)
     private String description;
 
@@ -97,81 +100,11 @@ public class Website extends WebRepresentation<WebsiteElement>{
     @Column(columnDefinition = "TEXT", name = "search_button_ident")
     private String searchButtonIdent;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "historic_link_ident_type", nullable = false)
-    private IdentType historicLinkIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "historic_link_ident")
-    private String historicLinkIdent;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "date_from_day_ident_type", nullable = false)
-    private IdentType dateFromDayIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "date_from_day_ident")
-    private String dateFromDayIdent;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "date_from_month_ident_type", nullable = false)
-    private IdentType dateFromMonthIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "date_from_month_ident")
-    private String dateFromMonthIdent;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "date_from_year_ident_type", nullable = false)
-    private IdentType dateFromYearIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "date_from_year_ident")
-    private String dateFromYearIdent;
-
     @Column(columnDefinition = "TEXT", name = "date_from")
     private String dateFrom;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "date_until_day_ident_type", nullable = false)
-    private IdentType dateUntilDayIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "date_until_day_ident")
-    private String dateUntilDayIdent;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "date_until_month_ident_type", nullable = false)
-    private IdentType dateUntilMonthIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "date_until_month_ident")
-    private String dateUntilMonthIdent;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "date_until_year_ident_type", nullable = false)
-    private IdentType dateUntilYearIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "date_until_year_ident")
-    private String dateUntilYearIdent;
-
     @Column(columnDefinition = "TEXT", name = "date_until")
     private String dateUntil;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "load_button_ident_type", nullable = false)
-    private IdentType loadButtonIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "load_button_ident")
-    private String loadButtonIdent;
-
-    @Column(columnDefinition = "TEXT", name = "next_page_button_ident")
-    private String nextPageButtonIdent;
-
-    //@Enumerated(value = EnumType.STRING)
-    @Column(name = "next_page_button_ident_type", nullable = false)
-    private IdentType nextPageButtonIdentType = IdentType.ID;
-
-    @Column(columnDefinition = "TEXT", name = "page_count_ident")
-    private String pageCountIdent;
-
-    //@Enumerated(value = EnumType.STRING)
-    @Column(name = "page_count_ident_type", nullable = false)
-    private IdentType pageCountIdentType = IdentType.ID;
 
     @Column(columnDefinition = "TEXT")
     private String pageCount;
@@ -179,16 +112,26 @@ public class Website extends WebRepresentation<WebsiteElement>{
     /**
      * only used by hibernate. do not save an instance without setting the necessary fields
      */
-    public Website() {}
+    protected Website() {}
 
     public Website(String description) {
         this.description = description;
     }
 
+    // region Getters
     public int getId() {
         return id;
     }
 
+    public List<WebsiteElement> getWebsiteElements() {
+        return websiteElements;
+    }
+
+    public List<HistoricWebsiteIdentifiers> getHistoricWebsiteIdentifiers() {
+        return historicWebsiteIdentifiers;
+    }
+
+    @Override
     public String getDescription() {
         return description;
     }
@@ -197,104 +140,96 @@ public class Website extends WebRepresentation<WebsiteElement>{
         return loginUrl;
     }
 
-    public void setLoginUrl(String url) {
-        this.loginUrl = url;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public IdentType getUsernameIdentType() {
-        return usernameIdentType;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setUsernameIdentType(IdentType usernameIdentType) {
-        this.usernameIdentType = usernameIdentType;
+    public IdentType getUsernameIdentType() {
+        return usernameIdentType;
     }
 
     public String getUsernameIdent() {
         return usernameIdent;
     }
 
-    public void setUsernameIdent(String usernameIdent) {
-        this.usernameIdent = usernameIdent;
-    }
-
     public IdentType getPasswordIdentType() {
         return passwordIdentType;
-    }
-
-    public void setPasswordIdentType(IdentType passwordIdentType) {
-        this.passwordIdentType = passwordIdentType;
     }
 
     public String getPasswordIdent() {
         return passwordIdent;
     }
 
-    public void setPasswordIdent(String passwordIdent) {
-        this.passwordIdent = passwordIdent;
-    }
-
     public IdentType getLoginButtonIdentType() {
         return loginButtonIdentType;
-    }
-
-    public void setLoginButtonIdentType(IdentType loginButtonIdentType) {
-        this.loginButtonIdentType = loginButtonIdentType;
     }
 
     public String getLoginButtonIdent() {
         return loginButtonIdent;
     }
 
-    public void setLoginButtonIdent(String loginButtonIdent) {
-        this.loginButtonIdent = loginButtonIdent;
-    }
-
     public IdentType getLogoutIdentType() {
         return logoutIdentType;
-    }
-
-    public void setLogoutIdentType(IdentType logoutIdentType) {
-        this.logoutIdentType = logoutIdentType;
     }
 
     public String getLogoutIdent() {
         return logoutIdent;
     }
 
-    public void setLogoutIdent(String logoutIdent) {
-        this.logoutIdent = logoutIdent;
-    }
-
     public IdentType getCookieAcceptIdentType() {
         return cookieAcceptIdentType;
-    }
-
-    public void setCookieAcceptIdentType(IdentType cookieAcceptIdentType) {
-        this.cookieAcceptIdentType = cookieAcceptIdentType;
     }
 
     public String getCookieAcceptIdent() {
         return cookieAcceptIdent;
     }
 
-    public void setCookieAcceptIdent(String cookieAcceptIdent) {
-        this.cookieAcceptIdent = cookieAcceptIdent;
+    public IdentType getDeclineNotificationIdentType() {
+        return declineNotificationIdentType;
+    }
+
+    public String getNotificationDeclineIdent() {
+        return notificationDeclineIdent;
+    }
+
+    public boolean isHistoric() {
+        return isHistoric;
+    }
+
+    public String getSearchUrl() {
+        return searchUrl;
+    }
+
+    public IdentType getSearchFieldIdentType() {
+        return searchFieldIdentType;
+    }
+
+    public String getSearchFieldIdent() {
+        return searchFieldIdent;
+    }
+
+    public IdentType getSearchButtonIdentType() {
+        return searchButtonIdentType;
+    }
+
+    public String getSearchButtonIdent() {
+        return searchButtonIdent;
+    }
+
+    public String getDateFrom() {
+        return dateFrom;
+    }
+
+    public String getDateUntil() {
+        return dateUntil;
+    }
+
+    public String getPageCount() {
+        return pageCount;
     }
 
     /**
@@ -306,7 +241,117 @@ public class Website extends WebRepresentation<WebsiteElement>{
     public List<WebsiteElement> getChildren() {
         return websiteElements;
     }
+    // endregion
 
+    // region Setters
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setUsernameIdentType(IdentType usernameIdentType) {
+        this.usernameIdentType = usernameIdentType;
+    }
+
+    public void setUsernameIdent(String usernameIdent) {
+        this.usernameIdent = usernameIdent;
+    }
+
+    public void setPasswordIdentType(IdentType passwordIdentType) {
+        this.passwordIdentType = passwordIdentType;
+    }
+
+    public void setPasswordIdent(String passwordIdent) {
+        this.passwordIdent = passwordIdent;
+    }
+
+    public void setLoginButtonIdentType(IdentType loginButtonIdentType) {
+        this.loginButtonIdentType = loginButtonIdentType;
+    }
+
+    public void setLoginButtonIdent(String loginButtonIdent) {
+        this.loginButtonIdent = loginButtonIdent;
+    }
+
+    public void setLogoutIdentType(IdentType logoutIdentType) {
+        this.logoutIdentType = logoutIdentType;
+    }
+
+    public void setLogoutIdent(String logoutIdent) {
+        this.logoutIdent = logoutIdent;
+    }
+
+    public void setCookieAcceptIdentType(IdentType cookieAcceptIdentType) {
+        this.cookieAcceptIdentType = cookieAcceptIdentType;
+    }
+
+    public void setCookieAcceptIdent(String cookieAcceptIdent) {
+        this.cookieAcceptIdent = cookieAcceptIdent;
+    }
+
+    public void setDeclineNotificationIdentType(IdentType declineNotificationIdentType) {
+        this.declineNotificationIdentType = declineNotificationIdentType;
+    }
+
+    public void setNotificationDeclineIdent(String notificationDeclineIdent) {
+        this.notificationDeclineIdent = notificationDeclineIdent;
+    }
+
+    public void setHistoric(boolean historic) {
+        isHistoric = historic;
+    }
+
+    public void setSearchUrl(String searchUrl) {
+        this.searchUrl = searchUrl;
+    }
+
+    public void setSearchFieldIdentType(IdentType searchFieldIdentType) {
+        this.searchFieldIdentType = searchFieldIdentType;
+    }
+
+    public void setSearchFieldIdent(String searchFieldIdent) {
+        this.searchFieldIdent = searchFieldIdent;
+    }
+
+    public void setSearchButtonIdentType(IdentType searchButtonIdentType) {
+        this.searchButtonIdentType = searchButtonIdentType;
+    }
+
+    public void setSearchButtonIdent(String searchButtonIdent) {
+        this.searchButtonIdent = searchButtonIdent;
+    }
+
+    public void setDateFrom(String dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public void setDateUntil(String dateUntil) {
+        this.dateUntil = dateUntil;
+    }
+
+    public void setPageCount(String pageCount) {
+        this.pageCount = pageCount;
+    }
+
+    public void addSecuritiestypeIdentifiers(HistoricWebsiteIdentifiers identifiers){
+        historicWebsiteIdentifiers.add(identifiers);
+    }
+
+    public void removeSecuritiestypeIdentifiers(HistoricWebsiteIdentifiers identifiers){
+        historicWebsiteIdentifiers.remove(identifiers);
+    }
+    // endregion
 
     // TODO change when hibernate/jpa adds option for "on delete set null" when cascading persist
     /**
@@ -349,247 +394,5 @@ public class Website extends WebRepresentation<WebsiteElement>{
     @Override
     public int hashCode() {
         return Objects.hash(id, description, 2);
-    }
-
-    public boolean isHistoric() {
-        return isHistoric;
-    }
-
-    public void setHistoric(boolean historic) {
-        isHistoric = historic;
-    }
-
-    public String getSearchUrl() {
-        return searchUrl;
-    }
-
-    public void setSearchUrl(String searchUrl) {
-        this.searchUrl = searchUrl;
-    }
-
-    public IdentType getSearchFieldIdentType() {
-        return searchFieldIdentType;
-    }
-
-    public void setSearchFieldIdentType(IdentType searchFieldIdentType) {
-        this.searchFieldIdentType = searchFieldIdentType;
-    }
-
-    public String getSearchFieldIdent() {
-        return searchFieldIdent;
-    }
-
-    public void setSearchFieldIdent(String searchFieldIdent) {
-        this.searchFieldIdent = searchFieldIdent;
-    }
-
-    public IdentType getHistoricLinkIdentType() {
-        return historicLinkIdentType;
-    }
-
-    public void setHistoricLinkIdentType(IdentType historicLinkIdentType) {
-        this.historicLinkIdentType = historicLinkIdentType;
-    }
-
-    public String getHistoricLinkIdent() {
-        return historicLinkIdent;
-    }
-
-    public void setHistoricLinkIdent(String historicLinkIdent) {
-        this.historicLinkIdent = historicLinkIdent;
-    }
-
-    public IdentType getLoadButtonIdentType() {
-        return loadButtonIdentType;
-    }
-
-    public void setLoadButtonIdentType(IdentType loadButtonIdentType) {
-        this.loadButtonIdentType = loadButtonIdentType;
-    }
-
-    public String getLoadButtonIdent() {
-        return loadButtonIdent;
-    }
-
-    public void setLoadButtonIdent(String loadButtonIdent) {
-        this.loadButtonIdent = loadButtonIdent;
-    }
-
-    public IdentType getNextPageButtonIdentType() {
-        return nextPageButtonIdentType;
-    }
-
-    public void setNextPageButtonIdentType(IdentType nextPageButtonIdentType) {
-        this.nextPageButtonIdentType = nextPageButtonIdentType;
-    }
-
-    public String getNextPageButtonIdent() {
-        return nextPageButtonIdent;
-    }
-
-    public void setNextPageButtonIdent(String nextPageButtonIdent) {
-        this.nextPageButtonIdent = nextPageButtonIdent;
-    }
-
-    public IdentType getPageCountIdentType() {
-        return pageCountIdentType;
-    }
-
-    public void setPageCountIdentType(IdentType pageCountIdentType) {
-        this.pageCountIdentType = pageCountIdentType;
-    }
-
-    public String getPageCountIdent() {
-        return pageCountIdent;
-    }
-
-    public void setPageCountIdent(String pageCountIdent) {
-        this.pageCountIdent = pageCountIdent;
-    }
-
-
-
-    public IdentType getDeclineNotificationIdentType() {
-        return declineNotificationIdentType;
-    }
-
-    public void setDeclineNotificationIdentType(IdentType declineNotificationIdentType) {
-        this.declineNotificationIdentType = declineNotificationIdentType;
-    }
-
-    public String getNotificationDeclineIdent() {
-        return notificationDeclineIdent;
-    }
-
-    public void setNotificationDeclineIdent(String notificationDeclineIdent) {
-        this.notificationDeclineIdent = notificationDeclineIdent;
-    }
-
-    public IdentType getDateFromDayIdentType() {
-        return dateFromDayIdentType;
-    }
-
-    public void setDateFromDayIdentType(IdentType dateFromDayIdentType) {
-        this.dateFromDayIdentType = dateFromDayIdentType;
-    }
-
-    public String getDateFromDayIdent() {
-        return dateFromDayIdent;
-    }
-
-    public void setDateFromDayIdent(String dateFromDayIdent) {
-        this.dateFromDayIdent = dateFromDayIdent;
-    }
-
-    public IdentType getDateFromMonthIdentType() {
-        return dateFromMonthIdentType;
-    }
-
-    public void setDateFromMonthIdentType(IdentType dateFromMonthIdentType) {
-        this.dateFromMonthIdentType = dateFromMonthIdentType;
-    }
-
-    public String getDateFromMonthIdent() {
-        return dateFromMonthIdent;
-    }
-
-    public void setDateFromMonthIdent(String dateFromMonthIdent) {
-        this.dateFromMonthIdent = dateFromMonthIdent;
-    }
-
-    public IdentType getDateFromYearIdentType() {
-        return dateFromYearIdentType;
-    }
-
-    public void setDateFromYearIdentType(IdentType dateFromYearIdentType) {
-        this.dateFromYearIdentType = dateFromYearIdentType;
-    }
-
-    public String getDateFromYearIdent() {
-        return dateFromYearIdent;
-    }
-
-    public void setDateFromYearIdent(String dateFromYearIdent) {
-        this.dateFromYearIdent = dateFromYearIdent;
-    }
-
-    public String getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(String dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public IdentType getDateUntilDayIdentType() {
-        return dateUntilDayIdentType;
-    }
-
-    public void setDateUntilDayIdentType(IdentType dateUntilDayIdentType) {
-        this.dateUntilDayIdentType = dateUntilDayIdentType;
-    }
-
-    public IdentType getDateUntilMonthIdentType() {
-        return dateUntilMonthIdentType;
-    }
-
-    public void setDateUntilMonthIdentType(IdentType dateUntilMonthIdentType) {
-        this.dateUntilMonthIdentType = dateUntilMonthIdentType;
-    }
-
-    public String getDateUntilMonthIdent() {
-        return dateUntilMonthIdent;
-    }
-
-    public void setDateUntilMonthIdent(String dateUntilMonthIdent) {
-        this.dateUntilMonthIdent = dateUntilMonthIdent;
-    }
-
-    public String getDateUntilDayIdent() {
-        return dateUntilDayIdent;
-    }
-
-    public void setDateUntilDayIdent(String dateUntilDayIdent) {
-        this.dateUntilDayIdent = dateUntilDayIdent;
-    }
-
-    public IdentType getDateUntilYearIdentType() {
-        return dateUntilYearIdentType;
-    }
-
-    public void setDateUntilYearIdentType(IdentType dateUntilYearIdentType) {
-        this.dateUntilYearIdentType = dateUntilYearIdentType;
-    }
-
-    public String getDateUntilYearIdent() {
-        return dateUntilYearIdent;
-    }
-
-    public void setDateUntilYearIdent(String dateUntilYearIdent) {
-        this.dateUntilYearIdent = dateUntilYearIdent;
-    }
-
-    public IdentType getSearchButtonIdentType() {
-        return searchButtonIdentType;
-    }
-
-    public void setSearchButtonIdentType(IdentType searchButtonIdentType) {
-        this.searchButtonIdentType = searchButtonIdentType;
-    }
-
-    public String getSearchButtonIdent() {
-        return searchButtonIdent;
-    }
-
-    public void setSearchButtonIdent(String searchButtonIdent) {
-        this.searchButtonIdent = searchButtonIdent;
-    }
-
-    public String getDateUntil() {
-        return dateUntil;
-    }
-
-    public void setDateUntil(String dateUntil) {
-        this.dateUntil = dateUntil;
     }
 }
