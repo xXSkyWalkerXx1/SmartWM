@@ -36,6 +36,10 @@ public class WebsiteElement extends WebRepresentation<WebRepresentation<?>> {
     @OneToMany(mappedBy = "websiteElement", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<ElementIdentCorrelation> elementIdentCorrelations = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "content_type", nullable = false, updatable = false)
+    private ContentType contentType;
+
     @Column(nullable = false, updatable = false)
     private String description;
 
@@ -43,17 +47,18 @@ public class WebsiteElement extends WebRepresentation<WebRepresentation<?>> {
     private String informationUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "content_type", nullable = false, updatable = false)
-    private ContentType contentType;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "multiplicity_type", nullable = false, updatable = false)
     private MultiplicityType multiplicityType;
 
-    //only for table scraping
+    /*
+    Only for table scraping - this is NOT used for the elements in scraping>historic>elements
+    ToDo: remove them and implement the use of it via the ElementIdentCorrelation, since it's very complex
+     */
+    @Deprecated
     @Column(columnDefinition = "TEXT", name = "table_ident")
     private String tableIdent;
 
+    @Deprecated
     @Enumerated(EnumType.STRING)
     @Column(name = "table_iden_type", nullable = false)
     private IdentType tableIdenType = IdentType.ID;
@@ -159,7 +164,13 @@ public class WebsiteElement extends WebRepresentation<WebRepresentation<?>> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof WebsiteElement that)) return false;
-        return id == that.id && Objects.equals(description, that.description) && Objects.equals(informationUrl, that.informationUrl) && contentType == that.contentType && multiplicityType == that.multiplicityType && Objects.equals(tableIdent, that.tableIdent) && tableIdenType == that.tableIdenType;
+        return id == that.id
+                && Objects.equals(description, that.description)
+                && Objects.equals(informationUrl, that.informationUrl)
+                && contentType == that.contentType
+                && multiplicityType == that.multiplicityType
+                && Objects.equals(tableIdent, that.tableIdent)
+                && tableIdenType == that.tableIdenType;
     }
 
     /**
