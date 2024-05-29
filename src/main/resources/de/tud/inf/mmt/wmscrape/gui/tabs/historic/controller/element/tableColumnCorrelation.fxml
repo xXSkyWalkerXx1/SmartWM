@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="100.0" prefWidth="160.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.element.TableColumnCorrelation">
+   <children>
+      <VBox alignment="CENTER">
+         <children>
+            <HBox prefWidth="100.0">
+               <children>
+                  <Label prefWidth="160.0" text="Tabellenidentifikation">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin></Label>
+                  <ChoiceBox prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin></ChoiceBox>
+                  <TextField prefWidth="350.0" />
+               </children>
+            </HBox>
+            <Label prefHeight="20.0" text="Zuordnung zu den Zeilenelementen">
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin></Label>
+            <TableView editable="true" prefHeight="200.0" prefWidth="200.0">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin></TableView>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
