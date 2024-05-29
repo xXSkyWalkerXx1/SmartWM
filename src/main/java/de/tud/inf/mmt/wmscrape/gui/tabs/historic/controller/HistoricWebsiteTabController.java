@@ -318,10 +318,17 @@ public class HistoricWebsiteTabController {
         for (var dataContainer : securitiesTypeDataContainers){
             // if everything or none is filled in only then we save it
             if (dataContainer.areInputsCompletedOrEmpty()){
-                HistoricWebsiteIdentifiers typeIdents = new HistoricWebsiteIdentifiers();
-                typeIdents.setWebsiteId(website.getId());
+                HistoricWebsiteIdentifiers typeIdents = website.getHistoricIdentifiersByType(dataContainer.getType());
+
+                // create new entity, if not exists
+                if (typeIdents == null){
+                    typeIdents = new HistoricWebsiteIdentifiers();
+                    typeIdents.setWebsiteId(website.getId());
+                    website.addSecuritiestypeIdentifiers(typeIdents);
+                }
+
+                // write data
                 dataContainer.writeTo(typeIdents);
-                website.addSecuritiestypeIdentifiers(typeIdents);
             } else {
                 showAlertDialog(
                         Alert.AlertType.WARNING,
