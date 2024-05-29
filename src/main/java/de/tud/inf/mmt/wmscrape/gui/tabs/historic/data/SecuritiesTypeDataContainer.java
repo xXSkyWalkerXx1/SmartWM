@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.historic.data;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,7 +21,7 @@ import static de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentTypes.ID
  */
 public class SecuritiesTypeDataContainer implements Initializable {
 
-    private final SecuritiesType type;
+    private SecuritiesType type;
 
     @FXML
     private ChoiceBox<IdentType>
@@ -157,6 +158,10 @@ public class SecuritiesTypeDataContainer implements Initializable {
     // endregion
 
     // region Setters
+    public void setType(SecuritiesType type) {
+        this.type = type;
+    }
+
     public void setIdTypeHistoryCourse(IdentType idTypeHistoryCourse) {
         this.idTypeHistoryCourse.setValue(idTypeHistoryCourse);
     }
@@ -300,5 +305,59 @@ public class SecuritiesTypeDataContainer implements Initializable {
         idContentButtonLoad.clear();
         idContentButtonNextPage.clear();
         idContentCountPages.clear();
+    }
+
+    /***
+     * Write every data from {@link SecuritiesTypeDataContainer} to {@link HistoricWebsiteIdentifiers}.
+     */
+    public void writeTo(@NonNull HistoricWebsiteIdentifiers identsEntity){
+        identsEntity.setSecuritiesType(getType());
+        identsEntity.setHistoricLinkIdentType(getIdTypeHistoryCourse());
+        identsEntity.setHistoricLinkIdent(getIdContentHistoryCourse());
+        identsEntity.setDateFromDayIdentType(getIdTypeDateFromDay());
+        identsEntity.setDateFromDayIdent(getIdContentDateFromDay());
+        identsEntity.setDateFromMonthIdentType(getIdTypeDateFromMonth());
+        identsEntity.setDateFromMonthIdent(getIdContentDateFromMonth());
+        identsEntity.setDateFromYearIdentType(getIdTypeDateFromYear());
+        identsEntity.setDateFromYearIdent(getIdContentDateFromYear());
+        identsEntity.setDateUntilDayIdentType(getIdTypeDateToDay());
+        identsEntity.setDateUntilDayIdent(getIdContentDateToDay());
+        identsEntity.setDateUntilMonthIdentType(getIdTypeDateToMonth());
+        identsEntity.setDateUntilMonthIdent(getIdContentDateToMonth());
+        identsEntity.setDateUntilYearIdentType(getIdTypeDateToYear());
+        identsEntity.setDateUntilYearIdent(getIdContentDateToYear());
+        identsEntity.setLoadButtonIdentType(getIdTypeButtonLoad());
+        identsEntity.setLoadButtonIdent(getIdContentButtonLoad());
+        identsEntity.setNextPageButtonIdentType(getIdTypeButtonNextPage());
+        identsEntity.setNextPageButtonIdent(getIdContentButtonNextPage());
+        identsEntity.setPageCountIdentType(getIdTypeCountPages());
+        identsEntity.setPageCountIdent(getIdContentCountPages());
+    }
+
+    /***
+     * Write every data from {@link HistoricWebsiteIdentifiers} to {@link SecuritiesTypeDataContainer}.
+     */
+    public void writeFrom(@NonNull HistoricWebsiteIdentifiers identsEntity){
+        setType(identsEntity.getSecuritiesType());
+        setIdTypeHistoryCourse(identsEntity.getHistoricLinkIdentType());
+        setIdTypeDateFromDay(identsEntity.getDateFromDayIdentType());
+        setIdTypeDateFromMonth(identsEntity.getDateFromMonthIdentType());
+        setIdTypeDateFromYear(identsEntity.getDateFromYearIdentType());
+        setIdTypeDateToDay(identsEntity.getDateUntilDayIdentType());
+        setIdTypeDateToMonth(identsEntity.getDateUntilMonthIdentType());
+        setIdTypeDateToYear(identsEntity.getDateUntilYearIdentType());
+        setIdTypeButtonLoad(identsEntity.getLoadButtonIdentType());
+        setIdTypeButtonNextPage(identsEntity.getNextPageButtonIdentType());
+        setIdTypeCountPages(identsEntity.getPageCountIdentType());
+        setIdContentHistoryCourse(identsEntity.getHistoricLinkIdent());
+        setIdContentDateFromDay(identsEntity.getDateFromDayIdent());
+        setIdContentDateFromMonth(identsEntity.getDateFromMonthIdent());
+        setIdContentDateFromYear(identsEntity.getDateFromYearIdent());
+        setIdContentDateToDay(identsEntity.getDateUntilDayIdent());
+        setIdContentDateToMonth(identsEntity.getDateUntilMonthIdent());
+        setIdContentDateToYear(identsEntity.getDateUntilYearIdent());
+        setIdContentButtonLoad(identsEntity.getLoadButtonIdent());
+        setIdContentButtonNextPage(identsEntity.getNextPageButtonIdent());
+        setIdContentCountPages(identsEntity.getPageCountIdent());
     }
 }
