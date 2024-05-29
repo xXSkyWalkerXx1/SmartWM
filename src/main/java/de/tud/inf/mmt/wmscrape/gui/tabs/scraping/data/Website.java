@@ -1,7 +1,10 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -230,6 +233,14 @@ public class Website extends WebRepresentation<WebsiteElement>{
 
     public String getPageCount() {
         return pageCount;
+    }
+
+    @Nullable
+    public HistoricWebsiteIdentifiers getHistoricIdentifiersByType(@NonNull SecuritiesType type){
+        for (var typeIdents : historicWebsiteIdentifiers){
+            if (type.equals(typeIdents.getSecuritiesType())) return typeIdents;
+        }
+        return null;
     }
 
     /**
