@@ -185,26 +185,22 @@ public class ElementManagerTable extends ElementManager {
     public void saveTableSettings(WebsiteElement websiteElement) {
         websiteElementRepository.saveAndFlush(websiteElement);
 
-        var controller = websiteElement.getContentType() == ContentType.HISTORISCH ? historicTableSubController : tableSubController;
+        var controller = ContentType.HISTORISCH.equals(websiteElement.getContentType())
+                ? historicTableSubController
+                : tableSubController;
 
         for (var selection : controller.getSelections()) {
-            if(selection.isChanged()) {
-                elementSelectionRepository.save(selection);
-            }
+            if(selection.isChanged()) elementSelectionRepository.save(selection);
         }
         elementSelectionRepository.flush();
 
         for(var correlation : GetElementDescCorrelations(websiteElement)) {
-            if(correlation.isChanged()) {
-                elementDescCorrelationRepository.save(correlation);
-            }
+            if(correlation.isChanged()) elementDescCorrelationRepository.save(correlation);
         }
         elementDescCorrelationRepository.flush();
 
         for (var identCorrelation : controller.getDbCorrelations()) {
-            if(identCorrelation.isChanged()) {
-                elementIdentCorrelationRepository.save(identCorrelation);
-            }
+            if(identCorrelation.isChanged()) elementIdentCorrelationRepository.save(identCorrelation);
         }
 
         elementSelectionRepository.deleteAllBy_selected(false);
