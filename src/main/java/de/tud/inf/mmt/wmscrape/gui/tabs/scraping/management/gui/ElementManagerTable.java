@@ -211,7 +211,9 @@ public class ElementManagerTable extends ElementManager {
     }
 
     private ObservableList<ElementDescCorrelation> GetElementDescCorrelations(WebsiteElement websiteElement) {
-        return websiteElement.getContentType() == ContentType.HISTORISCH ? historicTableSubController.getElementDescCorrelations() : tableSubController.getElementDescCorrelations();
+        return websiteElement.getContentType() == ContentType.HISTORISCH
+                ? historicTableSubController.getElementDescCorrelations()
+                : tableSubController.getElementDescCorrelations();
     }
 
     private void textFieldCellFactory(TableColumn<ElementDescCorrelation, String> column) {
