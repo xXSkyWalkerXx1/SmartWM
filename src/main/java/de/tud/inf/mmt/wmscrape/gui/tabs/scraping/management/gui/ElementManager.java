@@ -530,6 +530,8 @@ public abstract class ElementManager {
 
 
     public List<WebsiteElement> getElements(boolean historic) {
-        return websiteElementRepository.findAll().stream().filter(element -> (element.getContentType() == ContentType.HISTORISCH) == historic).collect(Collectors.toList());
+        return websiteElementRepository.findAll().stream()
+                .filter(element -> (element.getContentType() == ContentType.HISTORISCH) == historic)
+                .collect(Collectors.toList());
     }
 }
