@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,9 +18,10 @@ import static de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentTypes.ID
 
 
 /***
- * Represents the container with data for each securities-type in the website-configuration.
+ * Used for each securities-type in the website-configuration to store & handle the data.
  */
-public class SecuritiesTypeDataContainer implements Initializable {
+@Controller
+public class SecuritiesTypeIdentController implements Initializable {
 
     private SecuritiesType type;
 
@@ -53,7 +55,7 @@ public class SecuritiesTypeDataContainer implements Initializable {
      * Default constructor
      * @param type The securities-type which this container represents.
      */
-    public SecuritiesTypeDataContainer(SecuritiesType type){
+    public SecuritiesTypeIdentController(SecuritiesType type){
         this.type = type;
     }
 
@@ -348,7 +350,7 @@ public class SecuritiesTypeDataContainer implements Initializable {
     }
 
     /***
-     * Write every data from {@link SecuritiesTypeDataContainer} to {@link HistoricWebsiteIdentifiers}.
+     * Write every data from {@link SecuritiesTypeIdentController} to {@link HistoricWebsiteIdentifiers}.
      */
     public void writeTo(@NonNull HistoricWebsiteIdentifiers identsEntity){
         identsEntity.setSecuritiesType(getType());
@@ -375,7 +377,7 @@ public class SecuritiesTypeDataContainer implements Initializable {
     }
 
     /***
-     * Write every data from {@link HistoricWebsiteIdentifiers} to {@link SecuritiesTypeDataContainer}.
+     * Write every data from {@link HistoricWebsiteIdentifiers} to {@link SecuritiesTypeIdentController}.
      */
     public void writeFrom(@NonNull HistoricWebsiteIdentifiers identsEntity){
         setType(identsEntity.getSecuritiesType());
