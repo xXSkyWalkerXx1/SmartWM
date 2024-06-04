@@ -594,6 +594,7 @@ public class WebsiteScraper extends WebsiteHandler {
                 // should not be that bad considering the wait time between page loads
                 WebsiteElement freshElement  = getFreshElement(element);
 
+                // get all selected items/securities to scrape and look for their historic data
                 var elementSelections = freshElement.getElementSelections();
 
                 for(ElementSelection elementSelection : elementSelections) {
