@@ -284,10 +284,10 @@ public class SecuritiesTypeIdentContainer implements Initializable {
     // endregion
 
     /***
-     * @return True, if all contents are complete or no content is completed.
+     * @return True, if all contents (choiceboxes and textfields) are completed.
      */
-    public boolean areInputsCompletedOrEmpty(){
-        boolean isAllCompleted = !isStringEmpty(idContentHistoryCourse)
+    public boolean areInputsCompleted(){
+        return !isStringEmpty(idContentHistoryCourse)
                 && !isStringEmpty(idContentDateFromDay)
                 && !isStringEmpty(idContentDateFromMonth)
                 && !isStringEmpty(idContentDateFromYear)
@@ -297,17 +297,6 @@ public class SecuritiesTypeIdentContainer implements Initializable {
                 && !isStringEmpty(idContentButtonLoad)
                 && !isStringEmpty(idContentButtonNextPage)
                 && !isStringEmpty(idContentCountPages);
-        boolean isNoneCompleted = isStringEmpty(idContentHistoryCourse)
-                && isStringEmpty(idContentDateFromDay)
-                && isStringEmpty(idContentDateFromMonth)
-                && isStringEmpty(idContentDateFromYear)
-                && isStringEmpty(idContentDateToDay)
-                && isStringEmpty(idContentDateToMonth)
-                && isStringEmpty(idContentDateToYear)
-                && isStringEmpty(idContentButtonLoad)
-                && isStringEmpty(idContentButtonNextPage)
-                && isStringEmpty(idContentCountPages);
-        return isAllCompleted || isNoneCompleted;
     }
 
     /***
