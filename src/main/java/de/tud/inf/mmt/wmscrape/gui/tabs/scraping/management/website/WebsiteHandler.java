@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.website;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import javafx.application.Platform;
@@ -12,6 +13,7 @@ import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.lang.NonNull;
 
 import java.time.Duration;
 import java.util.*;
@@ -599,137 +601,79 @@ public abstract class WebsiteHandler extends Service<Void> {
 
     protected boolean searchForStock(String isin) {
         WebElement searchInput = extractElementFromRoot(website.getSearchFieldIdentType(), website.getSearchFieldIdent());
-
         if (searchInput == null) return false;
 
         clickElement(searchInput);
         setText(searchInput, isin);
-
         waitLoadEvent();
 
         if(website.getSearchButtonIdentType() == IdentType.ENTER) {
             submit(searchInput);
         } else {
             WebElement searchButton = extractElementFromRoot(website.getSearchButtonIdentType(), website.getSearchButtonIdent());
-
             if (searchButton == null) return false;
 
             clickElement(searchButton);
         }
 
         addToLog("INFO:\tZu Wertpapier-Unterseite navigiert");
-
         return true;
     }
 
-    protected boolean boerseFrankfunkfurtLoadHP() {
+    protected boolean loadHistoricPage(@NonNull HistoricWebsiteIdentifiers identifiers) {
+        WebElement element = extractElementFromRoot(
+                identifiers.getHistoricLinkIdentType(),
+                identifiers.getHistoricLinkIdent()
+        );
+        if (element == null) return false;
 
-        var linkIdent = website.getHistoricLinkIdent();
-        if(!linkIdent.contains(";")) {
+        clickElement(element);
+        waitLoadEvent();
 
-            WebElement element = extractElementFromRoot(website.getHistoricLinkIdentType(), website.getHistoricLinkIdent());
-            if (element == null) element = extractElementFromRoot(website.getHistoricLinkIdentType(), "/html/body/app-root/app-wrapper/div/div[2]/app-equity/app-data-menue/div/div/div/drag-scroll/div/div/button[3]");
-            if (element == null) element = replaceXPATHFB(website.getHistoricLinkIdentType(), "/html/body/app-root/app-wrapper/div/div[2]/app-equity/app-data-menue/div/div/div/drag-scroll/div/div/button[3]");
-            if (!Objects.equals(element.getText(), "Kurshistorie")) {
-                element = extractElementFromRoot(website.getHistoricLinkIdentType(), "/html/body/app-root/app-wrapper/div/div[2]/app-equity/app-data-menue/div/div/div/drag-scroll/div/div/button[5]");
-            }
-            if (element == null)  {
-                return false;
-            }
-
-            clickElement(element);
-            waitLoadEvent();
-            addToLog("INFO:\tZu historischen Daten navigiert");
-        } else {
-            var linkIdents = linkIdent.split(";");
-
-            for(String ident : linkIdents) {
-                WebElement element = extractElementFromRoot(website.getHistoricLinkIdentType(), website.getHistoricLinkIdent());
-                if (element == null) element = extractElementFromRoot(website.getHistoricLinkIdentType(), "/html/body/app-root/app-wrapper/div/div[2]/app-equity/app-data-menue/div/div/div/drag-scroll/div/div/button[3]");
-                if (element == null) element = replaceXPATHFB(website.getHistoricLinkIdentType(), "/html/body/app-root/app-wrapper/div/div[2]/app-equity/app-data-menue/div/div/div/drag-scroll/div/div/button[3]");
-                if (!Objects.equals(element.getText(), "Kurshistorie")) {
-                    element = extractElementFromRoot(website.getHistoricLinkIdentType(), "/html/body/app-root/app-wrapper/div/div[2]/app-equity/app-data-menue/div/div/div/drag-scroll/div/div/button[5]");
-                }
-                if (element == null)  {
-                    return false;
-                }
-
-                clickElement(element);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                waitLoadEvent();
-            }
-        }
-
+        addToLog("INFO:\tZu historischen Daten navigiert");
         return true;
     }
 
-    protected boolean loadHistoricPage() {
-        if (website.getSearchUrl().contains("boerse-frankfurt")) return boerseFrankfunkfurtLoadHP();
-        var linkIdent = website.getHistoricLinkIdent();
-        if(!linkIdent.contains(";")) {
-
-            WebElement element = extractElementFromRoot(website.getHistoricLinkIdentType(), website.getHistoricLinkIdent());
-
-            if (element == null)  {
-                return false;
-            }
-
-            clickElement(element);
-            waitLoadEvent();
-            addToLog("INFO:\tZu historischen Daten navigiert");
-        } else {
-            var linkIdents = linkIdent.split(";");
-
-            for(String ident : linkIdents) {
-                WebElement element = extractElementFromRoot(website.getHistoricLinkIdentType(), ident);
-
-                if (element == null)  {
-                    return false;
-                }
-
-                clickElement(element);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                waitLoadEvent();
-            }
-        }
-
-
-        return true;
-    }
-    protected boolean setDate() {
-        var dateFromDayElement = extractElementFromRoot(website.getDateFromDayIdentType(), website.getDateFromDayIdent());
-        if (dateFromDayElement == null) dateFromDayElement = replaceXPATHFB(website.getDateFromDayIdentType(), website.getDateFromDayIdent());
-
+    protected boolean setDate(@NonNull HistoricWebsiteIdentifiers identifiers) {
         WebElement dateFromMonthElement = null;
         WebElement dateFromYearElement = null;
         WebElement dateUntilMonthElement = null;
         WebElement dateUntilYearElement = null;
 
-        if(website.getDateFromMonthIdent() != null && !website.getDateFromMonthIdent().equals("")) {
-            dateFromMonthElement = extractElementFromRoot(website.getDateFromMonthIdentType(), website.getDateFromMonthIdent());
-            dateFromYearElement = extractElementFromRoot(website.getDateFromYearIdentType(), website.getDateFromYearIdent());
+        var dateFromDayElement = extractElementFromRoot(
+                identifiers.getDateFromDayIdentType(),
+                identifiers.getDateFromDayIdent()
+        );
+        var dateUntilDayElement = extractElementFromRoot(
+                identifiers.getDateUntilDayIdentType(),
+                identifiers.getDateUntilDayIdent()
+        );
 
-            dateUntilMonthElement = extractElementFromRoot(website.getDateUntilMonthIdentType(), website.getDateUntilMonthIdent());
-            dateUntilYearElement = extractElementFromRoot(website.getDateUntilYearIdentType(), website.getDateUntilYearIdent());
+        if(identifiers.getDateFromMonthIdent() != null && !identifiers.getDateFromMonthIdent().equals("")) {
+            dateFromMonthElement = extractElementFromRoot(
+                    identifiers.getDateFromMonthIdentType(),
+                    identifiers.getDateFromMonthIdent()
+            );
+            dateFromYearElement = extractElementFromRoot(
+                    identifiers.getDateFromYearIdentType(),
+                    identifiers.getDateFromYearIdent()
+            );
+            dateUntilMonthElement = extractElementFromRoot(
+                    identifiers.getDateUntilMonthIdentType(),
+                    identifiers.getDateUntilMonthIdent()
+            );
+            dateUntilYearElement = extractElementFromRoot(
+                    identifiers.getDateUntilYearIdentType(),
+                    identifiers.getDateUntilYearIdent()
+            );
         }
 
-        var dateUntilDayElement = extractElementFromRoot(website.getDateUntilDayIdentType(), website.getDateUntilDayIdent());
-        if (dateUntilDayElement == null) dateUntilDayElement = replaceXPATHFB(website.getDateUntilDayIdentType(), website.getDateUntilDayIdent());
-
-        if(dateFromDayElement != null &&
-                dateFromMonthElement != null &&
-                dateFromYearElement != null &&
-                dateUntilDayElement != null &&
-                dateUntilMonthElement != null &&
-                dateUntilYearElement != null) {
+        if(dateFromDayElement != null
+                && dateFromMonthElement != null
+                && dateFromYearElement != null
+                && dateUntilDayElement != null
+                && dateUntilMonthElement != null
+                && dateUntilYearElement != null) {
 
             if (website.getDateFrom() != null && !website.getDateFrom().equals("")) {
                 var dateFrom = website.getDateFrom().split("#");
@@ -765,12 +709,12 @@ public abstract class WebsiteHandler extends Service<Void> {
 
             addToLog("INFO:\tDatum gesetzt");
             return true;
-        } else if(dateFromDayElement != null &&
-                dateFromMonthElement == null &&
-                dateFromYearElement == null &&
-                dateUntilDayElement != null &&
-                dateUntilMonthElement == null &&
-                dateUntilYearElement == null) {
+        } else if(dateFromDayElement != null
+                && dateFromMonthElement == null
+                && dateFromYearElement == null
+                && dateUntilDayElement != null
+                && dateUntilMonthElement == null
+                && dateUntilYearElement == null) {
 
             var dateFrom = website.getDateFrom();
             var dateUntil = website.getDateUntil();
@@ -805,69 +749,37 @@ public abstract class WebsiteHandler extends Service<Void> {
         return true;
     }
 
-    protected boolean loadHistoricData() {
-        var buttonIdent = website.getLoadButtonIdent();
+    protected boolean loadHistoricData(@NonNull HistoricWebsiteIdentifiers identifiers) {
+        WebElement element = extractElementFromRoot(
+                identifiers.getLoadButtonIdentType(),
+                identifiers.getLoadButtonIdent()
+        );
+        if (element == null) return false;
 
-        if(!buttonIdent.contains(";")) {
+        clickElement(element);
 
-            WebElement element = extractElementFromRoot(website.getLoadButtonIdentType(), website.getLoadButtonIdent());
-            if (element == null) element = replaceXPATHFB(website.getLoadButtonIdentType(), website.getLoadButtonIdent());
-
-            if (element == null) return false;
-
-            clickElement(element);
-
-            addToLog("INFO:\tHistorische Daten geladen");
-            return true;
-        } else {
-            var buttonIdents = buttonIdent.split(";");
-
-            for(String ident : buttonIdents) {
-                WebElement element = extractElementFromRoot(website.getLoadButtonIdentType(), ident);
-
-                if (element == null) return false;
-
-                clickElement(element);
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                waitLoadEvent();
-            }
-
-            addToLog("INFO:\tHistorische Daten geladen");
-        }
-
-
+        addToLog("INFO:\tHistorische Daten geladen");
         return true;
     }
 
-    protected Integer readPageCount() {
-        IdentType type = website.getPageCountIdentType();
+    protected Integer readPageCount(@NonNull HistoricWebsiteIdentifiers identifiers) {
+        IdentType type = identifiers.getPageCountIdentType();
         if (type == IdentType.DEAKTIVIERT) return 1;
-        var xpath = website.getPageCountIdent();
+
+        var xpath = identifiers.getPageCountIdent();
         WebElement element = extractElementFromRoot(type, xpath);
-        if (element == null) {
-            element = extractElementFromRoot(type, XPathReplacer(xpath, "app-equity","app-etp"));
-            if (element != null) xpath = XPathReplacer(xpath, "app-equity","app-etp");
-            element = extractElementFromRoot(type, XPathReplacer(xpath, "app-equity","app-fund"));
-            if (element != null) xpath = XPathReplacer(xpath, "app-equity","app-fund");
-            element = extractElementFromRoot(type, XPathReplacer(xpath, "app-equity","app-etp"));
-            if (element != null) xpath = XPathReplacer(xpath, "app-equity","app-component");
-        }
         if (element == null) {
             addToLog("INFO:\tSeitenzahl konnte nicht gelesen werden");
             return 1;
         }
+
         int pageCount = 1;
         try {
             pageCount = Integer.parseInt(element.getText());
         } catch (NumberFormatException nfe) {
             return 1;
         }
+
         int buttonCount = 4;
         while (true) {
             try {
@@ -881,55 +793,30 @@ public abstract class WebsiteHandler extends Service<Void> {
             }
         }
     }
-    protected boolean readPageCountTest() {
-        IdentType type = website.getPageCountIdentType();
-        if (type == IdentType.DEAKTIVIERT) return true;
 
-        WebElement element = extractElementFromRoot(website.getPageCountIdentType(), website.getPageCountIdent());
-        if (element == null) element = replaceXPATHFB(website.getPageCountIdentType(), website.getPageCountIdent());
+    protected boolean readPageCountTest(@NonNull HistoricWebsiteIdentifiers identifiers) {
+        if (identifiers.getPageCountIdentType() == IdentType.DEAKTIVIERT) return true;
+
+        WebElement element = extractElementFromRoot(
+                identifiers.getPageCountIdentType(),
+                identifiers.getPageCountIdent()
+        );
+
         addToLog("INFO:\tPage Count: " + element.getText());
         return true;
     }
 
-    protected boolean nextTablePage() {
-        IdentType type = website.getNextPageButtonIdentType();
-        if (type == IdentType.DEAKTIVIERT) return true;
+    protected boolean nextTablePage(@NonNull HistoricWebsiteIdentifiers identifiers) {
+        if (identifiers.getNextPageButtonIdentType() == IdentType.DEAKTIVIERT) return true;
 
-        var buttonIdent = website.getNextPageButtonIdent();
+        WebElement element = extractElementFromRoot(
+                identifiers.getNextPageButtonIdentType(),
+                identifiers.getNextPageButtonIdent()
+        );
+        if (element == null) return false;
 
-        if(!buttonIdent.contains(";")) {
-
-            WebElement element = extractElementFromRoot(website.getNextPageButtonIdentType(), website.getNextPageButtonIdent());
-            if (element == null) element = replaceXPATHFB(website.getNextPageButtonIdentType(), website.getNextPageButtonIdent());
-
-            if (element == null) return false;
-
-            clickElement(element);
-
-            addToLog("INFO:\tNächste Tabellenseite geladen");
-        } else {
-            var buttonIdents = buttonIdent.split(";");
-
-            for(String ident : buttonIdents) {
-                WebElement element = extractElementFromRoot(website.getNextPageButtonIdentType(), ident);
-                if (element == null) element = replaceXPATHFB(website.getNextPageButtonIdentType(), website.getNextPageButtonIdent());
-
-                if (element == null) return false;
-
-                clickElement(element);
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                waitLoadEvent();
-            }
-
-            addToLog("INFO:\tNächste Tabellenseite geladen");
-        }
-
+        clickElement(element);
+        addToLog("INFO:\tNächste Tabellenseite geladen");
         return true;
     }
 }
