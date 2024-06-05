@@ -13,6 +13,7 @@ import de.tud.inf.mmt.wmscrape.dynamicdb.stock.StockColumn;
 import de.tud.inf.mmt.wmscrape.dynamicdb.stock.StockTableManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data.Stock;
 import de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data.StockRepository;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelationRepository;
@@ -36,6 +37,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -210,9 +212,13 @@ public abstract class ElementManager {
      * @param staleElement the selected website configuration
      * @param table the javafx selection table
      * @param multiplicityType the {@link MultiplicityType} wo table or single
+     * @param matchType type which the correlations have to match to be added to table, if null, the matching will be ignored
+     *
+     * @implNote use {@code matchType} only for the table for historic-element-config!
      */
     @Transactional
-    public void initIdentCorrelationTable(WebsiteElement staleElement, TableView<ElementIdentCorrelation> table , MultiplicityType multiplicityType) {
+    public void initIdentCorrelationTable(WebsiteElement staleElement, TableView<ElementIdentCorrelation> table ,
+                                          MultiplicityType multiplicityType, @Nullable SecuritiesType matchType) {
         table.setPlaceholder(new Label("Es stehen keine DB-Spalten zur Auswahl. Legen Sie zusätzliche an."));
 
         WebsiteElement websiteElement = getFreshWebsiteElement(staleElement);
@@ -221,13 +227,13 @@ public abstract class ElementManager {
 
         var type = websiteElement.getContentType();
         if(type == ContentType.AKTIENKURS) {
-            fillCourseIdentCorrelationTable(websiteElement,table, multiplicityType);
+            fillCourseIdentCorrelationTable(websiteElement,table, multiplicityType, matchType);
         } else if(type == ContentType.STAMMDATEN) {
             fillStockIdentCorrelationTable(websiteElement,table, multiplicityType);
         } else if(type == ContentType.WECHSELKURS) {
             fillExchangeIdentCorrelationTable(websiteElement, table);
         } else if(type == ContentType.HISTORISCH) {
-            fillCourseIdentCorrelationTable(websiteElement, table, multiplicityType);
+            fillCourseIdentCorrelationTable(websiteElement, table, multiplicityType, matchType);
         }
     }
 
@@ -287,7 +293,8 @@ public abstract class ElementManager {
      * @param table the javafx selection table
      * @param multiplicityType the {@link MultiplicityType} wo table or single
      */
-    private void fillStockIdentCorrelationTable(WebsiteElement websiteElement, TableView<ElementIdentCorrelation> table, MultiplicityType multiplicityType) {
+    private void fillStockIdentCorrelationTable(WebsiteElement websiteElement, TableView<ElementIdentCorrelation> table,
+                                                MultiplicityType multiplicityType) {
         ObservableList<ElementIdentCorrelation> stockCorrelations = FXCollections.observableArrayList();
         ArrayList<String> addedStockColumns = new ArrayList<>();
 
@@ -332,7 +339,8 @@ public abstract class ElementManager {
      * @param table the javafx selection table
      * @param multiplicityType the {@link MultiplicityType} wo table or single
      */
-    private void fillCourseIdentCorrelationTable(WebsiteElement websiteElement, TableView<ElementIdentCorrelation> table, MultiplicityType multiplicityType) {
+    private void fillCourseIdentCorrelationTable(WebsiteElement websiteElement, TableView<ElementIdentCorrelation> table,
+                                                 MultiplicityType multiplicityType, @Nullable SecuritiesType matchType) {
         ObservableList<ElementIdentCorrelation> courseCorrelations = FXCollections.observableArrayList();
         ArrayList<String> addedStockColumns = new ArrayList<>();
 
@@ -344,6 +352,9 @@ public abstract class ElementManager {
         }
 
         for (ElementIdentCorrelation elementIdentCorrelation : websiteElement.getElementIdentCorrelations()) {
+            if (matchType != null){
+                if (!elementIdentCorrelation.getSecuritiesType().equals(matchType)) continue;
+            }
             courseCorrelations.add(elementIdentCorrelation);
             addedStockColumns.add(elementIdentCorrelation.getDbColName());
         }
@@ -355,7 +366,11 @@ public abstract class ElementManager {
                 if(!addedStockColumns.contains(column)) {
                     addedStockColumns.add(column);
                     courseCorrelations.add(new ElementIdentCorrelation(
-                            websiteElement, ColumnDatatype.TEXT, CourseTableManager.TABLE_NAME ,column));
+                            websiteElement,
+                            ColumnDatatype.TEXT,
+                            CourseTableManager.TABLE_NAME,
+                            column
+                    ));
                 }
             }
         }
