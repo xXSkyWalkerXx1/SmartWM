@@ -39,8 +39,10 @@ public enum SecuritiesType {
                 return SecuritiesType.SHARE;
             }
             default -> {
-                String msg = String.format("Der Wertpapier-Typ %s kann nicht gemappt werden.", type);
-                throw new IllegalArgumentException(msg);
+                throw new IllegalArgumentException(String.format(
+                        "Der Wertpapier-Typ %s kann nicht gemappt werden.",
+                        type
+                ));
             }
         }
     }
