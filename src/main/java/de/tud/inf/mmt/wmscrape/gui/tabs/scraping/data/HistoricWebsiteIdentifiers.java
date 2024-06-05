@@ -12,10 +12,6 @@ import javax.persistence.*;
 @Table(name = "wertpapier_identifikatoren")
 public class HistoricWebsiteIdentifiers {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "website_id", referencedColumnName = "id")
-    private Website website;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -25,8 +21,9 @@ public class HistoricWebsiteIdentifiers {
     @Column(name = "securities_type")
     private SecuritiesType securitiesType;
 
-    @Column(name = "website_id")
-    private int websiteId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "website_id")
+    private Website website;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "historic_link_ident_type", nullable = false)
@@ -107,8 +104,8 @@ public class HistoricWebsiteIdentifiers {
         return securitiesType;
     }
 
-    public int getWebsiteId() {
-        return websiteId;
+    public Website getWebsite() {
+        return website;
     }
 
     public IdentType getHistoricLinkIdentType() {
@@ -197,8 +194,8 @@ public class HistoricWebsiteIdentifiers {
         this.securitiesType = securitiesType;
     }
 
-    public void setWebsiteId(int websiteId) {
-        this.websiteId = websiteId;
+    public void setWebsite(Website website) {
+        this.website = website;
     }
 
     public void setHistoricLinkIdentType(IdentType historicLinkIdentType) {
