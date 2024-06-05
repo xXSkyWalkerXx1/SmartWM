@@ -317,7 +317,7 @@ public class HistoricWebsiteTabController {
 
         for (var dataContainer : securitiesTypeIdentContainers){
             // if everything or none is filled in only then we save it
-            if (dataContainer.areInputsCompletedOrEmpty()){
+            if (dataContainer.areInputsCompleted()){
                 HistoricWebsiteIdentifiers typeIdents = website.getHistoricIdentifiersByType(dataContainer.getType());
 
                 // create new entity, if not exists / were added - this is used to check if there is not already one
@@ -333,9 +333,9 @@ public class HistoricWebsiteTabController {
                 showAlertDialog(
                         Alert.AlertType.WARNING,
                         String.format(
-                                "Eingaben zu %s nicht gültig und werden daher ignoriert.\n" +
+                                "Leere bzw. unvollständige Eingaben zu %s nicht gültig und werden daher ignoriert.\n" +
                                         "Erlaubt ist nur komplett oder gar nicht ausfüllen!",
-                                dataContainer.getType()
+                                dataContainer.getType().getDisplayText()
                         ),
                         "Ungültige Eingabe"
                 );
@@ -393,9 +393,13 @@ public class HistoricWebsiteTabController {
         dateFromField.setText(website.getDateFrom());
         dateUntilField.setText(website.getDateUntil());
 
-        for (var typeIdents : website.getHistoricWebsiteIdentifiers()){
-            for (var dataContainer : securitiesTypeIdentContainers){
-                if (typeIdents.getSecuritiesType().equals(dataContainer.getType())) dataContainer.writeFrom(typeIdents);
+        for (var dataContainer : securitiesTypeIdentContainers){
+            var typeIdents = website.getHistoricIdentifiersByType(dataContainer.getType());
+
+            if (typeIdents != null) {
+                dataContainer.writeFrom(typeIdents);
+            } else {
+                dataContainer.clearAll();
             }
         }
 
@@ -424,7 +428,7 @@ public class HistoricWebsiteTabController {
                 && validIdentField(searchIdentField, false);
 
         for (var typeIdents : securitiesTypeIdentContainers){
-            if (!typeIdents.areInputsCompletedOrEmpty()) continue;
+            if (!typeIdents.areInputsCompleted()) continue;
             valid &= validIdentField(typeIdents.getFieldHistoryCourse(), false)
                     && validIdentField(typeIdents.getFieldDateFromDay(), false)
                     && validIdentField(typeIdents.getFieldDateFromMonth(), true)
