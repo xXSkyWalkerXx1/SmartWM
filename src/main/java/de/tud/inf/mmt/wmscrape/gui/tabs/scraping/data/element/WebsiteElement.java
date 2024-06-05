@@ -1,5 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.WebRepresentation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
@@ -7,6 +9,8 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.ContentType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.MultiplicityType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.selection.ElementSelection;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -128,6 +132,14 @@ public class WebsiteElement extends WebRepresentation<WebRepresentation<?>> {
 
     public void setElementSelections(List<ElementSelection> elementSelections) {
         this.elementSelections = elementSelections;
+    }
+
+    @Nullable
+    public ElementIdentCorrelation getElementIdentifiersByType(@NonNull SecuritiesType type){
+        for (var typeIdents : elementIdentCorrelations){
+            if (type.equals(typeIdents.getSecuritiesType())) return typeIdents;
+        }
+        return null;
     }
 
     public List<ElementIdentCorrelation> getElementIdentCorrelations() {
