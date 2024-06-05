@@ -4,33 +4,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="100.0" prefWidth="160.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeCorrelation">
-   <children>
-      <VBox alignment="CENTER">
-         <children>
-            <HBox prefWidth="100.0">
-               <children>
-                  <Label prefWidth="160.0" text="Tabellenidentifikation">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin></Label>
-                  <ChoiceBox fx:id="tableIdentType" prefWidth="150.0">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin></ChoiceBox>
-                  <TextField fx:id="tableIdent" prefWidth="350.0" />
-               </children>
-            </HBox>
-            <Label prefHeight="20.0" text="Zuordnung zu den Zeilenelementen">
-               <VBox.margin>
-                  <Insets top="20.0" />
-               </VBox.margin></Label>
-            <TableView fx:id="tableCorrelations" editable="true" prefHeight="200.0" prefWidth="200.0">
-               <VBox.margin>
-                  <Insets top="5.0" />
-               </VBox.margin></TableView>
-         </children>
-      </VBox>
-   </children>
+<AnchorPane prefWidth="540.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeCorrContainer">
+   <VBox alignment="CENTER" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="10">
+      <HBox alignment="CENTER" prefWidth="100">
+         <Label alignment="CENTER_RIGHT" prefWidth="160" text="Tabellenidentifikation">
+            <HBox.margin>
+               <Insets right="10" />
+            </HBox.margin>
+         </Label>
+         <ChoiceBox fx:id="tableIdentType" prefWidth="150">
+            <HBox.margin>
+               <Insets right="10" />
+            </HBox.margin>
+         </ChoiceBox>
+         <TextField fx:id="tableIdent" prefWidth="350" />
+      </HBox>
+      <Label prefHeight="20" text="Zuordnung zu den Zeilenelementen">
+         <VBox.margin>
+            <Insets top="15" />
+         </VBox.margin>
+      </Label>
+      <TableView fx:id="tableCorrelations" editable="true" prefHeight="200" prefWidth="200">
+         <VBox.margin>
+            <Insets top="5" />
+         </VBox.margin>
+      </TableView>
+   </VBox>
 </AnchorPane>
