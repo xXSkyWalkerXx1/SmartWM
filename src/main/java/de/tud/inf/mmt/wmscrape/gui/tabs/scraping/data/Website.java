@@ -26,7 +26,7 @@ public class Website extends WebRepresentation<WebsiteElement>{
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private final List<WebsiteElement> websiteElements = new ArrayList<>();
 
-    @OneToMany(mappedBy = "website", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "website", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final List<HistoricWebsiteIdentifiers> historicWebsiteIdentifiers = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
