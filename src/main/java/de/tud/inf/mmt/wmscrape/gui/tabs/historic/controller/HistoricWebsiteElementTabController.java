@@ -1,10 +1,14 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller;
 
+import de.tud.inf.mmt.wmscrape.WMScrape;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.element.HistoricTableSubController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.element.NewHistoricElementPopupController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeCorrContainer;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.controller.ScrapingElementsTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.gui.ElementManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.gui.ElementManagerCourseAndExchange;
@@ -13,12 +17,17 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.gui.WebsiteManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * handles the user interaction with the element tab
@@ -58,15 +67,24 @@ public class HistoricWebsiteElementTabController {
     @FXML
     private void initialize() {
         setRightPanelBoxVisible(false);
-        elementObservableList = scrapingTableManager.initWebsiteElementList(elementList, true);
-        elementList.getSelectionModel().selectedItemProperty().addListener(
-                (ov, oldWs, newWs) -> loadSpecificElement(newWs));
 
+        // load and show element-configs
+        elementObservableList = scrapingTableManager.initWebsiteElementList(elementList, true);
+
+        // load and set websites for which we can create an element-config
         reloadWebsiteList();
         websiteChoiceBox.setItems(websiteObservableList);
 
-        websiteChoiceBox.getSelectionModel().selectedItemProperty().addListener(x -> nullValidator(websiteChoiceBox));
+        // set listeners
+        elementList.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((ov, oldWs, newWs) -> loadSpecificElement(newWs));
 
+        websiteChoiceBox.getSelectionModel()
+                .selectedItemProperty()
+                .addListener(x -> nullValidator(websiteChoiceBox));
+
+        // select initial first element-config
         elementList.getSelectionModel().selectFirst();
     }
 
@@ -84,7 +102,7 @@ public class HistoricWebsiteElementTabController {
 
     @FXML
     private void handleDeleteElementButton() {
-        WebsiteElement element = elementList.getSelectionModel().getSelectedItem();
+        WebsiteElement element = getSelectedElement();
 
         if(element == null) {
             createAlert("Kein Element zum löschen ausgewählt!",
@@ -121,6 +139,10 @@ public class HistoricWebsiteElementTabController {
 
         WebsiteElement websiteElement = getSelectedElement();
         websiteElement.setWebsite(websiteChoiceBox.getValue());
+        websiteElement.setElementCorrelations(historicTableSubController.getSecuritiesTypeCorrContainers().stream()
+                .flatMap((Function<SecuritiesTypeCorrContainer, Stream<ElementIdentCorrelation>>) c -> c.getCorrelations().stream())
+                .collect(Collectors.toList())
+        );
 
         scrapingTableManager.saveTableSettings(websiteElement);
 
@@ -153,9 +175,9 @@ public class HistoricWebsiteElementTabController {
         inlineValidation = false;
         setRightPanelBoxVisible(true);
 
-        scrapingTableManager.resetElementRepresentation(null, websiteChoiceBox, staleElement);
+        scrapingTableManager.resetElementRepresentation(null, websiteChoiceBox, staleElement); // ToDo: contains bug?
 
-        loadTable();
+        loadTable(staleElement);
     }
 
     public void reloadElementList() {
@@ -223,9 +245,30 @@ public class HistoricWebsiteElementTabController {
         alert.showAndWait();
     }
 
-    private void loadTable() {
+    private void loadTable(WebsiteElement websiteElement) {
+        // load selection-table and db-description-table
         ElementManager.loadSubMenu(historicTableSubController,
                 "gui/tabs/historic/controller/element/tableSubmenu.fxml", subPane);
+
+        // load tab-menu with correlation-tables for each securities-type
+        for (SecuritiesType securitiesType : SecuritiesType.values()){
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(WMScrape.class.getResource(
+                        "gui/tabs/historic/controller/element/tableCorrelation.fxml"
+                ));
+
+                SecuritiesTypeCorrContainer corrContainer = new SecuritiesTypeCorrContainer(securitiesType, websiteElement, scrapingTableManager);
+                historicTableSubController.getSecuritiesTypeCorrContainers().add(corrContainer);
+                fxmlLoader.setControllerFactory(param -> corrContainer);
+
+                // add tab to tab-pane
+                historicTableSubController.getSecuritiesTypeTabPane()
+                        .getTabs()
+                        .add(new Tab(securitiesType.getDisplayText(), fxmlLoader.load()));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
     }
 
     private boolean isValidInput() {
