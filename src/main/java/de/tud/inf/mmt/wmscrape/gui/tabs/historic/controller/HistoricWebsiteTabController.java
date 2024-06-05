@@ -5,7 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.website.HistoricWebsiteTestPopupController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.website.NewHistoricWebsitePopupController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
-import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeDataContainer;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeIdentContainer;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
@@ -67,7 +67,7 @@ public class HistoricWebsiteTabController {
     @FXML private TextField dateUntilField;
 
     @FXML private VBox securitiesTypesTitledPaneList;
-    private final List<SecuritiesTypeDataContainer> securitiesTypeDataContainers = new ArrayList<>();
+    private final List<SecuritiesTypeIdentContainer> securitiesTypeIdentContainers = new ArrayList<>();
 
     private ObservableList<Website> websiteObservableList;
     private boolean inlineValidation = false;
@@ -149,9 +149,9 @@ public class HistoricWebsiteTabController {
             FXMLLoader fxmlLoader = new FXMLLoader(WMScrape.class.getResource(
                     "gui/tabs/historic/controller/historicWebsitesSecuritiesType.fxml"
             ));
-            fxmlLoader.setControllerFactory(param -> new SecuritiesTypeDataContainer(type));
-
-            securitiesTypeDataContainers.add(fxmlLoader.getController());
+            var controller = new SecuritiesTypeIdentContainer(type);
+            securitiesTypeIdentContainers.add(controller);
+            fxmlLoader.setControllerFactory(param -> controller);
 
             TitledPane titledPane = fxmlLoader.load();
             titledPane.setText(type.getDisplayText());
@@ -274,7 +274,7 @@ public class HistoricWebsiteTabController {
         dateFromField.clear();
         dateUntilField.clear();
 
-        securitiesTypeDataContainers.forEach(SecuritiesTypeDataContainer::clearAll);
+        securitiesTypeIdentContainers.forEach(SecuritiesTypeIdentContainer::clearAll);
     }
 
     private void clearTopFields() {
@@ -315,15 +315,15 @@ public class HistoricWebsiteTabController {
         website.setDateFrom(dateFromField.getText());
         website.setDateUntil(dateUntilField.getText());
 
-        for (var dataContainer : securitiesTypeDataContainers){
+        for (var dataContainer : securitiesTypeIdentContainers){
             // if everything or none is filled in only then we save it
             if (dataContainer.areInputsCompletedOrEmpty()){
                 HistoricWebsiteIdentifiers typeIdents = website.getHistoricIdentifiersByType(dataContainer.getType());
 
-                // create new entity, if not exists
+                // create new entity, if not exists / were added - this is used to check if there is not already one
                 if (typeIdents == null){
                     typeIdents = new HistoricWebsiteIdentifiers();
-                    typeIdents.setWebsiteId(website.getId());
+                    typeIdents.setWebsite(website);
                     website.addSecuritiestypeIdentifiers(typeIdents);
                 }
 
@@ -394,7 +394,7 @@ public class HistoricWebsiteTabController {
         dateUntilField.setText(website.getDateUntil());
 
         for (var typeIdents : website.getHistoricWebsiteIdentifiers()){
-            for (var dataContainer : securitiesTypeDataContainers){
+            for (var dataContainer : securitiesTypeIdentContainers){
                 if (typeIdents.getSecuritiesType().equals(dataContainer.getType())) dataContainer.writeFrom(typeIdents);
             }
         }
@@ -423,7 +423,7 @@ public class HistoricWebsiteTabController {
                 && validUrlField(informationUrlField)
                 && validIdentField(searchIdentField, false);
 
-        for (var typeIdents : securitiesTypeDataContainers){
+        for (var typeIdents : securitiesTypeIdentContainers){
             if (!typeIdents.areInputsCompletedOrEmpty()) continue;
             valid &= validIdentField(typeIdents.getFieldHistoryCourse(), false)
                     && validIdentField(typeIdents.getFieldDateFromDay(), false)
@@ -504,7 +504,7 @@ public class HistoricWebsiteTabController {
             passwordIdentField.setText("-");
             loginIdentField.setText("-");
 
-            for (SecuritiesTypeDataContainer dataContainer : securitiesTypeDataContainers){
+            for (SecuritiesTypeIdentContainer dataContainer : securitiesTypeIdentContainers){
                 dataContainer.setIdTypeButtonNextPage(IdentType.DEAKTIVIERT);
                 dataContainer.setIdContentButtonNextPage("-");
                 dataContainer.setIdTypeCountPages(IdentType.DEAKTIVIERT);
