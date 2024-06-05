@@ -121,6 +121,10 @@ public class ElementSelection {
         this.wasExtracted = true;
     }
 
+    public Stock getStock() {
+        return stock;
+    }
+
     /**
      * called after entity creation by hibernate (loading from the database)
      * updates the property values to those from the database
