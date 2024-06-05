@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<TitledPane contentDisplay="CENTER" expanded="false" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeDataContainer">
+<TitledPane contentDisplay="CENTER" expanded="false" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeIdentContainer">
    <content>
       <VBox prefHeight="200.0" prefWidth="100.0" spacing="6.0">
          <children>
