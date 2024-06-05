@@ -1,6 +1,8 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.website;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.management.extraction.TableHistoricExtraction;
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.WebsiteRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
@@ -19,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -145,14 +146,14 @@ public class WebsiteScraper extends WebsiteHandler {
         return true;
     }
 
-    private boolean doLoadHistoricData(WebsiteElement element) {
-        if(!loadHistoricPage()) return false;
+    private boolean doLoadHistoricData(WebsiteElement element, HistoricWebsiteIdentifiers identifiers) {
+        if(!loadHistoricPage(identifiers)) return false;
         delayRandom();
         declineNotifications();
-        if(!setDate()) return false;
+        if(!setDate(identifiers)) return false;
         delayRandom();
 
-        if(!loadHistoricData()) return false;
+        if(!loadHistoricData(identifiers)) return false;
         delayRandom();
         declineNotifications();
 
@@ -168,7 +169,7 @@ public class WebsiteScraper extends WebsiteHandler {
                 return false;
             }
 
-            if(!loadHistoricData()) return false;
+            if(!loadHistoricData(identifiers)) return false;
             delayRandom();
             declineNotifications();
             waitLoadEvent();
@@ -599,24 +600,29 @@ public class WebsiteScraper extends WebsiteHandler {
 
                 for(ElementSelection elementSelection : elementSelections) {
                     setCurrentSelection(elementSelection);
+
                     var websiteIsin = elementSelection.getElementDescCorrelation().getWsIsin();
+                    var wpType = elementSelection.getStock().stockTypeProperty().get();
+                    var securitiesType = SecuritiesType.getMapped(wpType);
+                    var identifiers = website.getHistoricIdentifiersByType(securitiesType);
 
                     if(!doSearchRoutine(websiteIsin)) continue;
                     waitLoadEvent();
-                    if(!doLoadHistoricData(freshElement)) continue;
+
+                    if(!doLoadHistoricData(freshElement, identifiers)) continue;
                     scrollToBottom(freshElement);
 
                     tableHistoricExtraction.setIsin(elementSelection.getIsin());
                     addToLog("INFO:\tExtrahiere Daten für " + elementSelection.getIsin());
 
                     var currentPageCount = 1;
-                    var pageCount = readPageCount();
+                    var pageCount = readPageCount(identifiers);
                     addToLog("INFO:\tEs wurden " + pageCount + " Seiten gelesen");
                     while(currentPageCount <= pageCount) {
                         tableHistoricExtraction.extract(freshElement, task, elementSelectionProgress);
                         addToLog("INFO:\tSeite " + currentPageCount + " von " + pageCount + " Seiten gelesen");
                         if (currentPageCount < pageCount) {
-                            nextTablePage();
+                            nextTablePage(identifiers);
                             delayRandom();
                             declineNotifications();
                             waitLoadEvent();
