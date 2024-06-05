@@ -50,7 +50,7 @@ public class ElementIdentCorrelation {
     @Column(name = "table_iden_type", nullable = false)
     private IdentType tableIdenType = IdentType.ID;
 
-    @Column(columnDefinition = "TEXT", name = "table_ident")
+    @Column(name = "table_ident", nullable = false)
     private String tableIdent;
 
     @Column(name = "ident_type", columnDefinition = "TEXT", nullable = false)
