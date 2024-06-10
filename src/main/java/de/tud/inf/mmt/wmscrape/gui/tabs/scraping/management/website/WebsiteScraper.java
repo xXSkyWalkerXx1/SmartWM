@@ -134,12 +134,12 @@ public class WebsiteScraper extends WebsiteHandler {
         return true;
     }
 
-    private boolean doSearchRoutine(String isin) {
+    private boolean doSearchRoutine(@NonNull String isin, @NonNull SecuritiesType securitiesType) {
         if(!loadSearchPage()) return false;
         delayRandom();
         declineNotifications();
 
-        if(!searchForStock(isin)) return false;
+        if(!searchForStock(isin, securitiesType)) return false;
         delayRandom();
         declineNotifications();
 
@@ -606,7 +606,7 @@ public class WebsiteScraper extends WebsiteHandler {
                     var securitiesType = SecuritiesType.getMapped(wpType);
                     var identifiers = website.getHistoricIdentifiersByType(securitiesType);
 
-                    if(!doSearchRoutine(websiteIsin)) continue;
+                    if(!doSearchRoutine(websiteIsin, securitiesType)) continue;
                     waitLoadEvent();
 
                     if(!doLoadHistoricData(freshElement, identifiers)) continue;
