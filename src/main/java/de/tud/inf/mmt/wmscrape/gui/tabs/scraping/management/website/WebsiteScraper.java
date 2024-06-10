@@ -134,6 +134,11 @@ public class WebsiteScraper extends WebsiteHandler {
         return true;
     }
 
+    /***
+     * @param isin Security to search.
+     * @param securitiesType Security-type of the {@code isin}, only used for log-message.
+     * @return if was successfully.
+     */
     private boolean doSearchRoutine(@NonNull String isin, @NonNull SecuritiesType securitiesType) {
         if(!loadSearchPage()) return false;
         delayRandom();
