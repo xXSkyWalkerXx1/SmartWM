@@ -47,7 +47,7 @@
                     <Insets bottom="5.0"/>
                 </VBox.margin>
             </Label>
-            <Label fx:id="nextStep" text="&lt;Schritt&gt;">
+            <Label fx:id="nextStepLabel" text="&lt;Schritt&gt;">
                 <font>
                     <Font name="System Bold" size="13.0"/>
                 </font>
