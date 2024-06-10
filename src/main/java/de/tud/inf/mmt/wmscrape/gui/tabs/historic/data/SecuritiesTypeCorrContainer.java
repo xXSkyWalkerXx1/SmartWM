@@ -5,6 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.MultiplicityType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.gui.ElementManagerTable;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
@@ -18,7 +19,7 @@ import java.util.ResourceBundle;
 
 import static de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentTypes.IDENT_TYPE_SIMPLE;
 
-/***
+/**
  * Used for each securities-type in the element-configuration to store & handle the correlations.
  */
 public class SecuritiesTypeCorrContainer implements Initializable {
@@ -46,16 +47,25 @@ public class SecuritiesTypeCorrContainer implements Initializable {
         // load data
         tableIdentType.getItems().addAll(IDENT_TYPE_SIMPLE);
 
-        tableIdentType.setValue(websiteElement.getTableIdenType());
-        tableIdent.setText(websiteElement.getTableIdent());
-
-        // set listeners
-        tableIdentType.getSelectionModel().selectedItemProperty().addListener((o,ov,nv) -> websiteElement.setTableIdenType(nv));
-        tableIdent.textProperty().addListener((o,ov,nv) -> websiteElement.setTableIdent(nv));
+        var elementIdentifiers = websiteElement.getElementIdentifiersByType(securitiesType);
+        if (elementIdentifiers != null){
+            tableIdentType.setValue(elementIdentifiers.getTableIdenType());
+            tableIdent.setText(elementIdentifiers.getTableIdent());
+        } else {
+            tableIdentType.getSelectionModel().selectFirst();
+        }
 
         // init table with columns and correlations
         scrapingTableManager.initIdentCorrelationTable(websiteElement, tableCorrelations, MultiplicityType.TABELLE, securitiesType);
-        tableCorrelations.getItems().forEach(correlation -> correlation.setSecuritiesType(securitiesType));
+
+        ObservableList<ElementIdentCorrelation> elementIdentCorrelations = tableCorrelations.getItems();
+        elementIdentCorrelations.forEach(correlation -> correlation.setSecuritiesType(securitiesType));
+
+        // set listeners
+        tableIdentType.getSelectionModel().selectedItemProperty()
+                .addListener((o,ov,nv) -> elementIdentCorrelations.forEach(c -> c.setTableIdenType(nv)));
+        tableIdent.textProperty()
+                .addListener((o,ov,nv) -> elementIdentCorrelations.forEach(c -> c.setTableIdent(nv)));
     }
 
     // region Getters
@@ -63,16 +73,15 @@ public class SecuritiesTypeCorrContainer implements Initializable {
         return securitiesType;
     }
 
-    public IdentType getTableIdentType(){
-        return tableIdentType.getValue();
-    }
-
-    public String getTableIdent(){
-        return tableIdent.getText();
-    }
-
     public List<ElementIdentCorrelation> getCorrelations() {
         return tableCorrelations.getItems();
     }
     // endregion
+
+    /**
+     * @return True, if table-ident -type and -content are set.
+     */
+    public boolean areMandatoryInputsCompleted() {
+        return tableIdent.getText() != null && !tableIdent.getText().isBlank();
+    }
 }
