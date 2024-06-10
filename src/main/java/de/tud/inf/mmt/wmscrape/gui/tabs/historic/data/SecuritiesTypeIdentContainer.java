@@ -285,6 +285,7 @@ public class SecuritiesTypeIdentContainer implements Initializable {
 
     /***
      * @return True, if ident for history-course, dateFromDay-field, dateToDay-field and load-button are set.
+     * @implNote Must keep synced with {@code isValidInput()} in {@link de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.HistoricWebsiteTabController}!
      */
     public boolean areMandatoryInputsCompleted(){
         return !isStringEmpty(idContentHistoryCourse)
@@ -306,16 +307,17 @@ public class SecuritiesTypeIdentContainer implements Initializable {
      */
     public void clearAll(){
         // clear choice-boxes
-        idTypeHistoryCourse.setValue(null);
-        idTypeDateFromDay.setValue(null);
-        idTypeDateFromMonth.setValue(null);
-        idTypeDateFromYear.setValue(null);
-        idTypeDateToDay.setValue(null);
-        idTypeDateToMonth.setValue(null);
-        idTypeDateToYear.setValue(null);
-        idTypeButtonLoad.setValue(null);
-        idTypeButtonNextPage.setValue(null);
-        idTypeCountPages.setValue(null);
+        idTypeHistoryCourse.getSelectionModel().selectFirst();
+        idTypeHistoryCourse.getSelectionModel().selectFirst();
+        idTypeDateFromDay.getSelectionModel().selectFirst();
+        idTypeDateFromMonth.getSelectionModel().selectFirst();
+        idTypeDateFromYear.getSelectionModel().selectFirst();
+        idTypeDateToDay.getSelectionModel().selectFirst();
+        idTypeDateToMonth.getSelectionModel().selectFirst();
+        idTypeDateToYear.getSelectionModel().selectFirst();
+        idTypeButtonLoad.getSelectionModel().selectFirst();
+        idTypeButtonNextPage.getSelectionModel().selectFirst();
+        idTypeCountPages.getSelectionModel().selectFirst();
 
         // clear text-fields
         idContentHistoryCourse.clear();
