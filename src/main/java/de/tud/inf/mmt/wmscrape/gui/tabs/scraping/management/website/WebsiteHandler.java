@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.website;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
@@ -599,7 +600,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         return loadPage(website.getSearchUrl());
     }
 
-    protected boolean searchForStock(String isin) {
+    protected boolean searchForStock(@NonNull String isin, @NonNull SecuritiesType securitiesType) {
         WebElement searchInput = extractElementFromRoot(website.getSearchFieldIdentType(), website.getSearchFieldIdent());
         if (searchInput == null) return false;
 
@@ -616,7 +617,7 @@ public abstract class WebsiteHandler extends Service<Void> {
             clickElement(searchButton);
         }
 
-        addToLog("INFO:\tZu Wertpapier-Unterseite navigiert");
+        addToLog(String.format("INFO:\tZu Wertpapier-Unterseite von %s (%s) navigiert", isin, securitiesType.getDisplayText()));
         return true;
     }
 
