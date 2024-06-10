@@ -284,20 +284,13 @@ public class SecuritiesTypeIdentContainer implements Initializable {
     // endregion
 
     /***
-     * Not mandatory are the contents for dateFromMonth, dateFromMonthYear as well for all dateTo fields.
-     * @return True, if all mandatory contents (choiceboxes and textfields) are completed.
+     * @return True, if ident for history-course, dateFromDay-field, dateToDay-field and load-button are set.
      */
-    public boolean areInputsCompleted(){
+    public boolean areMandatoryInputsCompleted(){
         return !isStringEmpty(idContentHistoryCourse)
                 && !isStringEmpty(idContentDateFromDay)
-                //&& !isStringEmpty(idContentDateFromMonth)
-                //&& !isStringEmpty(idContentDateFromYear)
-                //&& !isStringEmpty(idContentDateToDay)
-                //&& !isStringEmpty(idContentDateToMonth)
-                //&& !isStringEmpty(idContentDateToYear)
-                && !isStringEmpty(idContentButtonLoad)
-                && !isStringEmpty(idContentButtonNextPage)
-                && !isStringEmpty(idContentCountPages);
+                && !isStringEmpty(idContentDateToDay)
+                && !isStringEmpty(idContentButtonLoad);
     }
 
     /***
