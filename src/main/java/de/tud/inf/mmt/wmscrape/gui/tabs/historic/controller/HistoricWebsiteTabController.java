@@ -317,7 +317,7 @@ public class HistoricWebsiteTabController {
 
         for (var dataContainer : securitiesTypeIdentContainers){
             // if everything or none is filled in only then we save it
-            if (dataContainer.areInputsCompleted()){
+            if (dataContainer.areMandatoryInputsCompleted()){
                 HistoricWebsiteIdentifiers typeIdents = website.getHistoricIdentifiersByType(dataContainer.getType());
 
                 // create new entity, if not exists / were added - this is used to check if there is not already one
@@ -428,7 +428,7 @@ public class HistoricWebsiteTabController {
                 && validIdentField(searchIdentField, false);
 
         for (var typeIdents : securitiesTypeIdentContainers){
-            if (!typeIdents.areInputsCompleted()) continue;
+            if (!typeIdents.areMandatoryInputsCompleted()) continue;
             valid &= validIdentField(typeIdents.getFieldHistoryCourse(), false)
                     && validIdentField(typeIdents.getFieldDateFromDay(), false)
                     && validIdentField(typeIdents.getFieldDateFromMonth(), true)
