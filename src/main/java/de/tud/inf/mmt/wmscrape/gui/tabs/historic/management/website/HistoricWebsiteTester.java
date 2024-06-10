@@ -22,8 +22,6 @@ public class HistoricWebsiteTester extends WebsiteHandler {
     private HistoricWebsiteIdentifiers currentIdentifiers;
     private String currentIsin;
 
-    private String warningMessage = null;
-
     // this contains securities-types with an example (ISIN) to be tested
     private final List<Map.Entry<SecuritiesType, String>> dummies = new ArrayList<>(List.of(
             Map.entry(SecuritiesType.SHARE, "DE0005140008"),
@@ -39,7 +37,7 @@ public class HistoricWebsiteTester extends WebsiteHandler {
     }
 
     // region Getters
-    /***
+    /**
      * @return Message about what will be done on next step.
      * @implNote Should be called mainly after {@link HistoricWebsiteTester#doNextStep()}.
      */
@@ -61,16 +59,6 @@ public class HistoricWebsiteTester extends WebsiteHandler {
             case 12 -> "Test beenden";
             default -> null;
         };
-    }
-
-    /***
-     * @return Warning-message; after calling that method the warning-message is set to null.
-     */
-    @Nullable
-    public String getWarningMessage() {
-        String oldMsg = warningMessage;
-        warningMessage = null; // reset
-        return oldMsg;
     }
 
     public Map.Entry<SecuritiesType, String> getCurrentDummy() {
@@ -168,7 +156,6 @@ public class HistoricWebsiteTester extends WebsiteHandler {
 
                 if (!searchForStock(currentIsin, currentIdentifiers.getSecuritiesType())) {
                     setCountersForNextSecuritiesType();
-                    setWarningMessage(null);
                     return false;
                 }
             }
@@ -177,7 +164,6 @@ public class HistoricWebsiteTester extends WebsiteHandler {
 
                 if(!loadHistoricPage(currentIdentifiers)) {
                     setCountersForNextSecuritiesType();
-                    setWarningMessage("Kurshistorie");
                     return false;
                 }
                 if(!readPageCountTest(currentIdentifiers)) {
@@ -190,7 +176,6 @@ public class HistoricWebsiteTester extends WebsiteHandler {
 
                 if(!setDate(currentIdentifiers)) {
                     setCountersForNextSecuritiesType();
-                    setWarningMessage("Datumsfelder");
                     return false;
                 }
             }
@@ -199,15 +184,13 @@ public class HistoricWebsiteTester extends WebsiteHandler {
 
                 if(!loadHistoricData(currentIdentifiers)) {
                     setCountersForNextSecuritiesType();
-                    setWarningMessage("Kurshistoriendaten");
                     return false;
                 }
                 if(!nextTablePage(currentIdentifiers)) {
                     setCountersForNextSecuritiesType();
-                    setWarningMessage("Identifikator für nächste Seite");
                     return false;
                 }
-                if (!areAllDummiesTested()){
+                if (hasNextDummy()){
                     setCountersForNextSecuritiesType();
                     return false;
                 }
@@ -236,51 +219,43 @@ public class HistoricWebsiteTester extends WebsiteHandler {
         return false;
     }
 
-    private boolean areAllDummiesTested() {
-        return dummiesPointer == dummies.size() - 1;
+    private boolean hasNextDummy() {
+        return !(dummiesPointer == dummies.size() - 1)
+                && !(dummiesPointer == website.getHistoricWebsiteIdentifiers().size() - 1);
     }
 
-    /***
+    /**
      * @return True, if identifier-type for username is deactivated.
      */
     private boolean isNotUsingLogin() {
         return IdentType.DEAKTIVIERT.equals(website.getUsernameIdentType());
     }
 
-    /***
-     * Loads current dummy, identifiers and isin until (recursive call) the container of the identifiers is not null.
+    /**
+     * Loads current dummy, identifiers and isin until the container of the identifiers is not null.
+     * @implNote Uses recursive call.
      */
     private void loadCurrentDummyData() {
         Map.Entry<SecuritiesType, String> currentDummy = getCurrentDummy();
         currentIdentifiers = website.getHistoricIdentifiersByType(currentDummy.getKey());
         currentIsin = currentDummy.getValue();
 
-        if (currentIdentifiers == null && dummiesPointer < dummies.size() - 1) {
+        if (currentIdentifiers == null && hasNextDummy()) {
             dummiesPointer++;
             loadCurrentDummyData();
         }
     }
 
+    /**
+     * If there is still a dummy to test, it sets {@code step=6} and increases {@code dummiesPointer}, to test the next one
+     * on next step, otherwise it sets {@code step=11}.
+     */
     private void setCountersForNextSecuritiesType() {
-        // if there are still securities-types to test, do with next one, else finish test
-        if (dummiesPointer < dummies.size() - 1) {
+        if (hasNextDummy()) {
             dummiesPointer++;
-            step = 6;
+            step = 5;
         } else {
             step = 11;
         }
-    }
-
-    /***
-     * @param whatCouldNotBeFound string to be added in the warning-message-pattern.
-     * @implNote Pattern is "Konnte %s (string) [für] Wertpapier %s nicht finden und überspringe daher den Test für %s."
-     */
-    private void setWarningMessage(@Nullable String whatCouldNotBeFound){
-        if (whatCouldNotBeFound != null) whatCouldNotBeFound += " für";
-
-        warningMessage = String.format(
-                "Konnte %s Wertpapier %s nicht finden und überspringe daher den Test für %s.",
-                whatCouldNotBeFound, currentIsin, currentIdentifiers.getSecuritiesType().getDisplayText()
-        );
     }
 }
