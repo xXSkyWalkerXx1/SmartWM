@@ -24,9 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -139,9 +140,11 @@ public class HistoricWebsiteElementTabController {
 
         WebsiteElement websiteElement = getSelectedElement();
         websiteElement.setWebsite(websiteChoiceBox.getValue());
-        websiteElement.setElementCorrelations(historicTableSubController.getSecuritiesTypeCorrContainers().stream()
+        websiteElement.setElementCorrelations(
+                historicTableSubController.getSecuritiesTypeCorrContainers().stream()
+                .filter(SecuritiesTypeCorrContainer::areMandatoryInputsCompleted)
                 .flatMap((Function<SecuritiesTypeCorrContainer, Stream<ElementIdentCorrelation>>) c -> c.getCorrelations().stream())
-                .collect(Collectors.toList())
+                .toList()
         );
 
         scrapingTableManager.saveTableSettings(websiteElement);
@@ -175,8 +178,7 @@ public class HistoricWebsiteElementTabController {
         inlineValidation = false;
         setRightPanelBoxVisible(true);
 
-        scrapingTableManager.resetElementRepresentation(null, websiteChoiceBox, staleElement); // ToDo: contains bug?
-
+        scrapingTableManager.resetElementRepresentation(null, websiteChoiceBox, staleElement);
         loadTable(staleElement);
     }
 
@@ -246,6 +248,8 @@ public class HistoricWebsiteElementTabController {
     }
 
     private void loadTable(WebsiteElement websiteElement) {
+        final List<SecuritiesTypeCorrContainer> corrContainers = new ArrayList<>();
+
         // load selection-table and db-description-table
         ElementManager.loadSubMenu(historicTableSubController,
                 "gui/tabs/historic/controller/element/tableSubmenu.fxml", subPane);
@@ -258,7 +262,7 @@ public class HistoricWebsiteElementTabController {
                 ));
 
                 SecuritiesTypeCorrContainer corrContainer = new SecuritiesTypeCorrContainer(securitiesType, websiteElement, scrapingTableManager);
-                historicTableSubController.getSecuritiesTypeCorrContainers().add(corrContainer);
+                corrContainers.add(corrContainer);
                 fxmlLoader.setControllerFactory(param -> corrContainer);
 
                 // add tab to tab-pane
@@ -269,6 +273,8 @@ public class HistoricWebsiteElementTabController {
                 ioException.printStackTrace();
             }
         }
+
+        historicTableSubController.setSecuritiesTypeCorrContainers(corrContainers);
     }
 
     private boolean isValidInput() {
@@ -276,25 +282,9 @@ public class HistoricWebsiteElementTabController {
         return nullValidator(websiteChoiceBox);
     }
 
-    private boolean emptyValidator(TextInputControl input) {
-        boolean isValid = input.getText() != null && !input.getText().isBlank();
-        PrimaryTabManager.decorateField(input, "Dieses Feld darf nicht leer sein!", isValid, inlineValidation);
-        return isValid;
-    }
-
     private boolean nullValidator(ChoiceBox<Website> choiceBox) {
         boolean isValid = choiceBox.getValue() != null;
         PrimaryTabManager.decorateField(choiceBox, "Es muss eine Auswahl getroffen werden!", isValid,
-                inlineValidation);
-        return isValid;
-    }
-
-    private boolean urlValidator(TextInputControl input) {
-        String value = input.getText();
-        if(value==null) return true;
-
-        boolean isValid = value.matches("^(https?://.+)$");
-        PrimaryTabManager.decorateField(input, "Die URL muss mit http:// oder https:// beginnen!", isValid,
                 inlineValidation);
         return isValid;
     }
