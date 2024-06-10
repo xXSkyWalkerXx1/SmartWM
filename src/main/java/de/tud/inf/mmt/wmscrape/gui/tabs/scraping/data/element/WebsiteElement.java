@@ -30,14 +30,14 @@ public class WebsiteElement extends WebRepresentation<WebRepresentation<?>> {
     private int id;
 
     // set to null if website config is removed -> no cascading delete
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "website_id", referencedColumnName = "id")
     private Website website;
 
     @OneToMany(mappedBy = "websiteElement", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<ElementSelection> elementSelections = new ArrayList<>();
 
-    @OneToMany(mappedBy = "websiteElement", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "websiteElement", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<ElementIdentCorrelation> elementIdentCorrelations = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
