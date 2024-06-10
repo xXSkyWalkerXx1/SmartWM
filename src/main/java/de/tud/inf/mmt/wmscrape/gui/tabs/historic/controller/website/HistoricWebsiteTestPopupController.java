@@ -2,9 +2,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.website;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.HistoricWebsiteTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.management.website.HistoricWebsiteTester;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.controller.ScrapingWebsiteTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.website.WebsiteTester;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,10 +15,13 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class HistoricWebsiteTestPopupController {
-    @FXML
-    private Label nextStep;
-    @FXML private TextArea logTextArea;
+
     private HistoricWebsiteTester websiteTester;
+
+    @FXML
+    private Label nextStepLabel;
+    @FXML
+    private TextArea logTextArea;
 
     @Autowired
     private HistoricWebsiteTabController historicWebsiteTabController;
@@ -36,7 +37,7 @@ public class HistoricWebsiteTestPopupController {
         Website website = historicWebsiteTabController.getWebsiteUnpersistedData();
         websiteTester = new HistoricWebsiteTester(website, logText);
 
-        nextStep.setText("Browser starten");
+        nextStepLabel.setText(websiteTester.getNextStepAction());
     }
 
     /**
@@ -44,38 +45,29 @@ public class HistoricWebsiteTestPopupController {
      */
     @FXML
     private void handleNextStepButton() {
-
-        boolean done = websiteTester.doNextStep();
-        if(done) {
+        // do next step and handle on finished
+        if(websiteTester.doNextStep()) {
             handleCancelButton();
             return;
         }
 
-        int step = websiteTester.getStep();
+        // if there is a next step print message, otherwise quit
+        String nextStepAction = websiteTester.getNextStepAction();
 
-        // next step
-        switch (step) {
-            case 1 -> nextStep.setText("Webseite laden");
-            case 2 -> nextStep.setText("Cookies akzeptieren/ablehnen");
-            case 3 -> nextStep.setText("Login Informationen ausfüllen");
-            case 4 -> nextStep.setText("Einloggen");
-            case 5 -> nextStep.setText("Navigiere auf Such-Seite");
-            case 6 -> nextStep.setText("Suche nach Deutsche Bank AG");
-            case 7 -> nextStep.setText("Navigiere zu historischen Daten");
-            case 8 -> nextStep.setText("Stelle Datum ein");
-            case 9 -> nextStep.setText("Lade historische Daten");
-            case 10 -> nextStep.setText("Ausloggen");
-            case 11 -> nextStep.setText("Browser schließen");
-            case 12 -> nextStep.setText("Test beenden");
-            default -> handleCancelButton();
+        if (nextStepAction != null) {
+            nextStepLabel.setText(nextStepAction);
+
+            String warningMessage = websiteTester.getWarningMessage();
+            if (warningMessage != null) nextStepLabel.setText(warningMessage);
+        } else {
+            handleCancelButton();
         }
-
     }
 
     @FXML
     private void handleCancelButton() {
         websiteTester.cancel();
-        logTextArea.getScene().getWindow().hide();
+        logTextArea.getScene().getWindow().hide(); // use ((Stage) logTextArea.getScene().getWindow()).close(); ?
     }
 
 }
