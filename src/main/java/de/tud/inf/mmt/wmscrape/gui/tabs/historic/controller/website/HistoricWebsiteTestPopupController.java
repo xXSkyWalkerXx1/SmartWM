@@ -33,6 +33,7 @@ public class HistoricWebsiteTestPopupController {
     private void initialize() {
         SimpleStringProperty logText = new SimpleStringProperty("");
         logTextArea.textProperty().bind(logText);
+        //logTextArea.textProperty().addListener((observableValue, s, t1) -> logTextArea.setScrollTop(Double.MAX_VALUE));
 
         Website website = historicWebsiteTabController.getWebsiteUnpersistedData();
         websiteTester = new HistoricWebsiteTester(website, logText);
@@ -56,9 +57,6 @@ public class HistoricWebsiteTestPopupController {
 
         if (nextStepAction != null) {
             nextStepLabel.setText(nextStepAction);
-
-            String warningMessage = websiteTester.getWarningMessage();
-            if (warningMessage != null) nextStepLabel.setText(warningMessage);
         } else {
             handleCancelButton();
         }
