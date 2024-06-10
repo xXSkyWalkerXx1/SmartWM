@@ -33,7 +33,10 @@ public class HistoricWebsiteTestPopupController {
     private void initialize() {
         SimpleStringProperty logText = new SimpleStringProperty("");
         logTextArea.textProperty().bind(logText);
-        //logTextArea.textProperty().addListener((observableValue, s, t1) -> logTextArea.setScrollTop(Double.MAX_VALUE));
+        /*
+        ToDo: implement auto-scroll to bottom
+         maybe do: logTextArea.textProperty().addListener((observableValue, s, t1) -> logTextArea.setScrollTop(Double.MAX_VALUE));
+         */
 
         Website website = historicWebsiteTabController.getWebsiteUnpersistedData();
         websiteTester = new HistoricWebsiteTester(website, logText);
