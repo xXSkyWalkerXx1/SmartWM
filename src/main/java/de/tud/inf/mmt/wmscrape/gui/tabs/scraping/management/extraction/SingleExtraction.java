@@ -1,11 +1,13 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.extraction;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.website.WebsiteScraper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
+import org.springframework.lang.Nullable;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -24,7 +26,7 @@ public abstract class SingleExtraction extends ExtractionGeneral implements Extr
      * @param task the task the process is running in
      * @param progress the selection/row progress property bound to the javafx progress bar
      */
-    public void extract(WebsiteElement element, Task<Void> task, SimpleDoubleProperty progress) {
+    public void extract(@Nullable SecuritiesType securitiesType, WebsiteElement element, Task<Void> task, SimpleDoubleProperty progress) {
         var identCorrelations = element.getElementIdentCorrelations();
         var elementSelections = element.getElementSelections();
         preparedStatements.clear();
