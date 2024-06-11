@@ -7,6 +7,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Service;
+import javafx.scene.control.TextArea;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -18,6 +19,7 @@ import org.springframework.lang.NonNull;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.List;
 
 public abstract class WebsiteHandler extends Service<Void> {
 
@@ -590,9 +592,9 @@ public abstract class WebsiteHandler extends Service<Void> {
         }
     }
 
-    protected void addToLog(String line) {
+    protected void addToLog(@NonNull String message) {
         // not doing this would we be a problem due to the multithreaded execution
-        Platform.runLater(() -> logText.set(logText.getValue() + "\n" + line));
+        Platform.runLater(() -> ((TextArea) logText.getBean()).appendText("\n" + message));
     }
 
     protected boolean loadSearchPage() {
