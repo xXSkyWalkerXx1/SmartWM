@@ -47,10 +47,10 @@ public class ElementIdentCorrelation {
     private SecuritiesType securitiesType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "table_iden_type", nullable = false)
+    @Column(name = "table_iden_type")
     private IdentType tableIdenType = IdentType.ID;
 
-    @Column(name = "table_ident", nullable = false)
+    @Column(name = "table_ident")
     private String tableIdent;
 
     @Column(name = "ident_type", columnDefinition = "TEXT", nullable = false)
