@@ -315,8 +315,9 @@ public class HistoricWebsiteTabController {
         website.setDateFrom(dateFromField.getText());
         website.setDateUntil(dateUntilField.getText());
 
+        List<SecuritiesType> securitiesTypes = new ArrayList<>();
         for (var dataContainer : securitiesTypeIdentContainers){
-            // if everything or none is filled in only then we save it
+            // if mandatory fields were filled, save, otherwise don't save and show warning
             if (dataContainer.areMandatoryInputsCompleted()){
                 HistoricWebsiteIdentifiers typeIdents = website.getHistoricIdentifiersByType(dataContainer.getType());
 
@@ -330,16 +331,25 @@ public class HistoricWebsiteTabController {
                 // write data
                 dataContainer.writeTo(typeIdents);
             } else {
-                showAlertDialog(
-                        Alert.AlertType.WARNING,
-                        String.format(
-                                "Leere bzw. unvollständige Eingaben zu %s nicht gültig und werden daher ignoriert.\n" +
-                                        "Erlaubt ist nur komplett oder gar nicht ausfüllen!",
-                                dataContainer.getType().getDisplayText()
-                        ),
-                        "Ungültige Eingabe"
-                );
+                securitiesTypes.add(dataContainer.getType());
             }
+        }
+
+        // if there are skipped types, show which one were not saved
+        if (securitiesTypes.size() > 0) {
+            showAlertDialog(
+                    Alert.AlertType.WARNING,
+                    String.format(
+                            "Für folgende Wertpapier-Typen wurde die Konfiguration nicht gespeichert: %s.\n" +
+                                    "Wenn dies nicht gewollt ist, überprüfe die verpflichtenden Felder:\n" +
+                                    "- Historische-Link\n" +
+                                    "- Datums-Feld ab (Tag)\n" +
+                                    "- Datums-Feld bis (Tag)\n" +
+                                    "- Lade-Button\n",
+                            securitiesTypes
+                    ),
+                    "Nicht-ausfüllen von Wertpapier-Typen"
+            );
         }
     }
 
@@ -437,8 +447,8 @@ public class HistoricWebsiteTabController {
                     && validIdentField(typeIdents.getFieldDateToMonth(), true)
                     && validIdentField(typeIdents.getFieldDateToYear(), true)
                     && validIdentField(typeIdents.getFieldButtonLoad(), false)
-                    && validIdentField(typeIdents.getFieldButtonNextPage(), true)
-                    && validIdentField(typeIdents.getFieldCountPages(), true);
+                    && validIdentField(typeIdents.getFieldButtonNextPage(), false)
+                    && validIdentField(typeIdents.getFieldCountPages(), false);
         }
         return valid;
     }
