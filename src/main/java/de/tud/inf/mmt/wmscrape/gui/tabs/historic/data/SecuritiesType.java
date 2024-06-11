@@ -7,6 +7,7 @@ public enum SecuritiesType {
     BOND("Anleihen"),
     CERTIFICATE("Zertifikate"),
     ETF("ETF"),
+    ETC("ETC"),
     FOND("Fonds"),
     RESOURCE("Rohstoffe");
 
@@ -17,7 +18,7 @@ public enum SecuritiesType {
         this.displayText = displayText;
     }
 
-    /***
+    /**
      * Maps the type, given by the excel-sheet, to an instance of {@link SecuritiesType}.
      * @param type A = Aktie, BZR = Bezugsrechte; FA = Aktienfond; FAD = deutsche Aktienfonds, FAA = ausländischer FA;
      *             FAE = europäische FA, FV = Gemischte Fond; FVE = europäische FV; FVA = internationale FV;
@@ -27,7 +28,8 @@ public enum SecuritiesType {
      *             Rst = Rohstoffe, Z = Zertifikate
      * @// TODO: 22.05.2024 Implement mapping of the other types!
      */
-    public static SecuritiesType getMapped(@NonNull String type){
+    @NonNull
+    public static SecuritiesType getMapped(@NonNull String type) throws IllegalArgumentException{
         switch (type){
             case "Z" -> {
                 return SecuritiesType.CERTIFICATE;
@@ -38,12 +40,7 @@ public enum SecuritiesType {
             case "A" -> {
                 return SecuritiesType.SHARE;
             }
-            default -> {
-                throw new IllegalArgumentException(String.format(
-                        "Der Wertpapier-Typ %s kann nicht gemappt werden.",
-                        type
-                ));
-            }
+            default -> throw new IllegalArgumentException();
         }
     }
 
