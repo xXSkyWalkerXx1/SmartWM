@@ -1,38 +1,30 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.element;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.HistoricWebsiteElementTabController;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.controller.element.SingleCourseOrStockSubController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeCorrContainer;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.description.ElementDescCorrelation;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.ContentType;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.MultiplicityType;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.gui.ElementManagerTable;
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TabPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import static de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentTypes.IDENT_TYPE_SIMPLE;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * controller which handles the configuration of the identifier correlation of
  * database columns and website table columns
  */
 @Controller
-public class HistoricTableSubController extends SingleCourseOrStockSubController {
+public class HistoricTableSubController extends TableSubControllerBase {
+
+    private List<SecuritiesTypeCorrContainer> securitiesTypeCorrContainers = new ArrayList<>();
+
     @FXML
-    private TableView<ElementDescCorrelation> elementDescCorrelationTableView;
-    @FXML private ChoiceBox<IdentType> tableIdentChoiceBox;
-    @FXML private TextField tableIdentField;
-
-    private WebsiteElement websiteElement;
-
-    @Autowired
-    private ElementManagerTable scrapingTableManager;
+    private TabPane securitiesTypeTabPane;
 
     @Autowired
     private HistoricWebsiteElementTabController historicWebsiteElementTabController;
@@ -40,21 +32,37 @@ public class HistoricTableSubController extends SingleCourseOrStockSubController
     @FXML
     @Override
     protected void initialize() {
-
         websiteElement = historicWebsiteElementTabController.getSelectedElement();
 
         scrapingTableManager.initStockSelectionTable(websiteElement, selectionTable, false);
         scrapingTableManager.initCourseOrStockDescCorrelationTable(websiteElement, elementDescCorrelationTableView);
-        scrapingTableManager.initIdentCorrelationTable(websiteElement, columnCorrelationTable, MultiplicityType.TABELLE);
+    }
 
-        tableIdentChoiceBox.getItems().addAll(IDENT_TYPE_SIMPLE);
-        tableIdentChoiceBox.setValue(websiteElement.getTableIdenType());
-        tableIdentChoiceBox.getSelectionModel().selectedItemProperty().addListener((o,ov,nv) -> websiteElement.setTableIdenType(nv));
-        tableIdentField.setText(websiteElement.getTableIdent());
-        tableIdentField.textProperty().addListener((o,ov,nv) -> websiteElement.setTableIdent(nv));
+    // region Getters
+    public List<SecuritiesTypeCorrContainer> getSecuritiesTypeCorrContainers() {
+        return securitiesTypeCorrContainers;
+    }
+
+    public TabPane getSecuritiesTypeTabPane() {
+        return securitiesTypeTabPane;
     }
 
     public ObservableList<ElementDescCorrelation> getElementDescCorrelations() {
         return elementDescCorrelationTableView.getItems();
+    }
+
+    /***
+     * @return Mixed collection of all correlations (contains of all securities-type).
+     */
+    @Override
+    public ObservableList<ElementIdentCorrelation> getDbCorrelations() {
+        final List<ElementIdentCorrelation> elementIdentCorrelations = new ArrayList<>();
+        securitiesTypeCorrContainers.forEach(corrContainer -> elementIdentCorrelations.addAll(corrContainer.getCorrelations()));
+        return FXCollections.observableArrayList(elementIdentCorrelations);
+    }
+    // endregion
+
+    public void setSecuritiesTypeCorrContainers(List<SecuritiesTypeCorrContainer> corrContainers) {
+        this.securitiesTypeCorrContainers = corrContainers;
     }
 }
