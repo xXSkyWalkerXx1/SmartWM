@@ -140,12 +140,6 @@ public class HistoricWebsiteElementTabController {
 
         WebsiteElement websiteElement = getSelectedElement();
         websiteElement.setWebsite(websiteChoiceBox.getValue());
-        websiteElement.setElementCorrelations(
-                historicTableSubController.getSecuritiesTypeCorrContainers().stream()
-                .filter(SecuritiesTypeCorrContainer::areMandatoryInputsCompleted)
-                .flatMap((Function<SecuritiesTypeCorrContainer, Stream<ElementIdentCorrelation>>) c -> c.getCorrelations().stream())
-                .toList()
-        );
 
         scrapingTableManager.saveTableSettings(websiteElement);
 
