@@ -183,17 +183,23 @@ public class ElementManagerTable extends ElementManager {
      */
     @Transactional
     public void saveTableSettings(WebsiteElement websiteElement) {
-        websiteElementRepository.saveAndFlush(websiteElement);
-
         var controller = ContentType.HISTORISCH.equals(websiteElement.getContentType())
                 ? historicTableSubController
                 : tableSubController;
 
+        // Save ident-correlations, due their Cascade.ALL attribute
+        websiteElement.setElementCorrelations(controller.getDbCorrelations());
+
+        // Save website-element
+        websiteElementRepository.saveAndFlush(websiteElement);
+
+        // Save and flush element selections
         for (var selection : controller.getSelections()) {
             if(selection.isChanged()) elementSelectionRepository.save(selection);
         }
         elementSelectionRepository.flush();
 
+        // Save and flush desc-correlations
         for(var correlation : GetElementDescCorrelations(websiteElement)) {
             if(correlation.isChanged()) elementDescCorrelationRepository.save(correlation);
         }
