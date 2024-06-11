@@ -47,7 +47,7 @@ public class SecuritiesTypeCorrContainer implements Initializable {
         // load data
         tableIdentType.getItems().addAll(IDENT_TYPE_SIMPLE);
 
-        var elementIdentifiers = websiteElement.getElementIdentifiersByType(securitiesType);
+        var elementIdentifiers = websiteElement.getElementIdentifierByType(securitiesType);
         if (elementIdentifiers != null){
             tableIdentType.setValue(elementIdentifiers.getTableIdenType());
             tableIdent.setText(elementIdentifiers.getTableIdent());
