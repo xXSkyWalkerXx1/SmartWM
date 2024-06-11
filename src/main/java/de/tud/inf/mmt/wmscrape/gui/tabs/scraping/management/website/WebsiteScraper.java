@@ -565,19 +565,21 @@ public class WebsiteScraper extends WebsiteHandler {
                     case TABELLE -> {
                         switch (contentType) {
                             case AKTIENKURS, STAMMDATEN -> tableCourseOrStockExtraction.extract(
-                                    freshElement, task, elementSelectionProgress);
-
+                                    null, freshElement, task, elementSelectionProgress
+                            );
                             case WECHSELKURS -> tableExchangeExtraction.extract(
-                                    freshElement, task, elementSelectionProgress);
+                                    null, freshElement, task, elementSelectionProgress
+                            );
                         }
                     }
                     case EINZELWERT -> {
                         switch (contentType) {
                             case AKTIENKURS, STAMMDATEN -> singleCourseOrStockExtraction.extract(
-                                    freshElement, task, elementSelectionProgress);
-
+                                    null, freshElement, task, elementSelectionProgress
+                            );
                             case WECHSELKURS -> singleExchangeExtraction.extract(
-                                    freshElement, task, elementSelectionProgress);
+                                    null, freshElement, task, elementSelectionProgress
+                            );
                         }
                     }
                 }
@@ -611,20 +613,22 @@ public class WebsiteScraper extends WebsiteHandler {
                     var securitiesType = SecuritiesType.getMapped(wpType);
                     var identifiers = website.getHistoricIdentifiersByType(securitiesType);
 
+                    if (identifiers == null) continue;
                     if(!doSearchRoutine(websiteIsin, securitiesType)) continue;
                     waitLoadEvent();
-
                     if(!doLoadHistoricData(freshElement, identifiers)) continue;
                     scrollToBottom(freshElement);
 
                     tableHistoricExtraction.setIsin(elementSelection.getIsin());
+                    tableHistoricExtraction.setSecurityType(securitiesType);
                     addToLog("INFO:\tExtrahiere Daten für " + elementSelection.getIsin());
 
                     var currentPageCount = 1;
                     var pageCount = readPageCount(identifiers);
                     addToLog("INFO:\tEs wurden " + pageCount + " Seiten gelesen");
+
                     while(currentPageCount <= pageCount) {
-                        tableHistoricExtraction.extract(freshElement, task, elementSelectionProgress);
+                        tableHistoricExtraction.extract(securitiesType, freshElement, task, elementSelectionProgress);
                         addToLog("INFO:\tSeite " + currentPageCount + " von " + pageCount + " Seiten gelesen");
                         if (currentPageCount < pageCount) {
                             nextTablePage(identifiers);
