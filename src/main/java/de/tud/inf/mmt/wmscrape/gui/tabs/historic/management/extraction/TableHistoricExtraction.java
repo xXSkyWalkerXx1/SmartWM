@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.historic.management.extraction;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.description.ElementDescCorrelation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 public class TableHistoricExtraction extends TableExtraction {
     private String isin;
+    private SecuritiesType securityType;
 
     public TableHistoricExtraction(Connection connection, SimpleStringProperty logText, WebsiteScraper scraper, Date date) {
         super(connection, logText, scraper, date);
@@ -85,8 +87,9 @@ public class TableHistoricExtraction extends TableExtraction {
 
     @Override
     protected boolean prepareCarrierAndStatements(Task<Void> task, WebsiteElement websiteElement, Map<String, InformationCarrier> preparedCarrierMap) {
+        if (securityType == null) return false;
 
-        for (var correlation : websiteElement.getElementIdentCorrelations()) {
+        for (var correlation : websiteElement.getElementIdentifiersByType(securityType)) {
             if(task.isCancelled()) return true;
 
             // create an information carrier with the basic information
@@ -111,5 +114,9 @@ public class TableHistoricExtraction extends TableExtraction {
 
     public void setIsin(String isin) {
         this.isin = isin;
+    }
+
+    public void setSecurityType(SecuritiesType type){
+        this.securityType = type;
     }
 }
