@@ -28,6 +28,7 @@ public class HistoricWebsiteTester extends WebsiteHandler {
             Map.entry(SecuritiesType.BOND, "DE000BU0E113"),
             Map.entry(SecuritiesType.CERTIFICATE, "DE000SW8NJ07"),
             Map.entry(SecuritiesType.ETF, "IE00B4L5Y983"),
+            Map.entry(SecuritiesType.ETC, "DE000A0S9GB0"),
             Map.entry(SecuritiesType.FOND, "DE0009807008"),
             Map.entry(SecuritiesType.RESOURCE, "US12492G1040"))
     );
