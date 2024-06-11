@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * controller which handles the configuration of the identifier correlation of
@@ -51,14 +53,17 @@ public class HistoricTableSubController extends TableSubControllerBase {
         return elementDescCorrelationTableView.getItems();
     }
 
-    /***
-     * @return Mixed collection of all correlations (contains of all securities-type).
+    /**
+     * @return All correlation-entries of each {@link SecuritiesTypeCorrContainer}, filtered by their validators.
+     * @see SecuritiesTypeCorrContainer#areMandatoryInputsCompleted()
      */
     @Override
     public ObservableList<ElementIdentCorrelation> getDbCorrelations() {
-        final List<ElementIdentCorrelation> elementIdentCorrelations = new ArrayList<>();
-        securitiesTypeCorrContainers.forEach(corrContainer -> elementIdentCorrelations.addAll(corrContainer.getCorrelations()));
-        return FXCollections.observableArrayList(elementIdentCorrelations);
+        return FXCollections.observableArrayList(securitiesTypeCorrContainers.stream()
+                        .filter(SecuritiesTypeCorrContainer::areMandatoryInputsCompleted)
+                        .flatMap((Function<SecuritiesTypeCorrContainer, Stream<ElementIdentCorrelation>>) c -> c.getCorrelations().stream())
+                        .toList()
+        );
     }
     // endregion
 
