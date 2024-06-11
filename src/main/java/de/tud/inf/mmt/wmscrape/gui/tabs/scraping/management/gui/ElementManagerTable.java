@@ -199,10 +199,6 @@ public class ElementManagerTable extends ElementManager {
         }
         elementDescCorrelationRepository.flush();
 
-        for (var identCorrelation : controller.getDbCorrelations()) {
-            if(identCorrelation.isChanged()) elementIdentCorrelationRepository.save(identCorrelation);
-        }
-
         elementSelectionRepository.deleteAllBy_selected(false);
     }
 
