@@ -155,6 +155,10 @@ public class ElementIdentCorrelation {
         initListener();
     }
 
+    public int getId() {
+        return id;
+    }
+
     public SecuritiesType getSecuritiesType() {
         return securitiesType;
     }
