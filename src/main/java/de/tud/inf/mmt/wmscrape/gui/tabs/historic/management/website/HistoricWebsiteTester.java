@@ -82,7 +82,11 @@ public class HistoricWebsiteTester extends WebsiteHandler {
     public boolean doNextStep() {
         // get current dummy data and stop if there could no container with identifiers be found
         loadCurrentDummyData();
-        if (currentIdentifiers == null) return true;
+
+        if (currentIdentifiers == null) {
+            // only if there is no more dummy to test and the last step was 9 it will go through the if-statement
+            if (step < 10) return true;
+        }
 
         // if closed stop test
         if(step>0 && getDriver() == null) return true;
@@ -207,9 +211,7 @@ public class HistoricWebsiteTester extends WebsiteHandler {
                     return false;
                 }
             }
-            case 11 -> {
-                quit();
-            }
+            case 11 -> quit();
             default -> {
                 return true;
             }
