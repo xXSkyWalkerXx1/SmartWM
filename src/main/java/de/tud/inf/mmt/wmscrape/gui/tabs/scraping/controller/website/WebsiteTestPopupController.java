@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class WebsiteTestPopupController {
-    @FXML private Label nextStep;
+    @FXML private Label nextStepLabel;
     @FXML private TextArea logTextArea;
     private WebsiteTester websiteTester;
 
@@ -27,13 +27,13 @@ public class WebsiteTestPopupController {
      */
     @FXML
     private void initialize() {
-        SimpleStringProperty logText = new SimpleStringProperty("");
-        logTextArea.textProperty().bind(logText);
+        SimpleStringProperty logText = new SimpleStringProperty(logTextArea, null, "");
+        //logTextArea.textProperty().bind(logText);
 
         Website website = scrapingWebsiteTabController.getWebsiteUnpersistedData();
         websiteTester = new WebsiteTester(website, logText);
 
-        nextStep.setText("Browser starten");
+        nextStepLabel.setText("Browser starten");
     }
 
     /**
@@ -52,13 +52,13 @@ public class WebsiteTestPopupController {
 
         // next step
         switch (step) {
-            case 1 -> nextStep.setText("Webseite laden");
-            case 2 -> nextStep.setText("Cookies akzeptieren");
-            case 3 -> nextStep.setText("Login Informationen ausfüllen");
-            case 4 -> nextStep.setText("Einloggen");
-            case 5 -> nextStep.setText("Ausloggen");
-            case 6 -> nextStep.setText("Browser schließen");
-            case 7 -> nextStep.setText("Test beenden");
+            case 1 -> nextStepLabel.setText("Webseite laden");
+            case 2 -> nextStepLabel.setText("Cookies akzeptieren");
+            case 3 -> nextStepLabel.setText("Login Informationen ausfüllen");
+            case 4 -> nextStepLabel.setText("Einloggen");
+            case 5 -> nextStepLabel.setText("Ausloggen");
+            case 6 -> nextStepLabel.setText("Browser schließen");
+            case 7 -> nextStepLabel.setText("Test beenden");
             default -> handleCancelButton();
         }
 

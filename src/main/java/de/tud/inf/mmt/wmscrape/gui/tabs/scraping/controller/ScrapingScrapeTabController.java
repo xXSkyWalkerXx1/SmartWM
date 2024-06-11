@@ -51,9 +51,9 @@ public class ScrapingScrapeTabController {
      */
     @FXML
     private void initialize() {
-        logText = new SimpleStringProperty("");
+        logText = new SimpleStringProperty(logArea, null, "");
         logArea.clear();
-        logArea.textProperty().bind(logText);
+        //logArea.textProperty().bind(logText);
 
         // twice works better. might be because of the delayed threads
         logText.addListener(x -> logArea.setScrollTop(Double.MAX_VALUE));

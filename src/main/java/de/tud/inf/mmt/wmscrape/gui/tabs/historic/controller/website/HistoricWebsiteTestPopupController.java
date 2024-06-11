@@ -31,12 +31,8 @@ public class HistoricWebsiteTestPopupController {
      */
     @FXML
     private void initialize() {
-        SimpleStringProperty logText = new SimpleStringProperty("");
-        logTextArea.textProperty().bind(logText);
-        /*
-        ToDo: implement auto-scroll to bottom
-         maybe do: logTextArea.textProperty().addListener((observableValue, s, t1) -> logTextArea.setScrollTop(Double.MAX_VALUE));
-         */
+        SimpleStringProperty logText = new SimpleStringProperty(logTextArea, null, "");
+        //logTextArea.textProperty().bind(logText);
 
         Website website = historicWebsiteTabController.getWebsiteUnpersistedData();
         websiteTester = new HistoricWebsiteTester(website, logText);
