@@ -43,7 +43,7 @@ public class ElementIdentCorrelation {
     private CourseColumn courseColumn;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "securities_type", nullable = false)
+    @Column(name = "securities_type")
     private SecuritiesType securitiesType;
 
     @Enumerated(EnumType.STRING)
