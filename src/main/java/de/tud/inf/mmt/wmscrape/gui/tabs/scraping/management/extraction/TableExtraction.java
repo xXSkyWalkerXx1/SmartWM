@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.extraction;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.description.ElementDescCorrelation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
@@ -64,9 +65,9 @@ public abstract class TableExtraction extends ExtractionGeneral implements Extra
      */
     protected abstract void correctCarrierValues(Map<String, InformationCarrier> carrierMap, ElementSelection selection);
 
-    public void extract(WebsiteElement element, Task<Void> task, SimpleDoubleProperty progress) {
+    public void extract(SecuritiesType securitiesType, WebsiteElement element, Task<Void> task, SimpleDoubleProperty progress) {
         if(element.getContentType() == ContentType.HISTORISCH) {
-            doExtractHistoric(element, task, progress);
+            doExtractHistoric(securitiesType, element, task, progress);
         } else {
             doExtract(element, task, progress);
         }
@@ -145,8 +146,7 @@ public abstract class TableExtraction extends ExtractionGeneral implements Extra
      * @param task the task the process is running in
      * @param progress the selection/row progress property bound to the javafx progress bar
      */
-    public void doExtractHistoric(WebsiteElement element, Task<Void> task, SimpleDoubleProperty progress) {
-        var identCorrelations = element.getElementIdentCorrelations();
+    public void doExtractHistoric(SecuritiesType securitiesType, WebsiteElement element, Task<Void> task, SimpleDoubleProperty progress) {
         Map<String, InformationCarrier> preparedCarrierMap = new HashMap<>();
         preparedStatements = new HashMap<>();
         List<WebElementInContext> rows;
@@ -156,7 +156,7 @@ public abstract class TableExtraction extends ExtractionGeneral implements Extra
         logStart(element.getDescription());
 
         // e.g. stock/course needs isin or wkn or the name
-        if(!validIdentCorrelations(element, identCorrelations)) return;
+        if(!validIdentCorrelations(element, element.getElementIdentifiersByType(securitiesType))) return;
 
         if (prepareCarrierAndStatements(task, element, preparedCarrierMap)) return;
 
