@@ -28,7 +28,7 @@ public class ElementSelection {
     private WebsiteElement websiteElement;
 
     // optional, only stock/course
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "stock_isin", referencedColumnName = "isin", updatable = false)
     private Stock stock;
 
