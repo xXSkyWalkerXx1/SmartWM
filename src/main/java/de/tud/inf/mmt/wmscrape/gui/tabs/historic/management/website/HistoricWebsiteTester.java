@@ -220,8 +220,13 @@ public class HistoricWebsiteTester extends WebsiteHandler {
     }
 
     private boolean hasNextDummy() {
-        return !(dummiesPointer == dummies.size() - 1)
-                && !(dummiesPointer == website.getHistoricWebsiteIdentifiers().size() - 1);
+        int startInd = dummiesPointer + 1;
+        if (startInd >= dummies.size()) return false;
+
+        var identifiers = dummies.subList(startInd, dummies.size());
+        identifiers.removeIf(dummy -> website.getHistoricIdentifiersByType(dummy.getKey()) == null);
+
+        return identifiers.size() > 0;
     }
 
     /**
