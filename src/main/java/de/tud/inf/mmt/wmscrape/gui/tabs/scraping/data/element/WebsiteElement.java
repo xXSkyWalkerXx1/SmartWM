@@ -1,7 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
-import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.WebRepresentation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
@@ -135,11 +134,18 @@ public class WebsiteElement extends WebRepresentation<WebRepresentation<?>> {
     }
 
     @Nullable
-    public ElementIdentCorrelation getElementIdentifiersByType(@NonNull SecuritiesType type){
+    public ElementIdentCorrelation getElementIdentifierByType(@NonNull SecuritiesType type){
         for (var typeIdents : elementIdentCorrelations){
             if (type.equals(typeIdents.getSecuritiesType())) return typeIdents;
         }
         return null;
+    }
+
+    @NonNull
+    public List<ElementIdentCorrelation> getElementIdentifiersByType(@NonNull SecuritiesType type){
+        List<ElementIdentCorrelation> correlationsByType = new ArrayList<>();
+        elementIdentCorrelations.forEach(c -> {if (type.equals(c.getSecuritiesType())) correlationsByType.add(c);});
+        return correlationsByType;
     }
 
     public List<ElementIdentCorrelation> getElementIdentCorrelations() {
