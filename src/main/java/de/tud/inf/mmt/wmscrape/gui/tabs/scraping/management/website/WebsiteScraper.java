@@ -28,10 +28,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class WebsiteScraper extends WebsiteHandler {
@@ -588,6 +585,8 @@ public class WebsiteScraper extends WebsiteHandler {
     }
 
     private void processHistoricWebsiteElement(WebsiteElement element, Task<Void> task) {
+        var typesToSkip = new ArrayList<String>();
+
         if(!usesLogin()) {
             loadSearchPage();
             acceptCookies();
@@ -608,17 +607,34 @@ public class WebsiteScraper extends WebsiteHandler {
                 for(ElementSelection elementSelection : elementSelections) {
                     setCurrentSelection(elementSelection);
 
+                    // setup data
                     var websiteIsin = elementSelection.getElementDescCorrelation().getWsIsin();
                     var wpType = elementSelection.getStock().stockTypeProperty().get();
-                    var securitiesType = SecuritiesType.getMapped(wpType);
-                    var identifiers = website.getHistoricIdentifiersByType(securitiesType);
+                    SecuritiesType securitiesType;
+                    HistoricWebsiteIdentifiers identifiers;
 
-                    if (identifiers == null) continue;
+                    if (typesToSkip.contains(wpType)) continue; // skip types which can not be mapped
+
+                    try {
+                        securitiesType = SecuritiesType.getMapped(wpType);
+                        identifiers = website.getHistoricIdentifiersByType(securitiesType);
+                    } catch (IllegalArgumentException argumentException) {
+                        typesToSkip.add(wpType);
+                        addToLog(String.format(
+                                "WARNUNG:\tMapping von %s zu einer Instanz von %s ist fehlgeschlagen! " +
+                                        "Daher werden alle Selektionen vom Typ %s übersprungen.",
+                                wpType, SecuritiesType.class.getName(), wpType
+                        ));
+                        continue;
+                    }
+
+                    // navigate to historic-table
                     if(!doSearchRoutine(websiteIsin, securitiesType)) continue;
                     waitLoadEvent();
                     if(!doLoadHistoricData(freshElement, identifiers)) continue;
                     scrollToBottom(freshElement);
 
+                    // prepare data for extraction
                     tableHistoricExtraction.setIsin(elementSelection.getIsin());
                     tableHistoricExtraction.setSecurityType(securitiesType);
                     addToLog("INFO:\tExtrahiere Daten für " + elementSelection.getIsin());
@@ -627,6 +643,7 @@ public class WebsiteScraper extends WebsiteHandler {
                     var pageCount = readPageCount(identifiers);
                     addToLog("INFO:\tEs wurden " + pageCount + " Seiten gelesen");
 
+                    // do extraction
                     while(currentPageCount <= pageCount) {
                         tableHistoricExtraction.extract(securitiesType, freshElement, task, elementSelectionProgress);
                         addToLog("INFO:\tSeite " + currentPageCount + " von " + pageCount + " Seiten gelesen");
