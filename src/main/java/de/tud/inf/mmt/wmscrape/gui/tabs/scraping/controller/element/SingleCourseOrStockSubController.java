@@ -29,7 +29,7 @@ public class SingleCourseOrStockSubController {
     protected void initialize() {
         WebsiteElement websiteElement = scrapingElementsTabController.getSelectedElement();
         manager.initStockSelectionTable(websiteElement, selectionTable, true);
-        manager.initIdentCorrelationTable(websiteElement, columnCorrelationTable, MultiplicityType.EINZELWERT);
+        manager.initIdentCorrelationTable(websiteElement, columnCorrelationTable, MultiplicityType.EINZELWERT, null);
     }
 
     public ObservableList<ElementSelection> getSelections() {
