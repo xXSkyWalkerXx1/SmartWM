@@ -5,7 +5,6 @@ import org.springframework.lang.NonNull;
 public enum SecuritiesType {
     SHARE("Aktien"),
     BOND("Anleihen"),
-    CERTIFICATE("Zertifikate"),
     ETF("ETF"),
     ETC("ETC"),
     FOND("Fonds"),
@@ -31,9 +30,6 @@ public enum SecuritiesType {
     @NonNull
     public static SecuritiesType getMapped(@NonNull String type) throws IllegalArgumentException{
         switch (type){
-            case "Z" -> {
-                return SecuritiesType.CERTIFICATE;
-            }
             case "Rst" -> {
                 return SecuritiesType.RESOURCE;
             }

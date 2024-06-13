@@ -26,7 +26,6 @@ public class HistoricWebsiteTester extends WebsiteHandler {
     private final List<Map.Entry<SecuritiesType, String>> dummies = new ArrayList<>(List.of(
             Map.entry(SecuritiesType.SHARE, "DE0005140008"),
             Map.entry(SecuritiesType.BOND, "DE000BU0E113"),
-            Map.entry(SecuritiesType.CERTIFICATE, "DE000SW8NJ07"),
             Map.entry(SecuritiesType.ETF, "IE00B4L5Y983"),
             Map.entry(SecuritiesType.ETC, "DE000A0S9GB0"),
             Map.entry(SecuritiesType.FOND, "DE0009807008"),
