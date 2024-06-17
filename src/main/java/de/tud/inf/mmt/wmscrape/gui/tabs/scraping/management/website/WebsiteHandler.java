@@ -130,10 +130,7 @@ public abstract class WebsiteHandler extends Service<Void> {
             FirefoxOptions options = new FirefoxOptions();
             options.setBinary(firefoxBinary);
             options.setLogLevel(FirefoxDriverLogLevel.FATAL);
-
-            if (headless) {
-                options.addArguments("--headless=new");
-            };
+            if (headless) options.addArguments("--headless");
 
             driver = new FirefoxDriver(options);
             waitForWsElements(true);
