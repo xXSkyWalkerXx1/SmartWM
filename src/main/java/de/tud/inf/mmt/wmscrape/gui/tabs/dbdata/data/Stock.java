@@ -1,6 +1,9 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data;
 
+import com.mysql.cj.conf.EnumProperty;
+import com.mysql.cj.conf.EnumPropertyDefinition;
 import de.tud.inf.mmt.wmscrape.gui.tabs.depots.data.DepotTransaction;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.selection.ElementSelection;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -29,6 +32,8 @@ public class Stock {
     private String _name;
     @Column(name = "typ",columnDefinition = "TEXT")
     private String _stockType;
+    @Column(name = "scrape_type", columnDefinition = "TEXT")
+    private SecuritiesType _scrapeType;
 
     // don't know what its exactly for butt he wants it for sorting purposes
     @Column(name = "r_par")
@@ -53,16 +58,15 @@ public class Stock {
      * Important: sortOrder is not a primitive and can be set to null!
      *
      * @param isin the unique stock isin
-     * @param wkn optional wkn number
-     * @param name optional name
-     * @param stockType optional stockType
      * @param sortOrder optional sortOrder aka "r_par"
+     * @param scrapeType abstracted stock-type, used to match stocks to their identifiers (f.e. website-configuration)
      */
-    public Stock(String isin, String wkn, String name, String stockType, Integer sortOrder) {
+    public Stock(String isin, String wkn, String name, String stockType, Integer sortOrder, SecuritiesType scrapeType) {
         this.isin = isin;
         this._wkn = wkn;
         this._name = name;
         this._stockType = stockType;
+        this._scrapeType = scrapeType;
         this._sortOrder = sortOrder;
         initListener();
     }
@@ -81,6 +85,10 @@ public class Stock {
 
     public String getName() {
         return name.get();
+    }
+
+    public SecuritiesType getScrapeType() {
+        return _scrapeType;
     }
 
     public SimpleStringProperty nameProperty() {
@@ -110,6 +118,7 @@ public class Stock {
     public void set_sortOrder(Integer _sortOrder) {
         this._sortOrder = _sortOrder;
     }
+    public void set_scrapeType(SecuritiesType scrapeType) { this._scrapeType = scrapeType; }
 
     /**
      * due to the fact that hibernate creates proxies (subclasses of the actual entities) one has to use "instanceof" to compare
@@ -148,6 +157,7 @@ public class Stock {
         name.addListener((o,ov,nv) -> _name = nv.trim());
         stockType.addListener((o,ov,nv) -> _stockType = nv.trim());
         sortOrder.addListener((o,ov,nv) -> cleanOrder(ov, nv));
+
     }
 
     /**
