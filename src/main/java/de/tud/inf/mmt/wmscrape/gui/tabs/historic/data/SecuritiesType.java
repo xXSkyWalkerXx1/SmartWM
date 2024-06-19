@@ -24,7 +24,8 @@ public enum SecuritiesType {
      * @param type can be AKT, ANL, ETF, AETF, ETC, FOD
      */
     @Nullable
-    public static SecuritiesType getMapped(@NonNull String type) {
+    public static SecuritiesType getMapped(String type) {
+        if (type == null) return null;
         return switch (type){
             case "AKT" -> SHARE;
             case "ANL" -> BOND;
