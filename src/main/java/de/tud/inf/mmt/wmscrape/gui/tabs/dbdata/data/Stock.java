@@ -28,10 +28,14 @@ public class Stock {
 
     @Column(name = "wkn",columnDefinition = "TEXT")
     private String _wkn;
+
     @Column(name = "name",columnDefinition = "TEXT")
     private String _name;
+
     @Column(name = "typ",columnDefinition = "TEXT")
     private String _stockType;
+
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "scrape_type", columnDefinition = "TEXT")
     private SecuritiesType _scrapeType;
 
