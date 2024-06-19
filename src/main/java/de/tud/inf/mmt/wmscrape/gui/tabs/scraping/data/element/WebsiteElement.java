@@ -133,6 +133,7 @@ public class WebsiteElement extends WebRepresentation<WebRepresentation<?>> {
         this.elementSelections = elementSelections;
     }
 
+    // ToDo: Refactor! Use instead elementIdentCorrelations.stream().filter(elementIdentCorrelation -> type.equals(elementIdentCorrelation.getSecuritiesType())).findAny()
     @Nullable
     public ElementIdentCorrelation getElementIdentifierByType(@NonNull SecuritiesType type){
         for (var typeIdents : elementIdentCorrelations){
