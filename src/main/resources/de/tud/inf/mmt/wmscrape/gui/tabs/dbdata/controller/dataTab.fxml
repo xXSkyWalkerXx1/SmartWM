@@ -48,21 +48,6 @@
                 <GridPane.margin>
                     <Insets top="-7.0"/>
                 </GridPane.margin>
-                <Tab fx:id="stockTab" text="Stammdaten">
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0"/>
-                </Tab>
-                <Tab fx:id="courseTab" text="Wertpapier-Kurs">
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0"/>
-                </Tab>
-                <Tab fx:id="exchangeTab" text="Wechselkurs">
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0"/>
-                </Tab>
-                <Tab fx:id="transactionTab" text="Depot-Transaktionen">
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0"/>
-                </Tab>
-                <Tab fx:id="watchListTab" text="Watch-Liste">
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0"/>
-                </Tab>
             </TabPane>
         </top>
         <center>
