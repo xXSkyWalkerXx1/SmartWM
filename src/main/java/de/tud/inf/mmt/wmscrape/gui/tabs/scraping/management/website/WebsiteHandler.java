@@ -766,31 +766,16 @@ public abstract class WebsiteHandler extends Service<Void> {
         IdentType type = identifiers.getPageCountIdentType();
         if (type == IdentType.DEAKTIVIERT) return 1;
 
-        var xpath = identifiers.getPageCountIdent();
-        WebElement element = extractElementFromRoot(type, xpath);
+        WebElement element = extractElementFromRoot(type, identifiers.getPageCountIdent());
         if (element == null) {
             addToLog("INFO:\tSeitenzahl konnte nicht gelesen werden");
             return 1;
         }
 
-        int pageCount = 1;
         try {
-            pageCount = Integer.parseInt(element.getText());
+            return Integer.parseInt(element.getText());
         } catch (NumberFormatException nfe) {
             return 1;
-        }
-
-        int buttonCount = 4;
-        while (true) {
-            try {
-                WebElement tempElement = extractElementFromRoot(type, XPathReplacer(xpath, "3", String.valueOf(buttonCount)) );
-                if (tempElement == null) return pageCount;
-                pageCount = Integer.parseInt(element.getText());
-                element = tempElement;
-                buttonCount++;
-            } catch (NumberFormatException nfe) {
-                return pageCount;
-            }
         }
     }
 
