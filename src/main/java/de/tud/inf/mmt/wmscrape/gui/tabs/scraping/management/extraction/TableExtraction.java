@@ -161,7 +161,7 @@ public abstract class TableExtraction extends ExtractionGeneral implements Extra
         if (prepareCarrierAndStatements(task, element, preparedCarrierMap)) return;
 
         // get the table
-        WebElementInContext table = getTable(element);
+        WebElementInContext table = getHistoricTable(element, securitiesType);
         if(table == null) {
             log("ERR:\t\tTabelle für "+element.getDescription()+" nicht gefunden.");
             return;
@@ -348,9 +348,6 @@ public abstract class TableExtraction extends ExtractionGeneral implements Extra
         }
     }
 
-
-
-
     protected WebElementInContext replaceXPATHFB(IdentType identType, String ident) {
         WebElementInContext element = scraper.extractFrameElementFromContext(identType, XPathReplacer(ident, "app-equity","app-etp"), null);
         if (element != null) return element;
@@ -373,7 +370,17 @@ public abstract class TableExtraction extends ExtractionGeneral implements Extra
     private WebElementInContext getTable(WebsiteElement websiteElement) {
         WebElementInContext element = scraper.extractFrameElementFromContext(websiteElement.getTableIdenType(), websiteElement.getTableIdent(), null);
 
-        if(element == null) element = replaceXPATHFB(websiteElement.getTableIdenType(), websiteElement.getTableIdent());
+        if(element == null) return null;
+
+        scraper.highlightElement(element.get(), "Tabelle");
+        return element;
+    }
+
+    private WebElementInContext getHistoricTable(WebsiteElement websiteElement, SecuritiesType securitiesType) {
+        var correlation = websiteElement.getElementIdentifierByType(securitiesType);
+        if (correlation == null) return null;
+
+        WebElementInContext element = scraper.extractFrameElementFromContext(correlation.getTableIdenType(), correlation.getTableIdent(), null);
         if(element == null) return null;
 
         scraper.highlightElement(element.get(), "Tabelle");
