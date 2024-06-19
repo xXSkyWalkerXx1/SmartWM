@@ -21,6 +21,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.Optional;
 
+import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
+
 /**
  * todo due to the increased size of this controller it should be split up again into separate controller. the manager implementation can be used as is
  *
@@ -53,11 +55,11 @@ public class DataTabController {
     @FXML private MenuItem deleteDepotMenuItem;
 
     @FXML private TabPane sectionTabPane;
-    @FXML private Tab stockTab;
-    @FXML private Tab courseTab;
-    @FXML private Tab exchangeTab;
-    @FXML private Tab transactionTab;
-    @FXML private Tab watchListTab;
+    private Tab stockTab;
+    private Tab courseTab;
+    private Tab exchangeTab;
+    private Tab transactionTab;
+    private Tab watchListTab;
 
     @FXML private GridPane columnSubmenuPane;
     @FXML private ChoiceBox<VisualDatatype> columnDatatypeChoiceBox;
@@ -98,6 +100,14 @@ public class DataTabController {
      */
     @FXML
     private void initialize() {
+        // init tabs
+        stockTab = createSubTab("Stammdaten", null);
+        courseTab = createSubTab("Wertpapier-Kurs", null);
+        exchangeTab = createSubTab("Wechselkurs", null);
+        transactionTab = createSubTab("Depot-Transaktionen", null);
+        watchListTab = createSubTab("Watch-Liste", null);
+        sectionTabPane.getTabs().addAll(stockTab, courseTab, exchangeTab, transactionTab, watchListTab);
+
         // initializing with stock data
         tabManager = stockDataManager;
 
