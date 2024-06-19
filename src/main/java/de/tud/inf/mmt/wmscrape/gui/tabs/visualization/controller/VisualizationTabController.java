@@ -19,6 +19,9 @@ import org.springframework.stereotype.Controller;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createPrimaryTab;
+import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
+
 /**
  * initializes the visualization tab
  */
@@ -48,12 +51,11 @@ public class VisualizationTabController {
             Parent courseRoot = courseLoader.load();
             VisualizationCourseTabController controller =  courseLoader.getController();
 
-            var courseTab = new Tab("Kursdaten", courseRoot);
+            var courseTab = createSubTab("Kursdaten", courseRoot);
             courseTab.selectedProperty().addListener((o,ov,nv) -> {
                 currentTab = controller;
                 currentTab.setTools(normalizeCheckbox, startDatePicker, endDatePicker);
                 normalizeCheckbox.setSelected(true);
-
                 normalizeCheckbox.setDisable(false);
             });
             tabPane.getTabs().add(courseTab);
@@ -66,11 +68,10 @@ public class VisualizationTabController {
             Parent stockRoot = stockLoader.load();
             VisualizationStockTabController controller =  stockLoader.getController();
 
-            var stockTab = new Tab("Wertpapier-Parameter", stockRoot);
+            var stockTab = createSubTab("Wertpapier-Parameter", stockRoot);
             stockTab.selectedProperty().addListener((o,ov,nv) -> {
                 currentTab = controller;
                 currentTab.setTools(normalizeCheckbox, startDatePicker, endDatePicker);
-
                 normalizeCheckbox.setSelected(false);
                 normalizeCheckbox.setDisable(true);
             });
