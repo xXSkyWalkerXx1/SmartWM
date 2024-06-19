@@ -56,23 +56,23 @@ public class PrimaryTabController {
         currentUserLabel.setText("Aktueller Nutzer: " + SpringIndependentData.getUsername());
 
         Parent parent = PrimaryTabManager.loadTabFxml("gui/tabs/dbdata/controller/dataTab.fxml", dataTabController);
-        Tab dataTab = createStyledTab("Daten", parent);
+        Tab dataTab = createPrimaryTab("Daten", parent);
         primaryTabPane.getTabs().add(dataTab);
 
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/imports/controller/importTab.fxml", importTabController);
-        Tab importTab = createStyledTab("Import", parent);
+        Tab importTab = createPrimaryTab("Import", parent);
         primaryTabPane.getTabs().add(importTab);
 
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/scraping/controller/scrapingTabs.fxml", scrapingTabsController);
-        Tab tab = createStyledTab("Scraping", parent);
+        Tab tab = createPrimaryTab("Scraping", parent);
         primaryTabPane.getTabs().add(tab);
 
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/visualization/controller/visualizeTab.fxml", visualizationTabController);
-        Tab visualizeTab = createStyledTab("Darstellung", parent);
+        Tab visualizeTab = createPrimaryTab("Darstellung", parent);
         primaryTabPane.getTabs().add(visualizeTab);
 
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/portfolioManagement.fxml", portfolioManagementTabController);
-        Tab managementTab = createStyledTab("Portfoliomanagement", parent);
+        Tab managementTab = createPrimaryTab("Portfoliomanagement", parent);
         primaryTabPane.getTabs().add(managementTab);
 
         primaryTabPane.getSelectionModel().selectedItemProperty().addListener((o, ov, nv) -> {
@@ -91,19 +91,35 @@ public class PrimaryTabController {
         primaryTabPane.setStyle("-fx-tab-min-height: 30px;" + "-fx-tab-max-height: 30px;" + "-fx-tab-min-width: 150px;" + "-fx-tab-max-width: 150px;" + "-fx-alignment: CENTER;");
     }
 
-    // Hilfsmethode zur Erstellung von Tabs mit angepasstem Stil
-    private Tab createStyledTab(String title, Parent parent) {
+    /**
+     * Create a styled primary tab, f.e. as root.
+     */
+    public static Tab createPrimaryTab(String title, Parent parent) {
+        return createStyledTab(title, parent, "#0064C7", "#014180");
+    }
+
+    /**
+     * Create a styled sub or secondary tab, f.e. as leave.
+     */
+    public static Tab createSubTab(String title, Parent parent) {
+        return createStyledTab(title, parent, "#b4dafd", "#e6f3fe");
+    }
+
+    /**
+     * Base-method to create a styled tab. Colors are in hex, f.e.: '#9accfe'.
+     */
+    private static Tab createStyledTab(String title, Parent parent, String colorDefault, String colorOnSelected) {
+        String style = "-fx-background-color: %s; -fx-background-insets: 0, 1; -fx-background-radius: 0, 0 0 0 0;";
         Tab tab = new Tab(title, parent);
-        tab.setStyle("-fx-background-color: #0064C7;" + "-fx-background-insets: 0, 1;" + "-fx-background-radius: 0, 0 0 0 0;");
+
+        tab.setStyle(String.format(style, colorDefault));
         tab.setOnSelectionChanged(event -> {
             if (tab.isSelected()) {
-                tab.setStyle("-fx-background-color: #014180;" + "-fx-background-insets: 0, 1;" + "-fx-background-radius: 0, 0 0 0 0;");
+                tab.setStyle(String.format(style, colorOnSelected));
             } else {
-                tab.setStyle("-fx-background-color: #0064C7;" + "-fx-background-insets: 0, 1;" + "-fx-background-radius: 0, 0 0 0 0;");
+                tab.setStyle(String.format(style, colorDefault));
             }
         });
-
-
         return tab;
     }
 
