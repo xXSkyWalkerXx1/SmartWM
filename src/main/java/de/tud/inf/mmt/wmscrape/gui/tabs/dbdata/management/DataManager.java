@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.dynamicdb.stock.StockColumnRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.depots.data.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.depots.data.DepotRepository;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -572,11 +573,11 @@ public abstract class DataManager {
         depotRepository.deleteAll(depot);
     }
 
-    public boolean createStock(String isin, String wkn, String name, String type, String sortOrder) {
+    public boolean createStock(String isin, String wkn, String name, String type, String sortOrder, SecuritiesType securitiesType) {
         if(isin == null || isin.isBlank()) return false;
 
         if(stockRepository.findByIsin(isin).isPresent()) return false;
-        stockRepository.saveAndFlush(new Stock(isin, wkn, name, type, Integer.parseInt(sortOrder)));
+        stockRepository.saveAndFlush(new Stock(isin, wkn, name, type, Integer.parseInt(sortOrder), securitiesType));
         return true;
     }
 
