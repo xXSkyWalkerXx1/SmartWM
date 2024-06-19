@@ -236,7 +236,9 @@ public class Website extends WebRepresentation<WebsiteElement>{
     }
 
     @Nullable
-    public HistoricWebsiteIdentifiers getHistoricIdentifiersByType(@NonNull SecuritiesType type){
+    public HistoricWebsiteIdentifiers getHistoricIdentifiersByType(SecuritiesType type){
+        if (type == null) return null;
+
         for (var typeIdents : historicWebsiteIdentifiers){
             if (type.equals(typeIdents.getSecuritiesType())) return typeIdents;
         }
