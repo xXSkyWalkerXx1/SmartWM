@@ -22,8 +22,10 @@ import org.springframework.stereotype.Controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
+
+import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createPrimaryTab;
+import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
 
 @Controller
 public class PortfolioManagementTabController {
@@ -164,120 +166,120 @@ public class PortfolioManagementTabController {
 
         portfolioListController = new PortfolioListController(portfolioManagementTabManager);
         Parent parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/portfolios/portfolios.fxml", portfolioListController);
-        portfoliosTab = createStyledTab("Portfolios", parent);
+        portfoliosTab = createSubTab("Portfolios", parent);
         portfolioManagementTabPane.getTabs().add(portfoliosTab);
 
         portfolioAnalyseController = new PortfolioAnalyseController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/portfolios/portfolio/portfolioAnalyse.fxml", portfolioAnalyseController);
-        portfolioAnalyseTab = createStyledTab("Analyse", parent);
+        portfolioAnalyseTab = createSubTab("Analyse", parent);
         portfolioManagementTabPane.getTabs().add(portfolioAnalyseTab);
 
         portfolioBenchmarkController = new PortfolioBenchmarkController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/portfolios/portfolio/portfolioBenchmarks.fxml", portfolioBenchmarkController);
-        portfolioBenchmarkTab = createStyledTab("Benchmarks", parent);
+        portfolioBenchmarkTab = createSubTab("Benchmarks", parent);
         portfolioManagementTabPane.getTabs().add(portfolioBenchmarkTab);
 
         portfolioStrukturController = new PortfolioStrukturController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/portfolios/portfolio/portfolioStruktur.fxml", portfolioStrukturController);
-        portfolioStrukturTab = createStyledTab("Struktur", parent);
+        portfolioStrukturTab = createSubTab("Struktur", parent);
         portfolioManagementTabPane.getTabs().add(portfolioStrukturTab);
 
         portfolioDepotsController = new PortfolioDepotsController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/portfolios/portfolio/portfolioDepots.fxml", portfolioDepotsController);
-        portfolioDepotsTab = createStyledTab("Depots", parent);
+        portfolioDepotsTab = createSubTab("Depots", parent);
         portfolioManagementTabPane.getTabs().add(portfolioDepotsTab);
 
         portfolioKontosController = new PortfolioKontosController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/portfolios/portfolio/portfolioKontos.fxml", portfolioKontosController);
-        portfolioKontosTab = createStyledTab("Kontos", parent);
+        portfolioKontosTab = createSubTab("Kontos", parent);
         portfolioManagementTabPane.getTabs().add(portfolioKontosTab);
 
 
         depotListController = new DepotListController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/depots/depots.fxml", depotListController);
-        depotTab = createStyledTab("Depots", parent);
+        depotTab = createSubTab("Depots", parent);
         portfolioManagementTabPane.getTabs().add(depotTab);
 
         depotWertpapierController = new DepotWertpapierController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/depots/depot/depotWertpapier.fxml", depotWertpapierController);
-        depotWertpapierTab = createStyledTab("Wertpapiere", parent);
+        depotWertpapierTab = createSubTab("Wertpapiere", parent);
         portfolioManagementTabPane.getTabs().add(depotWertpapierTab);
 
         depotStrukturController = new DepotStrukturController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/depots/depot/depotStruktur.fxml", depotStrukturController);
-        depotStrukturTab = createStyledTab("Struktur", parent);
+        depotStrukturTab = createSubTab("Struktur", parent);
         portfolioManagementTabPane.getTabs().add(depotStrukturTab);
 
         depotPlanungController = new DepotPlanungController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/depots/depot/depotPlanung.fxml", depotPlanungController);
-        depotPlanungTab = createStyledTab("Planung", parent);
+        depotPlanungTab = createSubTab("Planung", parent);
         portfolioManagementTabPane.getTabs().add(depotPlanungTab);
 
         depotPlanungWertpapiervergleichController = new DepotPlanungWertpapiervergleichController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/depots/depot/planung/depotPlanungWertpapierVergleich.fxml", depotPlanungWertpapiervergleichController);
-        depotPlanungVergleichTab = createStyledTab("Wertpapiervergleich", parent);
+        depotPlanungVergleichTab = createSubTab("Wertpapiervergleich", parent);
         portfolioManagementTabPane.getTabs().add(depotPlanungVergleichTab);
 
         depotPlanungOrderController = new DepotPlanungOrderController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/depots/depot/planung/depotPlanungOrders.fxml", depotPlanungOrderController);
-        depotPlanungOrdersTab = createStyledTab("Orders", parent);
+        depotPlanungOrdersTab = createSubTab("Orders", parent);
         portfolioManagementTabPane.getTabs().add(depotPlanungOrdersTab);
 
         depotTransaktionenController = new DepotTransaktionenController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/depots/depot/depotTransaktionen.fxml", depotTransaktionenController);
-        depotTransaktionenTab = createStyledTab("Transaktionen", parent);
+        depotTransaktionenTab = createSubTab("Transaktionen", parent);
         portfolioManagementTabPane.getTabs().add(depotTransaktionenTab);
 
         depotAnlagestrategieController = new DepotAnlagestrategieController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/depots/depot/depotAnlagestrategie.fxml", depotAnlagestrategieController);
-        depotAnlageStrategieTab = createStyledTab("Anlagestrategie", parent);
+        depotAnlageStrategieTab = createSubTab("Anlagestrategie", parent);
         portfolioManagementTabPane.getTabs().add(depotAnlageStrategieTab);
 
 
         kontoListController = new KontoListController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/kontos/kontos.fxml", kontoListController);
-        kontoTab = createStyledTab("Konten", parent);
+        kontoTab = createSubTab("Konten", parent);
         portfolioManagementTabPane.getTabs().add(kontoTab);
 
         kontoOverviewController = new KontoOverviewController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/kontos/konto/kontoOverview.fxml", kontoOverviewController);
-        kontoÜbersichtTab = createStyledTab("Übersicht", parent);
+        kontoÜbersichtTab = createSubTab("Übersicht", parent);
         portfolioManagementTabPane.getTabs().add(kontoÜbersichtTab);
 
         kontoTransactionsController = new KontoTransactionsController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/kontos/konto/kontoTransactions.fxml", kontoTransactionsController);
-        kontoTransaktionenTab = createStyledTab("Transaktionen", parent);
+        kontoTransaktionenTab = createSubTab("Transaktionen", parent);
         portfolioManagementTabPane.getTabs().add(kontoTransaktionenTab);
 
 
         ownerListController = new OwnerListController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/owners/owners.fxml", ownerListController);
-        inhaberTab = createStyledTab("Inhaber", parent);
+        inhaberTab = createSubTab("Inhaber", parent);
         portfolioManagementTabPane.getTabs().add(inhaberTab);
 
         ownerOverviewController = new OwnerOverviewController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/owners/owner/ownerOverview.fxml", ownerOverviewController);
-        inhaberÜbersichtTab = createStyledTab("Übersicht", parent);
+        inhaberÜbersichtTab = createSubTab("Übersicht", parent);
         portfolioManagementTabPane.getTabs().add(inhaberÜbersichtTab);
 
         ownerVermögenController = new OwnerVermögenController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/owners/owner/ownerVermögen.fxml", ownerVermögenController);
-        inhaberVermögenTab = createStyledTab("Vermögen", parent);
+        inhaberVermögenTab = createSubTab("Vermögen", parent);
         portfolioManagementTabPane.getTabs().add(inhaberVermögenTab);
 
         ownerPortfoliosController = new OwnerPortfoliosController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/owners/owner/ownerPortfolios.fxml", ownerPortfoliosController);
-        inhaberPortfoliosTab = createStyledTab("Portfolios", parent);
+        inhaberPortfoliosTab = createSubTab("Portfolios", parent);
         portfolioManagementTabPane.getTabs().add(inhaberPortfoliosTab);
 
         ownerKontosController = new OwnerKontosController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/owners/owner/ownerKontos.fxml", ownerKontosController);
-        inhaberKontosTab = createStyledTab("Kontos", parent);
+        inhaberKontosTab = createSubTab("Kontos", parent);
         portfolioManagementTabPane.getTabs().add(inhaberKontosTab);
 
         ownerDepotsController = new OwnerDepotsController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/owners/owner/ownerDepots.fxml", ownerDepotsController);
-        inhaberDepotsTab = createStyledTab("Depots", parent);
+        inhaberDepotsTab = createSubTab("Depots", parent);
         portfolioManagementTabPane.getTabs().add(inhaberDepotsTab);
 
 
@@ -299,22 +301,6 @@ public class PortfolioManagementTabController {
             }
 
         });
-    }
-
-    // Hilfsmethode zur Erstellung von Tabs mit angepasstem Stil
-    private Tab createStyledTab(String title, Parent parent) {
-        Tab tab = new Tab(title, parent);
-        tab.setStyle("-fx-background-color: #FFF;" + "-fx-background-insets: 0, 1;" + "-fx-background-radius: 0, 0 0 0 0;");
-        tab.setOnSelectionChanged(event -> {
-            if (tab.isSelected()) {
-                tab.setStyle("-fx-background-color: #DCDCDC;" + "-fx-background-insets: 0, 1;" + "-fx-background-radius: 0, 0 0 0 0;");
-            } else {
-                tab.setStyle("-fx-background-color: #FFF;" + "-fx-background-insets: 0, 1;" + "-fx-background-radius: 0, 0 0 0 0;");
-            }
-        });
-
-
-        return tab;
     }
 
     private void hideTab(Tab tab) {
