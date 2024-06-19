@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 
+import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
+
 /**
  * the controller for the complete scraping tab adding the sub-tabs
  */
@@ -25,19 +27,19 @@ public class ScrapingTabController {
      */
     @FXML
     private void initialize() throws IOException {
-        Parent parent = PrimaryTabManager.loadTabFxml("gui/tabs/scraping/controller/scrapingScrapeTab.fxml", scrapingScrapeTabController);
-        Tab tab = new Tab("Scrapen" , parent);
+        Tab tab;
 
+        Parent parent = PrimaryTabManager.loadTabFxml("gui/tabs/scraping/controller/scrapingScrapeTab.fxml", scrapingScrapeTabController);
+        tab = createSubTab("Scrapen" , parent);
         tab.selectedProperty().addListener((o,ov,nv) -> scrapingScrapeTabController.refresh());
         scrapingSubTabPane.getTabs().add(tab);
 
-
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/scraping/controller/scrapingWebsitesTab.fxml", scrapingWebsiteTabController);
-        tab = new Tab("Webseiten" , parent);
+        tab = createSubTab("Webseiten" , parent);
         scrapingSubTabPane.getTabs().add(tab);
 
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/scraping/controller/scrapingElementsTab.fxml", scrapingElementsTabController);
-        tab = new Tab("Elemente" , parent);
+        tab = createSubTab("Elemente" , parent);
 
         tab.selectedProperty().addListener((o,ov,nv) -> {
             if(nv) {
