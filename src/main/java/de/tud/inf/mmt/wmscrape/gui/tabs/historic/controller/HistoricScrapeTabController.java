@@ -108,6 +108,8 @@ public class HistoricScrapeTabController {
      */
     @FXML
     public void handleStartButton() {
+        logArea.clear();
+
         scrapingManager.startScrape(
                 delayMinSpinner.getValue(),
                 delayMaxSpinner.getValue(),
