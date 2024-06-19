@@ -27,10 +27,10 @@ public class HistoricWebsiteTester extends WebsiteHandler {
             Map.entry(SecuritiesType.SHARE, "DE0005140008"),
             Map.entry(SecuritiesType.BOND, "DE000BU0E113"),
             Map.entry(SecuritiesType.ETF, "IE00B4L5Y983"),
+            Map.entry(SecuritiesType.AETF, "IE00BF4G6Y48"),
             Map.entry(SecuritiesType.ETC, "DE000A0S9GB0"),
-            Map.entry(SecuritiesType.FOND, "DE0009807008"),
-            Map.entry(SecuritiesType.RESOURCE, "US12492G1040"))
-    );
+            Map.entry(SecuritiesType.FOND, "DE0009807008")
+    ));
 
     public HistoricWebsiteTester(Website website, SimpleStringProperty logText) {
         super(website, logText, false);
