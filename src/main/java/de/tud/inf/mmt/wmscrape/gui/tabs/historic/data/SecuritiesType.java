@@ -1,14 +1,15 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.historic.data;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 public enum SecuritiesType {
     SHARE("Aktien"),
     BOND("Anleihen"),
     ETF("ETF"),
+    AETF("Aktive ETFs"),
     ETC("ETC"),
-    FOND("Fonds"),
-    RESOURCE("Rohstoffe");
+    FOND("Fonds");
 
 
     final String displayText;
@@ -19,25 +20,20 @@ public enum SecuritiesType {
 
     /**
      * Maps the type, given by the excel-sheet, to an instance of {@link SecuritiesType}.
-     * @param type A = Aktie, BZR = Bezugsrechte; FA = Aktienfond; FAD = deutsche Aktienfonds, FAA = ausländischer FA;
-     *             FAE = europäische FA, FV = Gemischte Fond; FVE = europäische FV; FVA = internationale FV;
-     *             FG = Geldmarktfond; FGD = deutsche FG, FGE = europäische FG, FGA = ausländische FG,
-     *             FIM = Immobilienfond; FR = Rentenfond / O = Obligationen; FRD = deutesche FR, FRA = Internat. FR,
-     *             HF = Hedg, S = Spezialitäten, R = festferzinsliche Wertpapiere; RD = deutsche R, RA = ausländische R,
-     *             Rst = Rohstoffe, Z = Zertifikate
-     * @// TODO: 22.05.2024 Implement mapping of the other types!
+     *
+     * @param type can be AKT, ANL, ETF, AETF, ETC, FOD
      */
-    @NonNull
-    public static SecuritiesType getMapped(@NonNull String type) throws IllegalArgumentException{
-        switch (type){
-            case "Rst" -> {
-                return SecuritiesType.RESOURCE;
-            }
-            case "A" -> {
-                return SecuritiesType.SHARE;
-            }
-            default -> throw new IllegalArgumentException();
-        }
+    @Nullable
+    public static SecuritiesType getMapped(@NonNull String type) {
+        return switch (type){
+            case "AKT" -> SHARE;
+            case "ANL" -> BOND;
+            case "ETF" -> ETF;
+            case "AETF" -> AETF;
+            case "ETC" -> ETC;
+            case "FOD" -> FOND;
+            default -> null;
+        };
     }
 
     public String getDisplayText() {
