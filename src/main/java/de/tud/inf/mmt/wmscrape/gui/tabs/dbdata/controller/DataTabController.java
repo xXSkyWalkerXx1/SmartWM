@@ -7,6 +7,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data.CustomRow;
 import de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data.Stock;
 import de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.management.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.depots.data.Depot;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.controller.ScrapingElementsTabController;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -68,6 +69,7 @@ public class DataTabController {
     @FXML private TextField newNameField;
     @FXML private TextField newTypeField;
     @FXML private TextField newSortOrderField;
+    @FXML private TextField newScrapingTypeField;
 
     @FXML private DatePicker startDate;
     @FXML private DatePicker endDate;
@@ -337,14 +339,16 @@ public class DataTabController {
 
     @FXML
     private void handleNewStockButton() {
-
         if(!isValidStockCreationInput()) return;
 
-        boolean success = stockDataManager.createStock(newIsinField.getText().trim(),
-                                                        newWknField.getText().trim(),
-                                                        newNameField.getText().trim(),
-                                                        newTypeField.getText().trim(),
-                                                        newSortOrderField.getText().trim());
+        boolean success = stockDataManager.createStock(
+                newIsinField.getText().trim(),
+                newWknField.getText().trim(),
+                newNameField.getText().trim(),
+                newTypeField.getText().trim(),
+                newSortOrderField.getText().trim(),
+                SecuritiesType.getMapped(newScrapingTypeField.getText().trim())
+        );
         scrapingElementsTabController.refresh();
 
         if(success) {
