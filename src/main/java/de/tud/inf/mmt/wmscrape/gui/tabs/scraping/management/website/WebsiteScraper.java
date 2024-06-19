@@ -585,8 +585,6 @@ public class WebsiteScraper extends WebsiteHandler {
     }
 
     private void processHistoricWebsiteElement(WebsiteElement element, Task<Void> task) {
-        var typesToSkip = new ArrayList<String>();
-
         if(!usesLogin()) {
             loadSearchPage();
             acceptCookies();
@@ -609,21 +607,17 @@ public class WebsiteScraper extends WebsiteHandler {
 
                     // setup data
                     var websiteIsin = elementSelection.getElementDescCorrelation().getWsIsin();
-                    var wpType = elementSelection.getStock().stockTypeProperty().get();
-                    SecuritiesType securitiesType;
-                    HistoricWebsiteIdentifiers identifiers;
+                    var stock = elementSelection.getStock();
 
-                    if (typesToSkip.contains(wpType)) continue; // skip types which can not be mapped
+                    SecuritiesType securitiesType = stock.getScrapeType();
+                    HistoricWebsiteIdentifiers identifiers = website.getHistoricIdentifiersByType(securitiesType);
 
-                    try {
-                        securitiesType = SecuritiesType.getMapped(wpType);
-                        identifiers = website.getHistoricIdentifiersByType(securitiesType);
-                    } catch (IllegalArgumentException argumentException) {
-                        typesToSkip.add(wpType);
+                    if (identifiers == null) {
                         addToLog(String.format(
-                                "WARNUNG:\tMapping von %s zu einer Instanz von %s ist fehlgeschlagen! " +
-                                        "Daher werden alle Selektionen vom Typ %s übersprungen.",
-                                wpType, SecuritiesType.class.getName(), wpType
+                                "WARNUNG:\tDer Scrapetype zum Wertpapier %s (ISIN: %s) wurde nicht angegeben oder ist ungültig!\n" +
+                                        "Das Wertpapier wird daher beim Scrapevorgang übersprungen.",
+                                stock.getName(),
+                                stock.getIsin()
                         ));
                         continue;
                     }
