@@ -5,6 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.historic.management.extraction.TableHist
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.HistoricWebsiteIdentifiers;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.Website;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.WebsiteRepository;
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.element.WebsiteElementRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.ContentType;
@@ -158,19 +159,18 @@ public class WebsiteScraper extends WebsiteHandler {
         if(!loadHistoricData(identifiers)) return false;
         delayRandom();
         declineNotifications();
-
         waitLoadEvent();
 
-        var retryCount = 0;
-        WebElement table = extractElementFromRoot(element.getTableIdenType(), element.getTableIdent());
-        if (table == null) table = replaceXPATHFB(element.getTableIdenType(), element.getTableIdent());
-        while(table == null) {
+        ElementIdentCorrelation correlation = element.getElementIdentifierByType(identifiers.getSecuritiesType());
+        if (correlation == null) return false;
+        WebElement table = extractElementFromRoot(correlation.getTableIdenType(), correlation.getTableIdent());
 
+        var retryCount = 0;
+        while(table == null) {
             if(retryCount == MAX_LOAD_HISTORIC_DATA_RETRY_COUNT - 1) {
                 addToLog("ERR:\t\tFür dieses Wertpapier sind keine historischen Kursdaten auf der Webseite \""+website.getDescription()+"\" vorhanden.");
                 return false;
             }
-
             if(!loadHistoricData(identifiers)) return false;
             delayRandom();
             declineNotifications();
@@ -626,18 +626,18 @@ public class WebsiteScraper extends WebsiteHandler {
                     if(!doSearchRoutine(websiteIsin, securitiesType)) continue;
                     waitLoadEvent();
                     if(!doLoadHistoricData(freshElement, identifiers)) continue;
-                    scrollToBottom(freshElement);
+                    scrollToBottom(freshElement, securitiesType);
 
                     // prepare data for extraction
                     tableHistoricExtraction.setIsin(elementSelection.getIsin());
                     tableHistoricExtraction.setSecurityType(securitiesType);
-                    addToLog("INFO:\tExtrahiere Daten für " + elementSelection.getIsin());
 
                     var currentPageCount = 1;
                     var pageCount = readPageCount(identifiers);
                     addToLog("INFO:\tEs wurden " + pageCount + " Seiten gelesen");
 
                     // do extraction
+                    addToLog("INFO:\tExtrahiere Daten für " + elementSelection.getIsin());
                     while(currentPageCount <= pageCount) {
                         tableHistoricExtraction.extract(securitiesType, freshElement, task, elementSelectionProgress);
                         addToLog("INFO:\tSeite " + currentPageCount + " von " + pageCount + " Seiten gelesen");
@@ -657,10 +657,11 @@ public class WebsiteScraper extends WebsiteHandler {
         });
     }
 
-    private void scrollToBottom(WebsiteElement element) {
-        var table = extractElementFromRoot(element.getTableIdenType(), element.getTableIdent());
-        if (table == null) table = replaceXPATHFB(element.getTableIdenType(), element.getTableIdent());
+    private void scrollToBottom(WebsiteElement element, SecuritiesType securitiesType) {
+        ElementIdentCorrelation correlation = element.getElementIdentifierByType(securitiesType);
+        if (correlation == null) return;
 
+        var table = extractElementFromRoot(correlation.getTableIdenType(), correlation.getTableIdent());
         var tableHeight = 0L;
 
         while(tableHeight < (tableHeight = (Long) driver.executeScript("return arguments[0].scrollHeight", table))) {
