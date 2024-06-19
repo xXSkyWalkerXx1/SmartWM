@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 
+import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
+
 /**
  * initializes scraping menu
  */
@@ -25,17 +27,19 @@ public class HistoricTabController {
      */
     @FXML
     private void initialize() throws IOException {
+        Tab tab;
+
         Parent parent = PrimaryTabManager.loadTabFxml("gui/tabs/historic/controller/historicScrapeTab.fxml", historicScrapeTabController);
-        Tab tab = new Tab("Scrapen" , parent);
+        tab = createSubTab("Scrapen" , parent);
         tab.selectedProperty().addListener((o,ov,nv) -> historicScrapeTabController.refresh());
         historicSubTabPane.getTabs().add(tab);
 
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/historic/controller/historicWebsitesTab.fxml", historicWebsiteTabController);
-        tab = new Tab("Webseiten" , parent);
+        tab = createSubTab("Webseiten" , parent);
         historicSubTabPane.getTabs().add(tab);
 
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/historic/controller/historicElementsTab.fxml", historicWebsiteElementTabController);
-        tab = new Tab("Elemente" , parent);
+        tab = createSubTab("Elemente" , parent);
         tab.selectedProperty().addListener((o,ov,nv) -> historicWebsiteElementTabController.refresh());
         historicSubTabPane.getTabs().add(tab);
     }
