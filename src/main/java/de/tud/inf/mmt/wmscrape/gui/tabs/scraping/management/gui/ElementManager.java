@@ -353,7 +353,7 @@ public abstract class ElementManager {
 
         for (ElementIdentCorrelation elementIdentCorrelation : websiteElement.getElementIdentCorrelations()) {
             if (matchType != null){
-                if (!(elementIdentCorrelation.getSecuritiesType() == matchType)) continue;
+                if (!matchType.equals(elementIdentCorrelation.getSecuritiesType())) continue;
             }
             courseCorrelations.add(elementIdentCorrelation);
             addedStockColumns.add(elementIdentCorrelation.getDbColName());
