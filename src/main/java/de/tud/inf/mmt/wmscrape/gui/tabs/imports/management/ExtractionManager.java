@@ -11,6 +11,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data.Stock;
 import de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data.StockRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.depots.data.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.depots.data.DepotRepository;
+import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.imports.controller.ImportTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.imports.data.ExcelCorrelation;
 import javafx.concurrent.Task;
@@ -99,7 +100,6 @@ public class ExtractionManager {
      * @return error information as integer value
      */
     private int extractStockData(Task<Integer> task) {
-
         importTabManager.addToLog("##### Start Stammdaten-Import #####\n");
 
         // execution is not stopped at a silent error but a log message is added
@@ -112,7 +112,6 @@ public class ExtractionManager {
         var excelSheetRows = parsingManager.getExcelSheetRows();
         var stockColumnRelations = importTabController.getStockDataCorrelations();
         var selected = parsingManager.getSelectedStockDataRows();
-
 
         if (statements == null) return -2;
 
@@ -144,6 +143,12 @@ public class ExtractionManager {
                 silentError = true;
                 continue;
             }
+
+            // ToDo: Refactor! It's just a little hack, but not a nice way to solve the issue.
+            // Puts stype-param to use it for stock-creating, because it's not in the correlation-table.
+            HashMap<String,String> newStocksData_ = potentialNewStocks.getOrDefault(isin, new HashMap<>());
+            newStocksData_.put("stype", rowData.get(2));
+            potentialNewStocks.put(isin, newStocksData_);
 
             // pick one column per relation from row
             for (ExcelCorrelation correlation : stockColumnRelations) {
@@ -184,9 +189,7 @@ public class ExtractionManager {
                 // isin wkn name typ
                 if (ignoreInStockData.contains(dbColName)) {
                     //if(colData == null) continue; uncomment if stock values should not contain null
-
-                    HashMap<String,String> newStocksData;
-                    newStocksData = potentialNewStocks.getOrDefault(isin, new HashMap<>());
+                    HashMap<String,String> newStocksData = potentialNewStocks.getOrDefault(isin, new HashMap<>());
                     newStocksData.put(dbColName, colData);
                     potentialNewStocks.put(isin,newStocksData);
                     continue;
@@ -404,7 +407,7 @@ public class ExtractionManager {
 
             // stocks are created beforehand
             if (!knownStockIsins.containsKey(isin)) {
-                stockRepository.saveAndFlush(new Stock(isin, null, null,null,-1));
+                stockRepository.saveAndFlush(new Stock(isin, null, null,null,-1, null));
                 importTabManager.addToLog("WARN:\tFür das Wertpapier der Transaktion aus Zeile "+(row+OFFSET)+
                         " wurden zuvor keine Stammdaten importiert. \n\t\t" +
                         "Ein neues Wertpapier mit der ISIN: '"+isin+"' wurde angelegt, um die Transaktionsdaten importieren zu können. \n\t\t" +
@@ -519,6 +522,7 @@ public class ExtractionManager {
             String name = ks.getValue().getOrDefault("name", null);
             String typ = ks.getValue().getOrDefault("typ", null);
             Integer r = getNullInteger(ks.getValue().getOrDefault("r_par", null));
+            SecuritiesType scrapeType = SecuritiesType.getMapped(ks.getValue().getOrDefault("stype", null));
             Stock s;
 
             if(knownStocks.containsKey(ks.getKey())) {
@@ -528,8 +532,9 @@ public class ExtractionManager {
                 s.set_name(name);
                 s.set_stockType(typ);
                 s.set_sortOrder(r);
+                s.set_scrapeType(scrapeType);
             } else {
-                s = new Stock(ks.getKey(), wkn, name, typ, r);
+                s = new Stock(ks.getKey(), wkn, name, typ, r, scrapeType);
             }
             stockRepository.save(s);
         }
