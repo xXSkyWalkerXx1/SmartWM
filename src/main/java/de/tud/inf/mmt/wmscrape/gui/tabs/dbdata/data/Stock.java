@@ -80,7 +80,7 @@ public class Stock {
     }
 
     public String getWkn() {
-        return wkn.get();
+        return _wkn;
     }
 
     public SimpleStringProperty wknProperty() {
@@ -88,7 +88,7 @@ public class Stock {
     }
 
     public String getName() {
-        return name.get();
+        return _name;
     }
 
     public SecuritiesType getScrapeType() {
