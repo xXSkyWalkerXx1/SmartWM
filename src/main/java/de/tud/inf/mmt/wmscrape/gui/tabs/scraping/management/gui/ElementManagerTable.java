@@ -187,10 +187,8 @@ public class ElementManagerTable extends ElementManager {
                 ? historicTableSubController
                 : tableSubController;
 
-        // Save ident-correlations, due their Cascade.ALL attribute
-        websiteElement.setElementCorrelations(controller.getDbCorrelations());
-
         // Save website-element
+        websiteElement.setElementCorrelations(controller.getDbCorrelations());
         websiteElementRepository.saveAndFlush(websiteElement);
 
         // Save and flush element selections
