@@ -601,6 +601,8 @@ public class WebsiteScraper extends WebsiteHandler {
 
                 // get all selected items/securities to scrape and look for their historic data
                 var elementSelections = freshElement.getElementSelections();
+                int countSelections = elementSelections.size();
+                int progressSelections = 1;
 
                 for(ElementSelection elementSelection : elementSelections) {
                     setCurrentSelection(elementSelection);
@@ -637,7 +639,13 @@ public class WebsiteScraper extends WebsiteHandler {
                     addToLog("INFO:\tEs wurden " + pageCount + " Seiten gelesen");
 
                     // do extraction
-                    addToLog("INFO:\tExtrahiere Daten für " + elementSelection.getIsin());
+                    addToLog(String.format(
+                            "INFO:\tExtrahiere Daten für %s (%s/%s)",
+                            elementSelection.getIsin(),
+                            progressSelections,
+                            countSelections
+
+                    ));
                     while(currentPageCount <= pageCount) {
                         tableHistoricExtraction.extract(securitiesType, freshElement, task, elementSelectionProgress);
                         addToLog("INFO:\tSeite " + currentPageCount + " von " + pageCount + " Seiten gelesen");
@@ -648,8 +656,8 @@ public class WebsiteScraper extends WebsiteHandler {
                             waitLoadEvent();
                         }
                         currentPageCount++;
-
                     }
+                    progressSelections++;
                 }
 
                 tableHistoricExtraction.logMatches(elementSelections, element.getDescription());
