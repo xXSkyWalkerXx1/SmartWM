@@ -786,6 +786,7 @@ public abstract class WebsiteHandler extends Service<Void> {
                 identifiers.getPageCountIdentType(),
                 identifiers.getPageCountIdent()
         );
+        if (element == null) return false;
 
         addToLog("INFO:\tPage Count: " + element.getText());
         return true;
