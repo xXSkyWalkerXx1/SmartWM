@@ -126,8 +126,11 @@ public class ElementSelection {
     }
 
     /**
-     * called after entity creation by hibernate (loading from the database)
-     * updates the property values to those from the database
+     * Called after entity creation by hibernate (loading from the database).
+     * Updates the property values to those from the database.<br>
+     *
+     * Reminder: the PostLoad-method in {@link Stock} is called after the one in this class. So getters needs to return
+     * the column-value, <u>not</u> the property-value.
      */
     @PostLoad
     private void setPropertiesFromPersistence() {
