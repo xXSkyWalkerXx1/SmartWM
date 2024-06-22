@@ -8,6 +8,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.website.WebElementIn
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.management.website.WebsiteScraper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TextArea;
 
 import java.sql.*;
 import java.sql.Date;
@@ -445,6 +446,7 @@ public abstract class ExtractionGeneral {
         for(PreparedStatement statement : preparedStatements.values()) {
             try {
                 statement.executeBatch();
+                var warning = statement.getWarnings();
                 statement.close();
             } catch (SQLException e) {
                 log("ERR:\t\tSQL Statements konnten nicht ausgeführt werden. "+e.getMessage());
@@ -462,7 +464,7 @@ public abstract class ExtractionGeneral {
      */
     protected void log(String line) {
         // not doing this would we be a problem due to the multithreaded execution
-        Platform.runLater(() -> logText.set(this.logText.getValue() +"\n" + line));
+        Platform.runLater(() -> ((TextArea) logText.getBean()).appendText("\n" + line));
     }
 
     protected void handleSqlException(InformationCarrier carrier, SQLException e) {
