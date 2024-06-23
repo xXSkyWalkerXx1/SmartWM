@@ -63,7 +63,7 @@ public class HistoricTableSubController extends TableSubControllerBase {
         return FXCollections.observableArrayList(securitiesTypeCorrContainers.stream()
                         .filter(SecuritiesTypeCorrContainer::areMandatoryInputsCompleted)
                         .flatMap((Function<SecuritiesTypeCorrContainer, Stream<ElementIdentCorrelation>>) c -> c.getCorrelations().stream())
-                        .filter(elementIdentCorrelation -> !IdentType.DEAKTIVIERT.equals(elementIdentCorrelation.getIdentType()))
+                        .filter(c -> !IdentType.DEAKTIVIERT.equals(c.getIdentType()))
                         .toList()
         );
     }
