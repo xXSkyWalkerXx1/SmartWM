@@ -446,7 +446,6 @@ public abstract class ExtractionGeneral {
         for(PreparedStatement statement : preparedStatements.values()) {
             try {
                 statement.executeBatch();
-                var warning = statement.getWarnings();
                 statement.close();
             } catch (SQLException e) {
                 log("ERR:\t\tSQL Statements konnten nicht ausgeführt werden. "+e.getMessage());
