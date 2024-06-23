@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.historic.controller.HistoricWebsiteEleme
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesTypeCorrContainer;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.description.ElementDescCorrelation;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.correlation.identification.ElementIdentCorrelation;
+import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.enums.IdentType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -62,6 +63,7 @@ public class HistoricTableSubController extends TableSubControllerBase {
         return FXCollections.observableArrayList(securitiesTypeCorrContainers.stream()
                         .filter(SecuritiesTypeCorrContainer::areMandatoryInputsCompleted)
                         .flatMap((Function<SecuritiesTypeCorrContainer, Stream<ElementIdentCorrelation>>) c -> c.getCorrelations().stream())
+                        .filter(elementIdentCorrelation -> !IdentType.DEAKTIVIERT.equals(elementIdentCorrelation.getIdentType()))
                         .toList()
         );
     }
