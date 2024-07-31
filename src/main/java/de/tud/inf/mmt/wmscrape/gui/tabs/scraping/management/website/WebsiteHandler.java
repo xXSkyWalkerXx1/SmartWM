@@ -171,7 +171,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         IdentType type = website.getCookieAcceptIdentType();
         if (type == IdentType.DEAKTIVIERT) return true;
 
-        var idents = website.getCookieAcceptIdent().split(";");
+        var idents = website.getCookieAcceptIdent().split(identDelimiter);
 
         for(String ident : idents) {
             WebElement element = extractElementFromRoot(type, ident);
@@ -621,14 +621,15 @@ public abstract class WebsiteHandler extends Service<Void> {
     }
 
     protected boolean loadHistoricPage(@NonNull HistoricWebsiteIdentifiers identifiers) {
-        WebElement element = extractElementFromRoot(
-                identifiers.getHistoricLinkIdentType(),
-                identifiers.getHistoricLinkIdent()
-        );
-        if (element == null) return false;
+        WebElement element;
 
-        clickElement(element);
-        waitLoadEvent();
+        for (String ident : identifiers.getHistoricLinkIdent().split(identDelimiter)) {
+             element = extractElementFromRoot(identifiers.getHistoricLinkIdentType(), ident);
+            if (element == null) return false;
+
+            clickElement(element);
+            waitLoadEvent();
+        }
 
         addToLog("INFO:\tZu historischen Daten navigiert");
         return true;
