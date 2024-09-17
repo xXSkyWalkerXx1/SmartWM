@@ -102,7 +102,7 @@ public class PrimaryTabController {
      * Create a styled sub or secondary tab, f.e. as leave.
      */
     public static Tab createSubTab(String title, Parent parent) {
-        return createStyledTab(title, parent, "#b4dafd", "#e6f3fe");
+        return createStyledTab(title, parent, "#b4dafd", "#50a9fb");
     }
 
     /**
