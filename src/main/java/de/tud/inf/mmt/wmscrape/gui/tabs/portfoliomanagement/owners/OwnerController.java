@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class OwnerListController {
+public class OwnerController {
 
     @FXML
     PortfolioManagementTabManager portfolioManagementTabManager;
@@ -19,7 +19,7 @@ public class OwnerListController {
     Button switchToOwner2Button;
 
     @Autowired
-    public OwnerListController(PortfolioManagementTabManager portfolioManagementTabManager) {
+    public OwnerController(PortfolioManagementTabManager portfolioManagementTabManager) {
         this.portfolioManagementTabManager = portfolioManagementTabManager;
     }
 
