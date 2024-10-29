@@ -8,7 +8,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.depots.depot.planung
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.kontos.KontoListController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.kontos.konto.KontoOverviewController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.kontos.konto.KontoTransactionsController;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.owners.OwnerListController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.owners.OwnerController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.owners.owner.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.portfolios.PortfolioListController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.portfolios.portfolio.*;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createPrimaryTab;
 import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
 
 @Controller
@@ -52,7 +51,7 @@ public class PortfolioManagementTabController {
     @Autowired
     private KontoListController kontoListController;
     @Autowired
-    private OwnerListController ownerListController;
+    private OwnerController ownerController;
 
 
     @Autowired
@@ -252,8 +251,8 @@ public class PortfolioManagementTabController {
         portfolioManagementTabPane.getTabs().add(kontoTransaktionenTab);
 
 
-        ownerListController = new OwnerListController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/owners/owners.fxml", ownerListController);
+        ownerController = new OwnerController(portfolioManagementTabManager);
+        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/owners/owners.fxml", ownerController);
         inhaberTab = createSubTab("Inhaber", parent);
         portfolioManagementTabPane.getTabs().add(inhaberTab);
 
