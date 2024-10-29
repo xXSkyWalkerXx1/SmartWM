@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface OwnerRepository extends CrudRepository<Owner, Long> {
 
-    List<Owner> getAll();
+    List<Owner> findAll();
 }
