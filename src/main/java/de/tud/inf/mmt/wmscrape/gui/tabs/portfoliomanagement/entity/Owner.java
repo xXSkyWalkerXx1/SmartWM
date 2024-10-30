@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 
 import javax.persistence.*;
@@ -8,6 +9,155 @@ import java.util.List;
 @Entity
 @Table(name = "inhaber")
 public class Owner {
+
+    // region Entities as inner-classes
+    @Entity
+    @Table(name = "inhaber_adresse")
+    public static class Address {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        @Column(name = "country", nullable = false)
+        private String country;
+
+        @Column(name = "plz", nullable = false)
+        private String plz;
+
+        @Column(name = "location", nullable = false)
+        private String location; // Stadt/Dorf
+
+        @Column(name = "street", nullable = false)
+        private String street;
+
+        @Column(name = "street_number", nullable = false)
+        private String streetNumber;
+
+        public Long getId() {
+            return id;
+        }
+
+        public String getCountry() {
+            return country;
+        }
+
+        public void setCountry(String country) {
+            this.country = country;
+        }
+
+        public String getPlz() {
+            return plz;
+        }
+
+        public void setPlz(String plz) {
+            this.plz = plz;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
+
+        public String getStreet() {
+            return street;
+        }
+
+        public void setStreet(String street) {
+            this.street = street;
+        }
+
+        public String getStreetNumber() {
+            return streetNumber;
+        }
+
+        public void setStreetNumber(String streetNumber) {
+            this.streetNumber = streetNumber;
+        }
+    }
+
+    @Entity
+    @Table(name = "inhaber_steuer_informationen")
+    public static class TaxInformation {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        @Column(name = "tax_number", nullable = false)
+        private String taxNumber;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "marital_state", nullable = false)
+        private MaritalState maritalState;
+
+        @Column(name = "tax_rate", nullable = false)
+        private double taxRate;
+
+        @Column(name = "church_tax_rate", nullable = false)
+        private double churchTaxRate;
+
+        @Column(name = "capital_gainstax_rate", nullable = false)
+        private double capitalGainsTaxRate;
+
+        @Column(name = "solidarity_surcharge_tax_rate", nullable = false)
+        private double solidaritySurchargeTaxRate;
+
+        public Long getId() {
+            return id;
+        }
+
+        public String getTaxNumber() {
+            return taxNumber;
+        }
+
+        public void setTaxNumber(String taxNumber) {
+            this.taxNumber = taxNumber;
+        }
+
+        public MaritalState getMaritalState() {
+            return maritalState;
+        }
+
+        public void setMaritalState(MaritalState maritalState) {
+            this.maritalState = maritalState;
+        }
+
+        public double getTaxRate() {
+            return taxRate;
+        }
+
+        public void setTaxRate(double taxRate) {
+            this.taxRate = taxRate;
+        }
+
+        public double getChurchTaxRate() {
+            return churchTaxRate;
+        }
+
+        public void setChurchTaxRate(double churchTaxRate) {
+            this.churchTaxRate = churchTaxRate;
+        }
+
+        public double getCapitalGainsTaxRate() {
+            return capitalGainsTaxRate;
+        }
+
+        public void setCapitalGainsTaxRate(double capitalGainsTaxRate) {
+            this.capitalGainsTaxRate = capitalGainsTaxRate;
+        }
+
+        public double getSolidaritySurchargeTaxRate() {
+            return solidaritySurchargeTaxRate;
+        }
+
+        public void setSolidaritySurchargeTaxRate(double solidaritySurchargeTaxRate) {
+            this.solidaritySurchargeTaxRate = solidaritySurchargeTaxRate;
+        }
+    }
+    // endregion
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
