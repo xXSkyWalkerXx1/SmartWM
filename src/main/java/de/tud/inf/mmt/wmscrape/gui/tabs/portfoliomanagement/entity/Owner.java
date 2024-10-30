@@ -37,7 +37,7 @@ public class Owner {
     private Address address;
 
     @OneToOne
-    @JoinColumn(name = "tax_information")
+    @JoinColumn(name = "tax_information_id") // creates foreign-key
     private TaxInformation taxInformation;
 
     @OneToMany(mappedBy = "owner")
