@@ -2,8 +2,10 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Currency;
 
 /**
@@ -11,7 +13,7 @@ import java.util.Currency;
  */
 @Entity
 @Table(name = "konto")
-public class Account {
+public class Account implements Valuable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +59,11 @@ public class Account {
     private InterestInterval interestInterval;
 
     // region Getters & Setters
+    @Override
+    public BigDecimal getValue() {
+        return BigDecimal.valueOf(balance);
+    }
+
     public Long getId() {
         return id;
     }

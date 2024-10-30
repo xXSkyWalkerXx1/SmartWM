@@ -1,14 +1,16 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "portfolio")
-public class Portfolio {
+public class Portfolio implements Valuable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +46,21 @@ public class Portfolio {
     private List<Account> accounts = new ArrayList<>();
 
     // region Getters & Setters
+    @Override
+    public BigDecimal getValue() {
+        BigDecimal sum = new BigDecimal(0);
+
+        for (Depot depot : depots){
+            sum = sum.add(depot.getValue());
+        }
+
+        for (Account account : accounts){
+            sum = sum.add(account.getValue());
+        }
+
+        return sum;
+    }
+
     public Long getId() {
         return id;
     }
