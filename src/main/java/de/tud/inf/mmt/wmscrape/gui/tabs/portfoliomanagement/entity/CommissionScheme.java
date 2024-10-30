@@ -194,7 +194,7 @@ public class CommissionScheme {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "currency", nullable = false)
+    @Column(name = "currency_code", nullable = false)
     private String currencyCode;
 
     @OneToMany
