@@ -7,6 +7,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.Date;
 
 /**
  * Konto
@@ -54,6 +55,14 @@ public class Account implements Valuable {
     @Enumerated(EnumType.STRING)
     @Column(name = "interest_interval", nullable = false)
     private InterestInterval interestInterval;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "deactivated_at")
+    private Date deactivatedAt;
 
     // region Getters & Setters
     @Override
@@ -157,5 +166,20 @@ public class Account implements Valuable {
         this.interestInterval = interestInterval;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getDeactivatedAt() {
+        return deactivatedAt;
+    }
+
+    public void setDeactivatedAt(Date deactivatedAt) {
+        this.deactivatedAt = deactivatedAt;
+    }
     // endregion
 }

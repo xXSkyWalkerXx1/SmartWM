@@ -6,6 +6,7 @@ import org.apache.poi.ss.formula.eval.NotImplementedFunctionException;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "pDepot")
@@ -57,6 +58,14 @@ public class Depot implements Valuable {
     @OneToOne
     @JoinColumn(name = "commission_scheme_id", nullable = false)
     private CommissionScheme commissionScheme; // Provision-schema
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "deactivated_at")
+    private Date deactivatedAt;
 
     // region Getters & Setters
     @Override
@@ -118,6 +127,22 @@ public class Depot implements Valuable {
 
     public void setCommissionScheme(CommissionScheme commissionScheme) {
         this.commissionScheme = commissionScheme;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getDeactivatedAt() {
+        return deactivatedAt;
+    }
+
+    public void setDeactivatedAt(Date deactivatedAt) {
+        this.deactivatedAt = deactivatedAt;
     }
     // endregion
 }

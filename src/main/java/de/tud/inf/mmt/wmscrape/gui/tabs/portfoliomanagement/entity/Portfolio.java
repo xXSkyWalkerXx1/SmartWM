@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,12 +25,6 @@ public class Portfolio implements Valuable {
     @Column(name = "state", nullable = false)
     private State state;
 
-    @Column(name = "created_at", nullable = false)
-    private String createdAt;
-
-    @Column(name = "deactivated_at")
-    private String deactivatedAt;
-
     @OneToOne
     @JoinColumn(name = "investment_guideline_id", nullable = false)
     private InvestmentGuideline investmentGuideline;
@@ -41,6 +36,14 @@ public class Portfolio implements Valuable {
     @OneToMany
     @JoinColumn(name = "account_id", nullable = false)
     private List<Account> accounts = new ArrayList<>();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "deactivated_at")
+    private Date deactivatedAt;
 
     // region Getters & Setters
     @Override
@@ -82,22 +85,6 @@ public class Portfolio implements Valuable {
         this.state = state;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getDeactivatedAt() {
-        return deactivatedAt;
-    }
-
-    public void setDeactivatedAt(String deactivatedAt) {
-        this.deactivatedAt = deactivatedAt;
-    }
-
     public InvestmentGuideline getInvestmentGuideline() {
         return investmentGuideline;
     }
@@ -120,6 +107,22 @@ public class Portfolio implements Valuable {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getDeactivatedAt() {
+        return deactivatedAt;
+    }
+
+    public void setDeactivatedAt(Date deactivatedAt) {
+        this.deactivatedAt = deactivatedAt;
     }
     // endregion
 }

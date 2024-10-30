@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -159,6 +160,8 @@ public class Owner {
     }
     // endregion
 
+    // ToDo: implement "Zugangspasswort" and so on?
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -176,12 +179,6 @@ public class Owner {
     @Column(name = "notice")
     private String notice;
 
-    @Column(name = "created_at", nullable = false)
-    private String createdAt;
-
-    @Column(name = "deactivated_at")
-    private String deactivatedAt;
-
     @OneToOne
     @JoinColumn(name = "address")
     private Address address;
@@ -193,6 +190,15 @@ public class Owner {
     @OneToMany(mappedBy = "owner")
     private List<Portfolio> portfolios;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "deactivated_at")
+    private Date deactivatedAt;
+
+    // region Getters & Setters
     public Long getId() {
         return id;
     }
@@ -229,19 +235,19 @@ public class Owner {
         this.notice = notice;
     }
 
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getDeactivatedAt() {
+    public Date getDeactivatedAt() {
         return deactivatedAt;
     }
 
-    public void setDeactivatedAt(String deactivatedAt) {
+    public void setDeactivatedAt(Date deactivatedAt) {
         this.deactivatedAt = deactivatedAt;
     }
 
@@ -264,4 +270,5 @@ public class Owner {
     public List<Portfolio> getPortfolios() {
         return portfolios;
     }
+    // endregion
 }
