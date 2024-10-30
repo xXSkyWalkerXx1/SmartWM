@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "depot")
+@Entity(name = "pDepot")
+@Table(name = "pdepot")
 public class Depot implements Valuable {
 
     // region Entity as inner-class
@@ -18,15 +18,8 @@ public class Depot implements Valuable {
     public static class DepotBank {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
-
         @Column(name = "name", nullable = false)
         private String name; // bank-name
-
-        public Long getId() {
-            return id;
-        }
 
         public String getName() {
             return name;
@@ -39,9 +32,6 @@ public class Depot implements Valuable {
     // endregion
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -72,10 +62,6 @@ public class Depot implements Valuable {
     @Override
     public BigDecimal getValue() {
         throw new NotImplementedFunctionException("Muss noch implementiert werden");
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getName() {
