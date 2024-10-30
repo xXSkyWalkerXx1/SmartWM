@@ -1,12 +1,16 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
+import org.apache.poi.ss.formula.eval.NotImplementedFunctionException;
+
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "depot")
-public class Depot {
+public class Depot implements Valuable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +29,11 @@ public class Depot {
     private CommissionScheme commissionScheme;
 
     // region Getters & Setters
+    @Override
+    public BigDecimal getValue() {
+        throw new NotImplementedFunctionException("Muss noch implementiert werden");
+    }
+
     public Long getId() {
         return id;
     }
