@@ -13,9 +13,6 @@ import java.util.List;
 public class Portfolio implements Valuable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -59,10 +56,6 @@ public class Portfolio implements Valuable {
         }
 
         return sum;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getName() {
