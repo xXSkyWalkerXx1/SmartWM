@@ -11,13 +11,13 @@ import java.util.Currency;
 /**
  * Konto
  */
-@Entity
-@Table(name = "konto")
+@Entity(name = "pAccount")
+@Table(name = "pkonto")
 public class Account implements Valuable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "iban", nullable = false)
+    private String iban;
 
     @Column(name = "description")
     private String description;
@@ -42,9 +42,6 @@ public class Account implements Valuable {
     @Column(name = "bank_name", nullable = false)
     private String bankName;
 
-    @Column(name = "iban", nullable = false)
-    private String iban;
-
     @Column(name = "konto_number", nullable = false)
     private String kontoNumber;
 
@@ -62,10 +59,6 @@ public class Account implements Valuable {
     @Override
     public BigDecimal getValue() {
         return BigDecimal.valueOf(balance);
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getDescription() {
