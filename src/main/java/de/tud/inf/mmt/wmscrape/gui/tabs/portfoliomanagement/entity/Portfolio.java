@@ -42,4 +42,74 @@ public class Portfolio {
     @OneToMany
     @JoinColumn(name = "account_id", nullable = false)
     private List<Account> accounts = new ArrayList<>();
+
+    // region Getters & Setters
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getDeactivatedAt() {
+        return deactivatedAt;
+    }
+
+    public void setDeactivatedAt(String deactivatedAt) {
+        this.deactivatedAt = deactivatedAt;
+    }
+
+    public InvestmentGuideline getInvestmentGuideline() {
+        return investmentGuideline;
+    }
+
+    public void setInvestmentGuideline(InvestmentGuideline investmentGuideline) {
+        this.investmentGuideline = investmentGuideline;
+    }
+
+    public List<Depot> getDepots() {
+        return depots;
+    }
+
+    public void setDepots(List<Depot> depots) {
+        this.depots = depots;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+    // endregion
 }
