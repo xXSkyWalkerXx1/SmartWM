@@ -3,7 +3,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "owner_adress")
+@Table(name = "inhaber_adresse")
 public class Address {
 
     @Id

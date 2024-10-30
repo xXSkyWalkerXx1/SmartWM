@@ -5,7 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "owner_tax_information")
+@Table(name = "inhaber_steuer_informationen")
 public class TaxInformation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
