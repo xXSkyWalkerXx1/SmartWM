@@ -168,7 +168,7 @@ public class Owner {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
-    private State state;
+    private State state = State.ACTIVATED;
 
     @Column(name = "forename", nullable = false)
     private String forename;
