@@ -40,7 +40,7 @@ public class Depot implements Valuable {
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_id", nullable = false)
     private DepotBank bank;
 
@@ -55,7 +55,7 @@ public class Depot implements Valuable {
     @JoinColumn(name = "billing_account_id", nullable = false)
     private List<Account> billingAccounts = new ArrayList<>(); // Verrechnungskonten
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "commission_scheme_id", nullable = false)
     private CommissionScheme commissionScheme; // Provision-schema
 

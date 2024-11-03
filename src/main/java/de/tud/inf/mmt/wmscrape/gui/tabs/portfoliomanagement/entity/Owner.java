@@ -179,11 +179,11 @@ public class Owner {
     @Column(name = "notice")
     private String notice;
 
-    @OneToOne
-    @JoinColumn(name = "address")
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "address") // ToDo: rename to adress_id
     private Address address;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "tax_information_id") // creates foreign-key
     private TaxInformation taxInformation;
 

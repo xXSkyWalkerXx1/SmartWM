@@ -25,15 +25,15 @@ public class Portfolio implements Valuable {
     @Column(name = "state", nullable = false)
     private State state;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "investment_guideline_id", nullable = false)
     private InvestmentGuideline investmentGuideline;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "depot_id", nullable = false)
     private List<Depot> depots = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "account_id", nullable = false)
     private List<Account> accounts = new ArrayList<>();
 
