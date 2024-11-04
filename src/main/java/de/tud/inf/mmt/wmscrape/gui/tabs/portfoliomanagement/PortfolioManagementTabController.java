@@ -29,10 +29,6 @@ import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab
 @Controller
 public class PortfolioManagementTabController {
 
-    public PortfolioManagementTabController(PortfolioManagementTabManager portfolioManagementTabManager) {
-        this.portfolioManagementTabManager = portfolioManagementTabManager;
-    }
-
     public ToolBar breadcrumbContainer;
 
     @FXML
@@ -253,27 +249,27 @@ public class PortfolioManagementTabController {
         // Owner-Management
         inhaberTab = createSubTab(
                 "Inhaber",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owners.fxml", null)
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owners.fxml", ownerController)
         );
         inhaberÜbersichtTab = createSubTab(
                 "Übersicht",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerOverview.fxml", null)
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerOverview.fxml", ownerOverviewController)
         );
         inhaberVermögenTab = createSubTab(
                 "Vermögen",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerVermögen.fxml", null)
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerVermögen.fxml", ownerVermögenController)
         );
         inhaberPortfoliosTab = createSubTab(
                 "Portfolios",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerPortfolios.fxml", null)
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerPortfolios.fxml", ownerPortfoliosController)
         );
         inhaberKontosTab = createSubTab(
                 "Kontos",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerKontos.fxml", null)
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerKontos.fxml", ownerKontosController)
         );
         inhaberDepotsTab = createSubTab(
                 "Depots",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerDepots.fxml", null)
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerDepots.fxml", ownerDepotsController)
         );
 
         portfolioManagementTabPane.getTabs().addAll(
