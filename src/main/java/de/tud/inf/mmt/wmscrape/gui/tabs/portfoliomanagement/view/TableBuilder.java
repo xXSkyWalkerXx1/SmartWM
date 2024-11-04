@@ -65,9 +65,9 @@ public class TableBuilder<S> {
      * @param itemName Text which is display in the context-menu for this item.
      * @param onClickAction Action to be performed on item-click.
      */
-    public void addRowContextMenuItem(@NonNull String itemName, @NonNull EventHandler<ActionEvent> onClickAction){
+    public void addRowContextMenuItem(@NonNull String itemName, @NonNull Consumer<S> onClickAction){
         MenuItem newContextMenuItem = new MenuItem(itemName);
-        newContextMenuItem.setOnAction(onClickAction);
+        newContextMenuItem.setOnAction(actionEvent -> onClickAction.accept(tableView.getSelectionModel().getSelectedItem()));
         rowContextMenu.getItems().add(newContextMenuItem);
         initializeRowFactory();
     }
