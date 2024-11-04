@@ -199,6 +199,11 @@ public class Owner {
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
+    @Override
+    public String toString() {
+        return String.format("%s %s", forename, aftername);
+    }
+
     // region Getters & Setters
     public Long getId() {
         return id;
