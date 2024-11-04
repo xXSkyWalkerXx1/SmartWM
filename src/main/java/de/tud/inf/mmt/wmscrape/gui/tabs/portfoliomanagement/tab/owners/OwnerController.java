@@ -43,7 +43,7 @@ public class OwnerController {
         PrimaryTabManager.loadFxml(
                 "gui/tabs/portfoliomanagement/tab/owners/createOwnerDialog.fxml",
                 "Neuen Inhaber anlegen",
-                null,
+                createOwnerButton,
                 true,
                 createOwnerDialog,
                 false
