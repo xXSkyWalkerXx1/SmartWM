@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -188,7 +189,7 @@ public class Owner {
     private TaxInformation taxInformation;
 
     @OneToMany(mappedBy = "owner")
-    private List<Portfolio> portfolios;
+    private List<Portfolio> portfolios = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
