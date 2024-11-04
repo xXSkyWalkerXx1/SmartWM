@@ -1,4 +1,4 @@
-package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.table;
+package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
