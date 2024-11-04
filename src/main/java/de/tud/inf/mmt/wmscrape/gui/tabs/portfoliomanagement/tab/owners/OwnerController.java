@@ -1,15 +1,11 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners;
 
-import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -23,6 +19,8 @@ public class OwnerController {
     private OwnerService ownerService;
     @Autowired
     private CreateOwnerDialog createOwnerDialog; // controller
+    @Autowired
+    private PortfolioManagementTabManager portfolioManagementTabManager;
 
     @FXML
     Button createOwnerButton;
@@ -43,7 +41,7 @@ public class OwnerController {
     @FXML
     public void onClickCreateOwner(){
         PrimaryTabManager.loadFxml(
-                "tabs/portfoliomanagement/tab/owners/createOwnerDialog.fxml",
+                "gui/tabs/portfoliomanagement/tab/owners/createOwnerDialog.fxml",
                 "Neuen Inhaber anlegen",
                 null,
                 true,
@@ -57,4 +55,7 @@ public class OwnerController {
         ownerTreeViewPane.getChildren().add(portfolioTreeView);
     }
 
+    public PortfolioManagementTabManager getPortfolioManagementTabManager() {
+        return portfolioManagementTabManager;
+    }
 }
