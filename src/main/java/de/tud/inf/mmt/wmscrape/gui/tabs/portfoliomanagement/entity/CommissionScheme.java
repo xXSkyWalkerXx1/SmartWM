@@ -109,7 +109,7 @@ public class CommissionScheme {
         @Column(name = "order_volume_to", nullable = false)
         private int orderVolumeTo;
 
-        @OneToMany
+        @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
         @JoinColumn(name = "securities_type_bank_fee_id")
         private List<SecuritiesTypeSpecificBankFee> securitiesTypeSpecificBankFees = new ArrayList<>();
 
@@ -197,7 +197,7 @@ public class CommissionScheme {
     @Column(name = "currency_code", nullable = false)
     private String currencyCode;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "depot_price_scaling_id", nullable = false)
     private List<DepotPriceScaling> depotPriceScalings = new ArrayList<>(); // Depot-Preisstaffel
 
@@ -207,7 +207,7 @@ public class CommissionScheme {
     @Column(name = "brokerage_fee", nullable = false)
     private double brokerageFee; // Maklergebühren
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_fee_id", nullable = false)
     private List<BankFee> bankFees = new ArrayList<>();
 
