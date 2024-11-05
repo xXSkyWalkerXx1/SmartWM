@@ -27,7 +27,7 @@
                         <TextField fx:id="inputForename" GridPane.columnIndex="1" />
                         <TextField fx:id="inputAftername" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Anmerkungen" GridPane.rowIndex="2" />
-                        <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <TextField fx:id="inputNotice" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>
                   </GridPane>
                </children>
