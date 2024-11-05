@@ -143,8 +143,8 @@
                         </GridPane>
                         <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" spacing="15.0">
                            <children>
-                              <Button mnemonicParsing="false" text="Speichern" />
-                              <Button mnemonicParsing="false" text="Abbrechen" />
+                              <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
+                              <Button mnemonicParsing="false" onAction="#onCancel" text="Abbrechen" />
                            </children>
                            <VBox.margin>
                               <Insets top="35.0" />
