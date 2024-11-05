@@ -7,7 +7,7 @@
 
 <AnchorPane prefHeight="650.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.CreateOwnerDialog">
    <children>
-      <SplitPane dividerPositions="0.19, 0.45" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane dividerPositions="0.22, 0.47" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
@@ -24,15 +24,15 @@
                      <children>
                         <Label text="Vorname" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
                         <Label text="Nachname" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                        <TextField fx:id="inputForename" GridPane.columnIndex="1" />
-                        <TextField fx:id="inputAftername" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="inputForename" maxWidth="200.0" GridPane.columnIndex="1" />
+                        <TextField fx:id="inputAftername" maxWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Anmerkungen" GridPane.rowIndex="2" />
-                        <TextField fx:id="inputNotice" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <TextArea fx:id="inputNotice" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>
                   </GridPane>
                </children>
                <padding>
-                  <Insets left="25.0" right="25.0" />
+                  <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
                </padding>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
@@ -91,12 +91,12 @@
                   </GridPane>
                </children>
                <padding>
-                  <Insets left="25.0" right="25.0" />
+                  <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
                </padding>
             </AnchorPane>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <padding>
-                  <Insets left="25.0" right="25.0" />
+                  <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
                </padding>
                <children>
                   <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -128,11 +128,11 @@
                               <Label text="Kapitalertragssteuer (%)" GridPane.rowIndex="5" />
                               <Label text="Solidaritätszuschlag (%)" GridPane.rowIndex="6" />
                               <TextField fx:id="inputTaxNumber" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <TextField fx:id="inputTaxRate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <TextField fx:id="inputChurchTaxRate" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                              <TextField fx:id="inputCapitalGainsTaxRate" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                              <TextField fx:id="inputSolidaritySurchargeTaxRate" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                              <ComboBox fx:id="inputMaritalState" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="inputTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <TextField fx:id="inputChurchTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <TextField fx:id="inputCapitalGainsTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <TextField fx:id="inputSolidaritySurchargeTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                              <ComboBox fx:id="inputMaritalState" prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                         </GridPane>
                         <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" spacing="15.0">
