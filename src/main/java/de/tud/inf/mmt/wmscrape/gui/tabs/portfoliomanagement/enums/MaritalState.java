@@ -15,7 +15,8 @@ public enum MaritalState {
         this.displayText = displayText;
     }
 
-    public String getDisplayText() {
+    @Override
+    public String toString() {
         return displayText;
     }
 }
