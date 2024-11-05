@@ -4,14 +4,14 @@ import de.tud.inf.mmt.wmscrape.WMScrape;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Control;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.function.UnaryOperator;
 
 @Service
 public class PrimaryTabManager {
@@ -140,5 +140,18 @@ public class PrimaryTabManager {
             input.setTooltip(PrimaryTabManager.createTooltip(tooltip));
             input.getStyleClass().add("bad-input");
         }
+    }
+
+    public static void setInputOnlyDecimalNumbers(@NonNull TextField textField) {
+        textField.setTextFormatter(new TextFormatter<String>(change -> {
+            String textChange = change.getText();
+
+            if (textChange.isEmpty() // removed anything
+                    || textChange.matches("^\\d$") // allow numerics
+                    || textChange.matches("^[,]$") && !textField.getText().contains(",")) { // allow ',' and only once
+                return change;
+            }
+            return null;
+        }));
     }
 }
