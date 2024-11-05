@@ -161,8 +161,6 @@ public class Owner {
     }
     // endregion
 
-    // ToDo: implement "Zugangspasswort" and so on?
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -181,7 +179,7 @@ public class Owner {
     private String notice;
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "address") // ToDo: rename to adress_id
+    @JoinColumn(name = "address") // ToDo: rename to address_id
     private Address address;
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
