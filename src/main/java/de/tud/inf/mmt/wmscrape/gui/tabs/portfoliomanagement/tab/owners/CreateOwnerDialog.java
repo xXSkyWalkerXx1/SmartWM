@@ -5,9 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -106,5 +104,11 @@ public class CreateOwnerDialog {
         newOwner.setTaxInformation(ownerTaxInfo);
         ownerService.saveOwner(newOwner);
         onCancel();
+
+        // Finally, show success-dialog
+        Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "Der neue Inhaber wurde erfolgreich angelegt.", ButtonType.OK);
+        successAlert.setTitle("Inhaber angelegt");
+        PrimaryTabManager.setAlertPosition(successAlert, inputForename);
+        successAlert.show();
     }
 }
