@@ -2,6 +2,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
 
 import javax.persistence.*;
@@ -26,6 +27,10 @@ public class Account extends FinancialAsset {
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private AccountType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false)
+    private State state;
 
     @Column(name = "currency_code", nullable = false)
     private String currencyCode;
@@ -85,6 +90,14 @@ public class Account extends FinancialAsset {
 
     public AccountType getType() {
         return type;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     public void setType(AccountType type) {
