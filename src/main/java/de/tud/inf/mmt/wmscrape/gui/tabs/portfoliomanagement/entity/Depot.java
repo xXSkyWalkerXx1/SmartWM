@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
 import org.apache.poi.ss.formula.eval.NotImplementedFunctionException;
 
@@ -39,6 +40,10 @@ public class Depot extends FinancialAsset {
     @OneToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false)
+    private State state;
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_id", nullable = false)
@@ -92,6 +97,14 @@ public class Depot extends FinancialAsset {
 
     public void setOwner(Owner owner) {
         this.owner = owner;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     public DepotBank getBank() {
