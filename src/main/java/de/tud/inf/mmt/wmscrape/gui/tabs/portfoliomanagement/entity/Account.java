@@ -64,12 +64,17 @@ public class Account extends FinancialAsset {
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
-    // region Getters & Setters
     @Override
     public BigDecimal getValue() {
         return BigDecimal.valueOf(balance);
     }
 
+    @Override
+    public String toString() {
+        return iban;
+    }
+
+    // region Getters & Setters
     public String getDescription() {
         return description;
     }

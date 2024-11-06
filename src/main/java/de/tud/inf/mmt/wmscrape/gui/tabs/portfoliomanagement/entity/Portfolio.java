@@ -45,6 +45,11 @@ public class Portfolio extends FinancialAsset {
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     // region Getters & Setters
     @Override
     public BigDecimal getValue() {

@@ -67,12 +67,17 @@ public class Depot extends FinancialAsset {
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
-    // region Getters & Setters
     @Override
     public BigDecimal getValue() {
         throw new NotImplementedFunctionException("Muss noch implementiert werden");
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    // region Getters & Setters
     public String getName() {
         return name;
     }
