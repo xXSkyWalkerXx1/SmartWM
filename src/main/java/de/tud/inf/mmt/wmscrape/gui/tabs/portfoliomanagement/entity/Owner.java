@@ -199,7 +199,7 @@ public class Owner {
 
     @Override
     public String toString() {
-        return String.format("%s %s", forename, aftername);
+        return String.format("%s %s (ID: %s)", forename, aftername, id);
     }
 
     // region Getters & Setters
