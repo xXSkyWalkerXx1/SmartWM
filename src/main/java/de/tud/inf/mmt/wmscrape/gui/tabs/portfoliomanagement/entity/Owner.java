@@ -186,7 +186,7 @@ public class Owner {
     @JoinColumn(name = "tax_information_id") // creates foreign-key
     private TaxInformation taxInformation;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<Portfolio> portfolios = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
