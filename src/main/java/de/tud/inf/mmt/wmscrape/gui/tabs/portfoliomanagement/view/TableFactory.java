@@ -60,7 +60,11 @@ public class TableFactory {
                         -> new SimpleStringProperty(ownerCellDataFeatures.getValue().getNotice())
         );
 
-        tableBuilder.setActionOnSingleClickRow(owner -> ownerController.setOwnerTreeView(new PortfolioTreeView(parent, owner.getPortfolios())));
+        tableBuilder.setActionOnSingleClickRow(owner -> ownerController.setOwnerTreeView(new PortfolioTreeView(
+                parent,
+                owner.getPortfolios(),
+                ownerController.getPortfolioManagementTabManager()
+        )));
         tableBuilder.setActionOnDoubleClickRow(openOwnerOverviewAction);
 
         tableBuilder.addRowContextMenuItem("Details anzeigen", openOwnerOverviewAction);
