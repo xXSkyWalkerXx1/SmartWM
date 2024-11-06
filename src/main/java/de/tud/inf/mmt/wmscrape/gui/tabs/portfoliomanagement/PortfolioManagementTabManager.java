@@ -26,6 +26,10 @@ public class PortfolioManagementTabManager {
         this.portfolioController = controller;
     }
 
+    public PortfolioManagementTabController getPortfolioController() {
+        return portfolioController;
+    }
+
     public List<BreadcrumbElement> getCurrentlyDisplayedElements() {
         return  currentlyDisplayedElements;
     }
