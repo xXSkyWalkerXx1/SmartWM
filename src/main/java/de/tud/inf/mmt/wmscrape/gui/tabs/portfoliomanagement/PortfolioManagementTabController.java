@@ -530,4 +530,82 @@ public class PortfolioManagementTabController {
         createBreadcrumbInstance(" / Planung", emptyContextMenuItemList, () -> {
         }, "");
     }
+
+    // region Getters
+    public PortfolioStrukturController getPortfolioStrukturController() {
+        return portfolioStrukturController;
+    }
+
+    public PortfolioAnalyseController getPortfolioAnalyseController() {
+        return portfolioAnalyseController;
+    }
+
+    public PortfolioBenchmarkController getPortfolioBenchmarkController() {
+        return portfolioBenchmarkController;
+    }
+
+    public PortfolioDepotsController getPortfolioDepotsController() {
+        return portfolioDepotsController;
+    }
+
+    public PortfolioKontosController getPortfolioKontosController() {
+        return portfolioKontosController;
+    }
+
+    public DepotPlanungController getDepotPlanungController() {
+        return depotPlanungController;
+    }
+
+    public DepotWertpapierController getDepotWertpapierController() {
+        return depotWertpapierController;
+    }
+
+    public DepotStrukturController getDepotStrukturController() {
+        return depotStrukturController;
+    }
+
+    public DepotTransaktionenController getDepotTransaktionenController() {
+        return depotTransaktionenController;
+    }
+
+    public DepotAnlagestrategieController getDepotAnlagestrategieController() {
+        return depotAnlagestrategieController;
+    }
+
+    public DepotPlanungWertpapiervergleichController getDepotPlanungWertpapiervergleichController() {
+        return depotPlanungWertpapiervergleichController;
+    }
+
+    public DepotPlanungOrderController getDepotPlanungOrderController() {
+        return depotPlanungOrderController;
+    }
+
+    public KontoOverviewController getKontoOverviewController() {
+        return kontoOverviewController;
+    }
+
+    public KontoTransactionsController getKontoTransactionsController() {
+        return kontoTransactionsController;
+    }
+
+    public OwnerOverviewController getOwnerOverviewController() {
+        return ownerOverviewController;
+    }
+
+    public OwnerVermögenController getOwnerVermögenController() {
+        return ownerVermögenController;
+    }
+
+    public OwnerDepotsController getOwnerDepotsController() {
+        return ownerDepotsController;
+    }
+
+    public OwnerKontosController getOwnerKontosController() {
+        return ownerKontosController;
+    }
+
+    public OwnerPortfoliosController getOwnerPortfoliosController() {
+        return ownerPortfoliosController;
+    }
+    // endregion
 }
