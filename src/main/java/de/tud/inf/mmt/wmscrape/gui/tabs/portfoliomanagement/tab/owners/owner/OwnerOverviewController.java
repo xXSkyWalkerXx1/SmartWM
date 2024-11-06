@@ -24,6 +24,8 @@ public class OwnerOverviewController implements Openable<Owner> {
 
     @Autowired
     OwnerService ownerService;
+    @Autowired
+    PortfolioManagementTabManager portfolioManagementManager;
 
     @FXML
     TextField inputForename;
@@ -64,7 +66,11 @@ public class OwnerOverviewController implements Openable<Owner> {
     public void open(Owner entity) {
         owner = entity;
         loadOwnerData();
-        ownerTreeViewPane.getChildren().add(new PortfolioTreeView(ownerTreeViewPane, owner.getPortfolios()));
+        ownerTreeViewPane.getChildren().add(new PortfolioTreeView(
+                ownerTreeViewPane,
+                owner.getPortfolios(),
+                portfolioManagementManager
+        ));
     }
 
     @FXML
