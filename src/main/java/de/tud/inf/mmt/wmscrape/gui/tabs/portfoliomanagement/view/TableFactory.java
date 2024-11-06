@@ -2,6 +2,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableBuilder;
@@ -25,7 +26,14 @@ public class TableFactory {
             @NonNull Region parent,
             @NonNull List<Owner> tableItems,
             @NonNull OwnerController ownerController){
+
         TableBuilder<Owner> tableBuilder = new TableBuilder<>(parent, tableItems);
+        Consumer<Owner> openOwnerOverviewAction = owner -> {
+            var manager = ownerController.getPortfolioManagementTabManager();
+            manager.showInhaberTabs();
+            manager.setCurrentlyDisplayedElement(new BreadcrumbElement(owner.toString(), "owner"));
+            manager.getPortfolioController().getOwnerOverviewController().open(owner);
+        };
 
         tableBuilder.addColumn(
                 "Vorname",
@@ -52,22 +60,22 @@ public class TableFactory {
                         -> new SimpleStringProperty(ownerCellDataFeatures.getValue().getNotice())
         );
 
-        tableBuilder.setActionOnSingleClickRow(owner -> {
-            ownerController.setOwnerTreeView(new PortfolioTreeView(parent, owner.getPortfolios()));
-        });
-        tableBuilder.setActionOnDoubleClickRow(owner -> { // ToDo: implement open specific user
-            var manager = ownerController.getPortfolioManagementTabManager();
-            manager.showInhaberTabs();
-            manager.setCurrentlyDisplayedElement(new BreadcrumbElement(owner.toString(), "inhaber"));
-        });
+        tableBuilder.setActionOnSingleClickRow(owner -> ownerController.setOwnerTreeView(new PortfolioTreeView(parent, owner.getPortfolios())));
+        tableBuilder.setActionOnDoubleClickRow(openOwnerOverviewAction);
 
+        tableBuilder.addRowContextMenuItem("Details anzeigen", openOwnerOverviewAction);
         tableBuilder.addRowContextMenuItem(
-                "Details anzeigen",
-                owner -> { // ToDo: implement open specific user
-                    System.out.println("Öffne Inhaber " + owner);
-                    var manager = ownerController.getPortfolioManagementTabManager();
-                    manager.showInhaberTabs();
-                    manager.setCurrentlyDisplayedElement(new BreadcrumbElement(owner.toString(), "inhaber"));
+                "Status umschalten",
+                new Consumer<Owner>() {
+                    @Override
+                    public void accept(Owner owner) {
+                        // ToDo: implement in future work
+                        if (State.ACTIVATED.equals(owner.getState())) {
+                            System.out.println("Deaktiviere Inhaber " + owner);
+                        } else {
+                            System.out.println("Aktiviere Inhaber " + owner);
+                        }
+                    }
                 }
         );
         tableBuilder.addRowContextMenuItem(
