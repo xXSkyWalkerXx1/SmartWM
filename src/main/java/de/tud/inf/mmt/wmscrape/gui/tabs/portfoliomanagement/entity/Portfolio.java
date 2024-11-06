@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "portfolio")
-public class Portfolio implements Valuable {
+public class Portfolio extends FinancialAsset {
 
     @Id
     @Column(name = "name", nullable = false)

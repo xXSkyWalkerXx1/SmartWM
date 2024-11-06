@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity(name = "pDepot")
 @Table(name = "pdepot")
-public class Depot implements Valuable {
+public class Depot extends FinancialAsset {
 
     // region Entity as inner-class
     @Entity

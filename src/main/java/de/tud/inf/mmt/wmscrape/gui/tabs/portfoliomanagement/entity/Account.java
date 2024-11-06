@@ -14,7 +14,7 @@ import java.util.Date;
  */
 @Entity(name = "pAccount")
 @Table(name = "pkonto")
-public class Account implements Valuable {
+public class Account extends FinancialAsset {
 
     @Id
     @Column(name = "iban", nullable = false)
