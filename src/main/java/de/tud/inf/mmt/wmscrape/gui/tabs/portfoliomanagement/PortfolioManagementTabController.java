@@ -2,6 +2,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.DepotListController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungOrderController;
@@ -154,6 +155,9 @@ public class PortfolioManagementTabController {
     public ContexMenuItem emptyContexMenuItem = new ContexMenuItem("", null);
     public List<ContexMenuItem> emptyContextMenuItemList = new ArrayList<>();
 
+    public static final String TAB_PROPERTY_CONTROLLER = "controller";
+    public static final String TAB_PROPERTY_ENTITY = "entity";
+
     /**
      * called when loading the fxml file
      */
@@ -253,26 +257,36 @@ public class PortfolioManagementTabController {
                 "Inhaber",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owners.fxml", ownerController)
         );
+
         inhaberÜbersichtTab = createSubTab(
                 "Übersicht",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerOverview.fxml", ownerOverviewController)
         );
+        inhaberÜbersichtTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerOverviewController);
+
         inhaberVermögenTab = createSubTab(
                 "Vermögen",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerVermögen.fxml", ownerVermögenController)
         );
+        inhaberVermögenTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerVermögenController);
+
         inhaberPortfoliosTab = createSubTab(
                 "Portfolios",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerPortfolios.fxml", ownerPortfoliosController)
         );
+        inhaberPortfoliosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerPortfoliosController);
+
         inhaberKontosTab = createSubTab(
                 "Kontos",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerKontos.fxml", ownerKontosController)
         );
+        inhaberKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerKontosController);
+
         inhaberDepotsTab = createSubTab(
                 "Depots",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerDepots.fxml", ownerDepotsController)
         );
+        inhaberDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerDepotsController);
 
         portfolioManagementTabPane.getTabs().addAll(
                 inhaberTab,
@@ -295,12 +309,19 @@ public class PortfolioManagementTabController {
 
 
         portfolioManagementTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
+            if (newTab == null) return;
+
             if (newTab == depotPlanungTab) {
                 showDepotPlanungTabs();
                 changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
                 addDepotPlanungBreadcrumbs();
             }
 
+            System.out.println(newTab.getProperties());
+
+            if (newTab.getProperties().containsKey(TAB_PROPERTY_CONTROLLER)) {
+                ((Openable) newTab.getProperties().get(TAB_PROPERTY_CONTROLLER)).open();
+            }
         });
     }
 
@@ -348,7 +369,6 @@ public class PortfolioManagementTabController {
         portfolioManagementTabPane.getSelectionModel().select(depotTab);
     }
 
-
     public void showDepotPlanungTabs() {
         removeBreadcrumbs();
         hideAllTabs();
@@ -370,8 +390,9 @@ public class PortfolioManagementTabController {
         hideAllTabs();
 
         ownerTabs.forEach(tab -> {
-            Node content = tab.getContent();
-            if (content != null) content.setUserData(owner);
+            if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
+                tab.getProperties().put(TAB_PROPERTY_ENTITY, owner);
+            }
         });
 
         addTab(inhaberÜbersichtTab);
