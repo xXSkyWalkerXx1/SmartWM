@@ -1,7 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
@@ -64,7 +64,12 @@ public class OwnerOverviewController implements Openable {
 
     @Override
     public void open() {
-        owner = (Owner) portfolioManagementManager.getPortfolioController().getInhaberÜbersichtTab().getContent().getUserData();
+        owner = (Owner) portfolioManagementManager
+                .getPortfolioController()
+                .getInhaberÜbersichtTab()
+                .getProperties()
+                .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
+
         loadOwnerData();
         ownerTreeViewPane.getChildren().add(new PortfolioTreeView(
                 ownerTreeViewPane,
