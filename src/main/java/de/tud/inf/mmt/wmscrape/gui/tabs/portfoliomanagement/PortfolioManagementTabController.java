@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.DepotListController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungOrderController;
@@ -13,6 +14,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.*;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -363,14 +365,21 @@ public class PortfolioManagementTabController {
         portfolioManagementTabPane.getSelectionModel().select(kontoÜbersichtTab);
     }
 
-    public void showInhaberTabs() {
+    public void showInhaberTabs(Owner owner) {
         removeBreadcrumbs();
         hideAllTabs();
+
+        ownerTabs.forEach(tab -> {
+            Node content = tab.getContent();
+            if (content != null) content.setUserData(owner);
+        });
+
         addTab(inhaberÜbersichtTab);
         addTab(inhaberVermögenTab);
         addTab(inhaberPortfoliosTab);
         addTab(inhaberDepotsTab);
         addTab(inhaberKontosTab);
+
         portfolioManagementTabPane.getSelectionModel().select(inhaberÜbersichtTab);
     }
 
@@ -487,7 +496,7 @@ public class PortfolioManagementTabController {
         }
         createBreadcrumbInstance("Inhaber / ", emptyContextMenuItemList, this::showPortfolioManagementTabs, "owner");
         createBreadcrumbInstance(chosenOwner, contextMenuList, () -> {
-            showInhaberTabs();
+            showInhaberTabs(null);
             addOwnerBreadcrumbs(chosenOwner, otherOwners);
         }, "owner");
     }
@@ -607,5 +616,82 @@ public class PortfolioManagementTabController {
     public OwnerPortfoliosController getOwnerPortfoliosController() {
         return ownerPortfoliosController;
     }
-    // endregion
+
+    public Tab getPortfolioAnalyseTab() {
+        return portfolioAnalyseTab;
+    }
+
+    public Tab getPortfolioBenchmarkTab() {
+        return portfolioBenchmarkTab;
+    }
+
+    public Tab getPortfolioStrukturTab() {
+        return portfolioStrukturTab;
+    }
+
+    public Tab getPortfolioDepotsTab() {
+        return portfolioDepotsTab;
+    }
+
+    public Tab getPortfolioKontosTab() {
+        return portfolioKontosTab;
+    }
+
+    public Tab getDepotWertpapierTab() {
+        return depotWertpapierTab;
+    }
+
+    public Tab getDepotStrukturTab() {
+        return depotStrukturTab;
+    }
+
+    public Tab getDepotPlanungTab() {
+        return depotPlanungTab;
+    }
+
+    public Tab getDepotPlanungVergleichTab() {
+        return depotPlanungVergleichTab;
+    }
+
+    public Tab getDepotPlanungOrdersTab() {
+        return depotPlanungOrdersTab;
+    }
+
+    public Tab getDepotTransaktionenTab() {
+        return depotTransaktionenTab;
+    }
+
+    public Tab getDepotAnlageStrategieTab() {
+        return depotAnlageStrategieTab;
+    }
+
+    public Tab getKontoÜbersichtTab() {
+        return kontoÜbersichtTab;
+    }
+
+    public Tab getKontoTransaktionenTab() {
+        return kontoTransaktionenTab;
+    }
+
+    public Tab getInhaberÜbersichtTab() {
+        return inhaberÜbersichtTab;
+    }
+
+    public Tab getInhaberVermögenTab() {
+        return inhaberVermögenTab;
+    }
+
+    public Tab getInhaberDepotsTab() {
+        return inhaberDepotsTab;
+    }
+
+    public Tab getInhaberPortfoliosTab() {
+        return inhaberPortfoliosTab;
+    }
+
+    public Tab getInhaberKontosTab() {
+        return inhaberKontosTab;
+    }
+
+// endregion
 }
