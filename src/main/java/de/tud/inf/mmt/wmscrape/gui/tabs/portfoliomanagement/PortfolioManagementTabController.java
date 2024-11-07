@@ -296,6 +296,7 @@ public class PortfolioManagementTabController {
                 inhaberKontosTab,
                 inhaberDepotsTab
         );
+        ownerTabs = Set.of(inhaberÜbersichtTab, inhaberVermögenTab, inhaberPortfoliosTab, inhaberDepotsTab, inhaberKontosTab);
 
         // Set TabPane-style
         portfolioManagementTabPane.setStyle("-fx-tab-min-height: 30px;" + "-fx-tab-max-height: 30px;" + "-fx-tab-min-width: 150px;" + "-fx-tab-max-width: 150px;" + "-fx-alignment: CENTER;");
@@ -304,7 +305,6 @@ public class PortfolioManagementTabController {
         depotTabs = Set.of(depotWertpapierTab, depotStrukturTab, depotTransaktionenTab, depotAnlageStrategieTab, depotPlanungTab);
         portfolioTabs = Set.of(portfolioStrukturTab, portfolioAnalyseTab, portfolioBenchmarkTab);
         kontoTabs = Set.of(kontoÜbersichtTab, kontoTransaktionenTab);
-        ownerTabs = Set.of(inhaberVermögenTab, inhaberÜbersichtTab);
         showPortfolioManagementTabs();
 
 
