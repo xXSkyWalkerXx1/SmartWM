@@ -317,8 +317,6 @@ public class PortfolioManagementTabController {
                 addDepotPlanungBreadcrumbs();
             }
 
-            System.out.println(newTab.getProperties());
-
             if (newTab.getProperties().containsKey(TAB_PROPERTY_CONTROLLER)) {
                 ((Openable) newTab.getProperties().get(TAB_PROPERTY_CONTROLLER)).open();
             }
