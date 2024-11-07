@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 
-import javafx.scene.control.TabPane;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -78,9 +79,9 @@ public class PortfolioManagementTabManager {
         }
     }
 
-    public void showInhaberTabs() {
+    public void showInhaberTabs(@Nullable Owner owner) {
         if (portfolioController != null) {
-            portfolioController.showInhaberTabs();
+            portfolioController.showInhaberTabs(owner);
         }
     }
     public void removeBreadcrumbs() {
