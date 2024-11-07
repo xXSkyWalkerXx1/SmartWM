@@ -18,7 +18,7 @@ import org.springframework.stereotype.Controller;
 import java.util.Calendar;
 
 @Controller
-public class OwnerOverviewController implements Openable<Owner> {
+public class OwnerOverviewController implements Openable {
 
     Owner owner;
 
@@ -63,8 +63,8 @@ public class OwnerOverviewController implements Openable<Owner> {
     AnchorPane ownerTreeViewPane;
 
     @Override
-    public void open(Owner entity) {
-        owner = entity;
+    public void open() {
+        owner = (Owner) portfolioManagementManager.getPortfolioController().getInhaberÜbersichtTab().getContent().getUserData();
         loadOwnerData();
         ownerTreeViewPane.getChildren().add(new PortfolioTreeView(
                 ownerTreeViewPane,
