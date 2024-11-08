@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -73,9 +74,9 @@ public class PortfolioManagementTabManager {
         }
     }
 
-    public void showKontoTabs() {
+    public void showKontoTabs(@Nullable Account account) {
         if (portfolioController != null) {
-            portfolioController.showKontoTabs();
+            portfolioController.showKontoTabs(account);
         }
     }
 
