@@ -1,17 +1,14 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -57,6 +54,24 @@ public class TableBuilder<S> {
         newColumn.setCellValueFactory(cellValueFactory);
         if (cellFactory != null) newColumn.setCellFactory(cellFactory);
         newColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(columnWidth));
+        tableView.getColumns().add(newColumn);
+    }
+
+    /**
+     * @param subCols Map entries containing of sub-column-name and his cell-value-factory.
+     */
+    public <T> void addNestedColumn(@NonNull String parentColName,
+                                    float parentColumnWidth,
+                                    @NonNull Map.Entry<String, Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>>>... subCols) {
+        TableColumn<S, T> newColumn = new TableColumn<>(parentColName);
+
+        for (var subCol : subCols) {
+            TableColumn<S, T> newSubCol = new TableColumn<>(subCol.getKey());
+            newSubCol.setCellValueFactory(subCol.getValue());
+            newColumn.getColumns().add(newSubCol);
+        }
+
+        newColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(parentColumnWidth));
         tableView.getColumns().add(newColumn);
     }
 
