@@ -12,6 +12,9 @@ import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 public class OwnerDepotsController implements Openable {
 
@@ -38,6 +41,12 @@ public class OwnerDepotsController implements Openable {
                 depotsTablePane,
                 depotAccountsTablePane,
                 owner.getDepots().stream().toList(),
+                this
+        ));
+
+        setDepotAccountsTable(TableFactory.createOwnerDepotAccountsTable(
+                depotAccountsTablePane,
+                new ArrayList<>(),
                 this
         ));
     }
