@@ -8,6 +8,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerDepotsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerPortfoliosController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -87,7 +88,7 @@ public class TableFactory {
 
         tableBuilder.setActionOnSingleClickRow(owner -> ownerController.setOwnerTreeView(new PortfolioTreeView(
                 parent,
-                owner.getPortfolios(),
+                owner.getPortfolios().stream().toList(),
                 ownerController.getPortfolioManagementTabManager()
         )));
         tableBuilder.setActionOnDoubleClickRow(openOwnerOverviewAction);
@@ -214,7 +215,7 @@ public class TableFactory {
                 "Typ",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getType().getDisplayText())
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getType().toString())
         );
         tableBuilder.addColumn(
                 "Status",
@@ -305,6 +306,129 @@ public class TableFactory {
         tableBuilder.setActionOnDoubleClickRow(openDepotOverviewAction);
 
         tableBuilder.addRowContextMenuItem("Details anzeigen", openDepotOverviewAction);
+
+        return tableBuilder.getResult();
+    }
+
+    /**
+     * @param parentDepotsTable JavaFX node-based UI-Controls and all layout containers (f.e. Pane).
+     * @param tableItems Items of table.
+     */
+    public static TableView<Depot> createOwnerDepotsTable(@NonNull Region parentDepotsTable,
+                                                          @NonNull Region parentDepotAccountsTable,
+                                                          @NonNull List<Depot> tableItems,
+                                                          @NonNull OwnerDepotsController ownerDepotsController) {
+
+        TableBuilder<Depot> tableBuilder = new TableBuilder<>(parentDepotsTable, tableItems);
+        Consumer<Depot> openDepotOverviewAction = depot -> {
+            Navigator.navigateToDepot(ownerDepotsController.getPortfolioManagementManager(), depot);
+
+            ownerDepotsController
+                    .getPortfolioManagementManager()
+                    .addCurrentlyDisplayedElement(new BreadcrumbElement(depot.toString(), "depot"));
+        };
+
+        tableBuilder.addColumn(
+                "Depot-Name",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
+                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getName())
+        );
+        tableBuilder.addColumn(
+                "In Portfolio",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
+                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getPortfolio().toString())
+        );
+        tableBuilder.addColumn(
+                "Status",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
+                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getState().getDisplayText())
+        );
+        tableBuilder.addColumn(
+                "Bemerkung",
+                0.2f,
+                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
+                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getNotice())
+        );
+        tableBuilder.addColumn(
+                "Wert",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
+                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getValue().toString())
+        );
+
+        tableBuilder.setActionOnSingleClickRow(depot -> ownerDepotsController.setDepotAccountsTable(TableFactory.createOwnerDepotAccountsTable(
+                parentDepotAccountsTable,
+                depot.getBillingAccounts(),
+                ownerDepotsController
+        )));
+        tableBuilder.setActionOnDoubleClickRow(openDepotOverviewAction);
+
+        tableBuilder.addRowContextMenuItem("Details anzeigen", openDepotOverviewAction);
+        tableBuilder.addRowContextMenuItem("Portfolio anzeigen", depot -> {
+            Navigator.navigateToPortfolio(ownerDepotsController.getPortfolioManagementManager(), depot.getPortfolio());
+
+            ownerDepotsController
+                    .getPortfolioManagementManager()
+                    .addCurrentlyDisplayedElement(new BreadcrumbElement(depot.getPortfolio().toString(), "portfolio"));
+        });
+
+        return tableBuilder.getResult();
+    }
+
+    /**
+     * @param parent JavaFX node-based UI-Controls and all layout containers (f.e. Pane).
+     * @param tableItems Items of table.
+     */
+    public static TableView<Account> createOwnerDepotAccountsTable(@NonNull Region parent,
+                                                              @NonNull List<Account> tableItems,
+                                                              @NonNull OwnerDepotsController ownerDepotsController) {
+
+        TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
+        Consumer<Account> openAccountOverviewAction = account -> {
+            Navigator.navigateToAccount(ownerDepotsController.getPortfolioManagementManager(), account);
+
+            ownerDepotsController
+                    .getPortfolioManagementManager()
+                    .addCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
+        };
+
+        tableBuilder.addColumn(
+                "Konto-Bezeichnung",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getDescription())
+        );
+        tableBuilder.addColumn(
+                "Bank",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getBankName())
+        );
+        tableBuilder.addColumn(
+                "Typ",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getType().toString())
+        );
+        tableBuilder.addColumn(
+                "Bemerkung",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getNotice())
+        );
+        tableBuilder.addColumn(
+                "Betrag",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getValue().toString())
+        );
+
+        tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
+
+        tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
 
         return tableBuilder.getResult();
     }
