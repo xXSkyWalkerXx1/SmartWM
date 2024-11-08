@@ -18,26 +18,6 @@ import java.util.List;
 public class PortfolioTreeView extends TreeView<FinancialAsset> {
 
     // ToDo: implement converting any currency to €
-    // region custom assets to edit toString()
-    public static class PortfolioItem extends Portfolio {
-        @Override
-        public String toString() {
-            return String.format("%s\t(%s€)", getName(), getValue());
-        }
-    }
-    public static class AccountItem extends Account {
-        @Override
-        public String toString() {
-            return String.format("%s\t(%s€)", getDescription(), getValue());
-        }
-    }
-    public static class DepotItem extends Depot {
-        @Override
-        public String toString() {
-            return String.format("%s\t(%s€)", getName(), getValue());
-        }
-    }
-    // endregion
 
     private final TreeItem<FinancialAsset> rootTreeItem;
     private final PortfolioManagementTabManager portfolioManagementManager;
@@ -72,17 +52,32 @@ public class PortfolioTreeView extends TreeView<FinancialAsset> {
         rootTreeItem.getChildren().clear();
 
         for (Portfolio portfolio : portfolios){
-            TreeItem<FinancialAsset> portfolioTreeItem = new TreeItem<>((PortfolioItem) portfolio);
+            TreeItem<FinancialAsset> portfolioTreeItem = new TreeItem<>(portfolio) {
+                @Override
+                public String toString() {
+                    return String.format("%s\t(%s€)", ((Portfolio) getValue()).getName(), getValue().getValue());
+                }
+            };
 
             // add accounts first
             for (Account account : portfolio.getAccounts()){
-                TreeItem<FinancialAsset> accountTreeItem = new TreeItem<>((AccountItem) account);
+                TreeItem<FinancialAsset> accountTreeItem = new TreeItem<>(account){
+                    @Override
+                    public String toString() {
+                        return String.format("%s\t(%s€)", ((Account) getValue()).getDescription(), getValue().getValue());
+                    }
+                };
                 portfolioTreeItem.getChildren().add(accountTreeItem);
             }
 
             // then add depots
             for (Depot depot : portfolio.getDepots()){
-                TreeItem<FinancialAsset> depotTreeItem = new TreeItem<>((DepotItem) depot);
+                TreeItem<FinancialAsset> depotTreeItem = new TreeItem<>(depot){
+                    @Override
+                    public String toString() {
+                        return String.format("%s\t(%s€)", ((Depot) getValue()).getName(), getValue().getValue());
+                    }
+                };
                 portfolioTreeItem.getChildren().add(depotTreeItem);
             }
 
@@ -103,9 +98,9 @@ public class PortfolioTreeView extends TreeView<FinancialAsset> {
                 portfolioManagementManager.setCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), "portfolio"));
                 // ToDo: portfolioManagementManager.getPortfolioController().getOwnerPortfoliosController().open(selectedAsset);
             } else if (selectedAsset instanceof Account) {
-                portfolioManagementManager.showKontoTabs();
+                portfolioManagementManager.showKontoTabs((Account) selectedAsset);
                 portfolioManagementManager.setCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), "konto"));
-                // ToDo: portfolioManagementManager.getPortfolioController().getOwnerPortfoliosController().open(selectedAsset);
+                portfolioManagementManager.getPortfolioController().getOwnerPortfoliosController().open();
             } else { // Otherwise, it has to be an instance of 'Depot'
                 portfolioManagementManager.showDepotTabs();
                 portfolioManagementManager.setCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), "depot"));
