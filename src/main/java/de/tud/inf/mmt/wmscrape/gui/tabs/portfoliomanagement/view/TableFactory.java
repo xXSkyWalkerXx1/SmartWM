@@ -336,7 +336,7 @@ public class TableFactory {
         );
         tableBuilder.addColumn(
                 "In Portfolio",
-                0.1f,
+                0.3f,
                 (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
                         -> new SimpleStringProperty(depotCellDataFeatures.getValue().getPortfolio().toString())
         );
@@ -397,31 +397,31 @@ public class TableFactory {
 
         tableBuilder.addColumn(
                 "Konto-Bezeichnung",
-                0.3f,
+                0.35f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getDescription())
         );
         tableBuilder.addColumn(
                 "Bank",
-                0.3f,
+                0.25f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getBankName())
         );
         tableBuilder.addColumn(
                 "Typ",
-                0.3f,
+                0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getType().toString())
         );
         tableBuilder.addColumn(
                 "Bemerkung",
-                0.3f,
+                0.2f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getNotice())
         );
         tableBuilder.addColumn(
                 "Betrag",
-                0.3f,
+                0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getValue().toString())
         );
