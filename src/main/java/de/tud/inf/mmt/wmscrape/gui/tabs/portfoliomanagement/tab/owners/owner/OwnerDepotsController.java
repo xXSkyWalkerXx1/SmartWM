@@ -45,4 +45,8 @@ public class OwnerDepotsController implements Openable {
         depotAccountsTablePane.getChildren().clear();
         depotAccountsTablePane.getChildren().add(table);
     }
+
+    public PortfolioManagementTabManager getPortfolioManagementManager() {
+        return portfolioManagementManager;
+    }
 }
