@@ -36,7 +36,8 @@ public class OwnerDepotsController implements Openable {
 
         depotsTablePane.getChildren().add(TableFactory.createOwnerDepotsTable(
                 depotsTablePane,
-                owner.getDepots(),
+                depotAccountsTablePane,
+                owner.getDepots().stream().toList(),
                 this
         ));
     }
