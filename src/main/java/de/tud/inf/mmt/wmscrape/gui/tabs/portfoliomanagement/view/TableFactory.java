@@ -454,7 +454,7 @@ public class TableFactory {
 
         tableBuilder.addColumn(
                 "Konto-Bezeichnung",
-                0.3f,
+                0.2f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getDescription())
         );
@@ -463,6 +463,12 @@ public class TableFactory {
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getType().toString())
+        );
+        tableBuilder.addColumn(
+                "Status",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getState().getDisplayText())
         );
         tableBuilder.addNestedColumn(
                 "Bank",
