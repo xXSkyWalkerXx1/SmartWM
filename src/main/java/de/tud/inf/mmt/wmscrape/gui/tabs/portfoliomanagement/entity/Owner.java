@@ -4,9 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "inhaber")
@@ -187,7 +185,13 @@ public class Owner {
     private TaxInformation taxInformation;
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-    private List<Portfolio> portfolios = new ArrayList<>();
+    private Set<Portfolio> portfolios = Collections.emptySet();
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<Account> accounts = Collections.emptySet();
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<Depot> depots = Collections.emptySet();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
@@ -271,8 +275,31 @@ public class Owner {
         this.taxInformation = taxInformation;
     }
 
-    public List<Portfolio> getPortfolios() {
+    public Set<Portfolio> getPortfolios() {
         return portfolios;
+    }
+
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
+
+    public Set<Depot> getDepots() {
+        return depots;
+    }
+
+    /*
+    ToDo:
+     Remove!
+     Be aware! This setters are only used to create a dummy-owner.
+     */
+    public void setPortfolios(Set<Portfolio> portfolios) {
+        this.portfolios = portfolios;
+    }
+    public void setAccounts(Set<Account> accounts) {
+        this.accounts = accounts;
+    }
+    public void setDepots(Set<Depot> depots) {
+        this.depots = depots;
     }
     // endregion
 }
