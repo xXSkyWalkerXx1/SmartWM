@@ -58,6 +58,7 @@ public class PortfolioTreeView extends TreeView<FinancialAsset> {
                     return String.format("%s\t(%s€)", ((Portfolio) getValue()).getName(), getValue().getValue());
                 }
             };
+            portfolioTreeItem.setExpanded(true);
 
             // add accounts first
             for (Account account : portfolio.getAccounts()){
