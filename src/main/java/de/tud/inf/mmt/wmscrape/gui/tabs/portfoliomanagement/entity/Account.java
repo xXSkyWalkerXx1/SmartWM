@@ -3,7 +3,6 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -38,7 +37,7 @@ public class Account extends FinancialAsset {
     @Column(name = "balance", nullable = false)
     private double balance;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
