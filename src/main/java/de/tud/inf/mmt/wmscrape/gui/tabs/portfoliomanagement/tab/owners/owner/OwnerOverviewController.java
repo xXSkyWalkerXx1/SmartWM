@@ -73,7 +73,7 @@ public class OwnerOverviewController implements Openable {
         loadOwnerData();
         ownerTreeViewPane.getChildren().add(new PortfolioTreeView(
                 ownerTreeViewPane,
-                owner.getPortfolios(),
+                owner.getPortfolios().stream().toList(),
                 portfolioManagementManager
         ));
     }

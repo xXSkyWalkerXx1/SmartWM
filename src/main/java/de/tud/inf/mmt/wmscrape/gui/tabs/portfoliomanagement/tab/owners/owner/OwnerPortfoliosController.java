@@ -45,7 +45,7 @@ public class OwnerPortfoliosController implements Openable {
                 portfoliosTablePane,
                 accountsTablePane,
                 depotsTablePane,
-                owner.getPortfolios(),
+                owner.getPortfolios().stream().toList(),
                 this
         ));
 
