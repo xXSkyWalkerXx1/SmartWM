@@ -26,11 +26,11 @@ public class KontoListController {
     @FXML
     private void initialize() {
         switchToKonto1Button.setOnAction(actionEvent -> {
-            portfolioManagementTabManager.showKontoTabs();
+            portfolioManagementTabManager.showKontoTabs(null);
             portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement("Konto 1", "konto"));
         });
         switchToKonto2Button.setOnAction(actionEvent -> {
-            portfolioManagementTabManager.showKontoTabs();
+            portfolioManagementTabManager.showKontoTabs(null);
             portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement("Konto 2", "konto"));
         });
     }
