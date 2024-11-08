@@ -30,7 +30,7 @@ public class Account extends FinancialAsset {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
-    private State state;
+    private State state = State.ACTIVATED;
 
     @Column(name = "currency_code", nullable = false)
     private String currencyCode;

@@ -43,7 +43,7 @@ public class Depot extends FinancialAsset {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
-    private State state;
+    private State state = State.ACTIVATED;
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_id", nullable = false)
