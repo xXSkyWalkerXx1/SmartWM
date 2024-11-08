@@ -90,9 +90,10 @@ public class PortfolioTreeView extends TreeView<FinancialAsset> {
     private final EventHandler<MouseEvent> onClickAction = new EventHandler<>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
-            if (getSelectionModel().getSelectedItem().equals(rootTreeItem)) return;
+            TreeItem<FinancialAsset> selectedItem = getSelectionModel().getSelectedItem();
+            if (selectedItem == null || selectedItem.equals(rootTreeItem)) return;
 
-            FinancialAsset selectedAsset = getSelectionModel().getSelectedItem().getValue();
+            FinancialAsset selectedAsset = selectedItem.getValue();
 
             if (selectedAsset instanceof Portfolio) {
                 portfolioManagementManager.showPortfolioTabs();
