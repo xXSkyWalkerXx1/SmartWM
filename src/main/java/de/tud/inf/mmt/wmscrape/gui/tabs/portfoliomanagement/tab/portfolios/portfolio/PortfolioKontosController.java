@@ -27,7 +27,7 @@ public class PortfolioKontosController {
             String konto = portfolioManagementTabManager.kontosOfPortfolio1List[i];
             Button button = new Button(konto);
             button.setOnAction(actionEvent -> {
-                portfolioManagementTabManager.showKontoTabs();
+                portfolioManagementTabManager.showKontoTabs(null);
                 portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(konto, "konto"));
             });
 
