@@ -9,10 +9,11 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+
+import java.util.ArrayList;
 
 @Controller
 public class OwnerPortfoliosController implements Openable {
@@ -39,11 +40,24 @@ public class OwnerPortfoliosController implements Openable {
                 .getProperties()
                 .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
 
+        // Show tables
         portfoliosTablePane.getChildren().add(TableFactory.createOwnerPortfoliosTable(
                 portfoliosTablePane,
                 accountsTablePane,
                 depotsTablePane,
                 owner.getPortfolios(),
+                this
+        ));
+
+        setAccountTable(TableFactory.createOwnerPortfolioAccountTable(
+                accountsTablePane,
+                new ArrayList<>(),
+                this
+        ));
+
+        setDepotTable(TableFactory.createOwnerPortfolioDepotTable(
+                depotsTablePane,
+                new ArrayList<>(),
                 this
         ));
     }
