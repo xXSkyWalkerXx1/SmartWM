@@ -9,6 +9,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerDepotsController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerKontosController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerPortfoliosController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +19,7 @@ import javafx.util.Callback;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -412,6 +414,72 @@ public class TableFactory {
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getType().toString())
+        );
+        tableBuilder.addColumn(
+                "Bemerkung",
+                0.2f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getNotice())
+        );
+        tableBuilder.addColumn(
+                "Betrag",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getValue().toString())
+        );
+
+        tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
+
+        tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
+
+        return tableBuilder.getResult();
+    }
+
+    /**
+     * @param parent JavaFX node-based UI-Controls and all layout containers (f.e. Pane).
+     * @param tableItems Items of table.
+     */
+    public static TableView<Account> createOwnerAccountsTable(@NonNull Region parent,
+                                                              @NonNull List<Account> tableItems,
+                                                              @NonNull OwnerKontosController ownerKontosController) {
+
+        TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
+        Consumer<Account> openAccountOverviewAction = account -> {
+            Navigator.navigateToAccount(ownerKontosController.getPortfolioManagementManager(), account);
+
+            ownerKontosController
+                    .getPortfolioManagementManager()
+                    .addCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
+        };
+
+        tableBuilder.addColumn(
+                "Konto-Bezeichnung",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getDescription())
+        );
+        tableBuilder.addColumn(
+                "Typ",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getType().toString())
+        );
+        tableBuilder.addNestedColumn(
+                "Bank",
+                0.3f,
+                Map.entry(
+                        "Name",
+                        accountCellDataFeatures -> new SimpleStringProperty(accountCellDataFeatures.getValue().getBankName())
+                ),
+                Map.entry(
+                        "IBAN",
+                        accountCellDataFeatures -> new SimpleStringProperty(accountCellDataFeatures.getValue().getIban())
+                ),
+                Map.entry(
+                        "Konto-Nr.",
+                        (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                                -> new SimpleStringProperty(accountCellDataFeatures.getValue().getKontoNumber())
+                )
         );
         tableBuilder.addColumn(
                 "Bemerkung",
