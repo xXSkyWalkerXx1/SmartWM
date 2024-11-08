@@ -68,6 +68,7 @@ public class TableBuilder<S> {
         for (var subCol : subCols) {
             TableColumn<S, T> newSubCol = new TableColumn<>(subCol.getKey());
             newSubCol.setCellValueFactory(subCol.getValue());
+            newSubCol.prefWidthProperty().bind(newColumn.widthProperty().divide(subCols.length)); // that's just a little nice hack
             newColumn.getColumns().add(newSubCol);
         }
 
