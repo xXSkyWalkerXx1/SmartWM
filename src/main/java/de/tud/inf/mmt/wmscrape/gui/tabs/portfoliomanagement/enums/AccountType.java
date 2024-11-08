@@ -11,7 +11,8 @@ public enum AccountType {
         this.displayText = displayText;
     }
 
-    public String getDisplayText() {
+    @Override
+    public String toString() {
         return displayText;
     }
 }
