@@ -15,11 +15,32 @@ import org.springframework.lang.NonNull;
 
 import java.util.List;
 
-public class PortfolioTreeView extends TreeView<FinancialAsset> {
+public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
+
+    public static class Item {
+
+        private boolean isRoot = false;
+        private final FinancialAsset asset;
+
+        public Item (@NonNull FinancialAsset asset) {
+            this.asset = asset;
+        }
+
+        public Item (@NonNull FinancialAsset asset, boolean isRoot) {
+            this(asset);
+            this.isRoot = isRoot;
+        }
+
+        @Override
+        public String toString() {
+            if (isRoot) return asset.toString();
+            return String.format("%s\t(%s €)", asset, asset.getValue().toString());
+        }
+    }
 
     // ToDo: implement converting any currency to €
 
-    private final TreeItem<FinancialAsset> rootTreeItem;
+    private final TreeItem<Item> rootTreeItem;
     private final PortfolioManagementTabManager portfolioManagementManager;
 
     /**
@@ -33,7 +54,7 @@ public class PortfolioTreeView extends TreeView<FinancialAsset> {
 
         Portfolio root = new Portfolio();
         root.setName("Portfolio/s");
-        rootTreeItem = new TreeItem<>(root);
+        rootTreeItem = new TreeItem<>(new Item(root, true));
         rootTreeItem.setExpanded(true);
 
         setRoot(rootTreeItem);
@@ -52,33 +73,18 @@ public class PortfolioTreeView extends TreeView<FinancialAsset> {
         rootTreeItem.getChildren().clear();
 
         for (Portfolio portfolio : portfolios){
-            TreeItem<FinancialAsset> portfolioTreeItem = new TreeItem<>(portfolio) {
-                @Override
-                public String toString() {
-                    return String.format("%s\t(%s€)", ((Portfolio) getValue()).getName(), getValue().getValue());
-                }
-            };
+            TreeItem<Item> portfolioTreeItem = new TreeItem<>(new Item(portfolio));
             portfolioTreeItem.setExpanded(true);
 
             // add accounts first
             for (Account account : portfolio.getAccounts()){
-                TreeItem<FinancialAsset> accountTreeItem = new TreeItem<>(account){
-                    @Override
-                    public String toString() {
-                        return String.format("%s\t(%s€)", ((Account) getValue()).getDescription(), getValue().getValue());
-                    }
-                };
+                TreeItem<Item> accountTreeItem = new TreeItem<>(new Item(account));
                 portfolioTreeItem.getChildren().add(accountTreeItem);
             }
 
             // then add depots
             for (Depot depot : portfolio.getDepots()){
-                TreeItem<FinancialAsset> depotTreeItem = new TreeItem<>(depot){
-                    @Override
-                    public String toString() {
-                        return String.format("%s\t(%s€)", ((Depot) getValue()).getName(), getValue().getValue());
-                    }
-                };
+                TreeItem<Item> depotTreeItem = new TreeItem<>(new Item(depot));
                 portfolioTreeItem.getChildren().add(depotTreeItem);
             }
 
@@ -90,10 +96,10 @@ public class PortfolioTreeView extends TreeView<FinancialAsset> {
     private final EventHandler<MouseEvent> onClickAction = new EventHandler<>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
-            TreeItem<FinancialAsset> selectedItem = getSelectionModel().getSelectedItem();
+            TreeItem<Item> selectedItem = getSelectionModel().getSelectedItem();
             if (selectedItem == null || selectedItem.equals(rootTreeItem)) return;
 
-            FinancialAsset selectedAsset = selectedItem.getValue();
+            FinancialAsset selectedAsset = selectedItem.getValue().asset;
 
             if (selectedAsset instanceof Portfolio) {
                 portfolioManagementManager.showPortfolioTabs();
