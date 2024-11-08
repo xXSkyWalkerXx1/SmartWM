@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.DepotListController;
@@ -15,7 +16,6 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.*;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -375,11 +375,19 @@ public class PortfolioManagementTabController {
         portfolioManagementTabPane.getSelectionModel().select(depotPlanungVergleichTab);
     }
 
-    public void showKontoTabs() {
+    public void showKontoTabs(Account account) {
         removeBreadcrumbs();
         hideAllTabs();
+
+        kontoTabs.forEach(tab -> {
+            if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
+                tab.getProperties().put(TAB_PROPERTY_ENTITY, account);
+            }
+        });
+
         addTab(kontoÜbersichtTab);
         addTab(kontoTransaktionenTab);
+
         portfolioManagementTabPane.getSelectionModel().select(kontoÜbersichtTab);
     }
 
@@ -547,7 +555,7 @@ public class PortfolioManagementTabController {
             }
             createBreadcrumbInstance("Konten / ", emptyContextMenuItemList, this::showPortfolioManagementTabs, "konto");
             createBreadcrumbInstance(chosenKonto, contextMenuList, () -> {
-                showKontoTabs();
+                showKontoTabs(null);
                 addKontoBreadcrumbs(chosenKonto, otherKontos);
             }, "konto");
         }
