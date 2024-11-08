@@ -53,11 +53,7 @@ public class TableFactory {
 
         TableBuilder<Owner> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Owner> openOwnerOverviewAction = owner -> {
-            Navigator.navigateToOwner(
-                    ownerController.getPortfolioManagementTabManager().getPortfolioController(),
-                    ownerController.getPortfolioManagementTabManager(),
-                    owner
-            );
+            Navigator.navigateToOwner(ownerController.getPortfolioManagementTabManager(), owner);
 
             ownerController
                     .getPortfolioManagementTabManager()
@@ -137,11 +133,7 @@ public class TableFactory {
 
         TableBuilder<Portfolio> tableBuilder = new TableBuilder<>(parentPortfolioTable, tableItems);
         Consumer<Portfolio> openPortfolioOverviewAction = portfolio -> {
-            Navigator.navigateToPortfolio(
-                    ownerPortfoliosController.getPortfolioManagementManager().getPortfolioController(),
-                    ownerPortfoliosController.getPortfolioManagementManager(),
-                    portfolio
-            );
+            Navigator.navigateToPortfolio(ownerPortfoliosController.getPortfolioManagementManager(), portfolio);
 
             ownerPortfoliosController
                     .getPortfolioManagementManager()
@@ -205,11 +197,7 @@ public class TableFactory {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Account> openAccountOverviewAction = account -> {
-            Navigator.navigateToAccount(
-                    ownerPortfoliosController.getPortfolioManagementManager().getPortfolioController(),
-                    ownerPortfoliosController.getPortfolioManagementManager(),
-                    account
-            );
+            Navigator.navigateToAccount(ownerPortfoliosController.getPortfolioManagementManager(), account);
 
             ownerPortfoliosController
                     .getPortfolioManagementManager()
@@ -270,11 +258,7 @@ public class TableFactory {
 
         TableBuilder<Depot> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Depot> openDepotOverviewAction = depot -> {
-            Navigator.navigateToDepot(
-                    ownerPortfoliosController.getPortfolioManagementManager().getPortfolioController(),
-                    ownerPortfoliosController.getPortfolioManagementManager(),
-                    depot
-            );
+            Navigator.navigateToDepot(ownerPortfoliosController.getPortfolioManagementManager(), depot);
 
             ownerPortfoliosController
                     .getPortfolioManagementManager()
