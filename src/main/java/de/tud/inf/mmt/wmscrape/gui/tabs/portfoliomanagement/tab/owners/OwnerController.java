@@ -40,6 +40,7 @@ public class OwnerController {
 
     @FXML
     public void initialize() {
+        /*
         Owner defaultOwner = new Owner();
         defaultOwner.setForename("Initial");
         defaultOwner.setAftername("Owner");
@@ -91,11 +92,12 @@ public class OwnerController {
         defaultOwner.setDepots(Collections.singleton(depot));
         portfolio.setAccounts(List.of(account));
         portfolio.setDepots(List.of(depot));
+         */
 
         //
         ownerTablePane.getChildren().add(TableFactory.createOwnerTable(
                 ownerTablePane,
-                List.of(defaultOwner), //ownerService.getAllOwners()
+                ownerService.getAllOwners(),
                 this
         ));
 
