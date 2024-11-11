@@ -91,7 +91,8 @@ public class TableFactory {
         tableBuilder.setActionOnSingleClickRow(owner -> ownerController.setOwnerTreeView(new PortfolioTreeView(
                 parent,
                 owner.getPortfolios().stream().toList(),
-                ownerController.getPortfolioManagementTabManager()
+                ownerController.getPortfolioManagementTabManager(),
+                true
         )));
         tableBuilder.setActionOnDoubleClickRow(openOwnerOverviewAction);
 
