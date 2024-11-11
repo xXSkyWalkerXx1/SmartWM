@@ -37,7 +37,7 @@ public class Depot extends FinancialAsset {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
@@ -74,7 +74,8 @@ public class Depot extends FinancialAsset {
 
     @Override
     public BigDecimal getValue() {
-        throw new NotImplementedFunctionException("Muss noch implementiert werden");
+        return BigDecimal.ZERO;
+        //throw new NotImplementedFunctionException("Muss noch implementiert werden");
     }
 
     @Override
