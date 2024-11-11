@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
@@ -39,17 +40,20 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
     }
 
     // ToDo: implement converting any currency to €
-
+    private boolean isOneMainMenu = true;
     private final TreeItem<Item> rootTreeItem;
     private final PortfolioManagementTabManager portfolioManagementManager;
 
     /**
      * @param parent JavaFX node-based UI Controls and all layout containers (f.e. Pane). Only used for view-sizing.
+     * @param isOnMainMenu If true, breadcrumbs will be set, otherwise they will be added.
      */
     public PortfolioTreeView(
             @NonNull Region parent,
             @NonNull List<Portfolio> portfolios,
-            @NonNull PortfolioManagementTabManager portfolioManagementManager){
+            @NonNull PortfolioManagementTabManager portfolioManagementManager,
+            boolean isOnMainMenu){
+        this.isOneMainMenu = isOnMainMenu;
         this.portfolioManagementManager = portfolioManagementManager;
 
         Portfolio root = new Portfolio();
@@ -100,19 +104,25 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
             if (selectedItem == null || selectedItem.equals(rootTreeItem)) return;
 
             FinancialAsset selectedAsset = selectedItem.getValue().asset;
+            String assetType;
 
+            // Handle navigation
             if (selectedAsset instanceof Portfolio) {
-                portfolioManagementManager.showPortfolioTabs();
-                portfolioManagementManager.setCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), "portfolio"));
-                // ToDo: portfolioManagementManager.getPortfolioController().getOwnerPortfoliosController().open(selectedAsset);
+                Navigator.navigateToPortfolio(portfolioManagementManager, (Portfolio) selectedAsset);
+                assetType = "portfolio";
             } else if (selectedAsset instanceof Account) {
-                portfolioManagementManager.showKontoTabs((Account) selectedAsset);
-                portfolioManagementManager.setCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), "konto"));
-                portfolioManagementManager.getPortfolioController().getOwnerPortfoliosController().open();
+                Navigator.navigateToAccount(portfolioManagementManager, (Account) selectedAsset);
+                assetType = "konto";
             } else { // Otherwise, it has to be an instance of 'Depot'
-                portfolioManagementManager.showDepotTabs();
-                portfolioManagementManager.setCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), "depot"));
-                // ToDo: portfolioManagementManager.getPortfolioController().getOwnerPortfoliosController().open(selectedAsset);
+                Navigator.navigateToDepot(portfolioManagementManager, (Depot) selectedAsset);
+                assetType = "depot";
+            }
+
+            // Handle breadcrumbs
+            if (isOneMainMenu) {
+                portfolioManagementManager.setCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), assetType));
+            } else {
+                portfolioManagementManager.addCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), assetType));
             }
         }
     };
