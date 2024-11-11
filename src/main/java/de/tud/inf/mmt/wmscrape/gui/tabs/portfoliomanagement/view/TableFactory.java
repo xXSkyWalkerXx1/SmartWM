@@ -270,7 +270,7 @@ public class TableFactory {
 
         tableBuilder.addColumn(
                 "Depot-Name",
-                0.3f,
+                0.4f,
                 (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
                         -> new SimpleStringProperty(depotCellDataFeatures.getValue().getName())
         );
@@ -287,14 +287,8 @@ public class TableFactory {
                         -> new SimpleStringProperty(depotCellDataFeatures.getValue().getOwner().toString())
         );
         tableBuilder.addColumn(
-                "Abrechnungskonten", // ToDo: weglassen?
-                0.2f,
-                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
-                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getBillingAccounts().toString())
-        );
-        tableBuilder.addColumn(
                 "Bemerkung",
-                0.2f,
+                0.3f,
                 (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
                         -> new SimpleStringProperty(depotCellDataFeatures.getValue().getNotice())
         );
