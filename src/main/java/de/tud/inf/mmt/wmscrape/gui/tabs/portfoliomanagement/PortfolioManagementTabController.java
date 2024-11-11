@@ -568,6 +568,10 @@ public class PortfolioManagementTabController {
     }
 
     // region Getters
+    public OwnerController getOwnerController() {
+        return ownerController;
+    }
+
     public PortfolioStrukturController getPortfolioStrukturController() {
         return portfolioStrukturController;
     }
