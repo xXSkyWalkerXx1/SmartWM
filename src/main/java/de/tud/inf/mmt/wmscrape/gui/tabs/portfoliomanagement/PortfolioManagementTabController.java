@@ -165,36 +165,43 @@ public class PortfolioManagementTabController {
     private void initialize() throws IOException {
         portfolioManagementTabManager.setPortfolioController(this);
 
-        portfolioListController = new PortfolioListController(portfolioManagementTabManager);
-        Parent parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolios.fxml", portfolioListController);
-        portfoliosTab = createSubTab("Portfolios", parent);
-        portfolioManagementTabPane.getTabs().add(portfoliosTab);
+        // Portfolio-Management
+        portfoliosTab = createSubTab(
+                "Portfolios",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolios.fxml", portfolioListController)
+        );
+        portfolioAnalyseTab = createSubTab(
+                "Analyse",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioAnalyse.fxml", portfolioAnalyseController)
+        );
+        portfolioBenchmarkTab = createSubTab(
+                "Benchmarks",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioBenchmarks.fxml", portfolioBenchmarkController)
+        );
+        portfolioStrukturTab = createSubTab(
+                "Struktur",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioStruktur.fxml", portfolioStrukturController)
+        );
+        portfolioDepotsTab = createSubTab(
+                "Depots",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioDepots.fxml", portfolioDepotsController)
+        );
+        portfolioKontosTab = createSubTab(
+                "Kontos",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioKontos.fxml", portfolioKontosController)
+        );
 
-        portfolioAnalyseController = new PortfolioAnalyseController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioAnalyse.fxml", portfolioAnalyseController);
-        portfolioAnalyseTab = createSubTab("Analyse", parent);
-        portfolioManagementTabPane.getTabs().add(portfolioAnalyseTab);
+        portfolioAnalyseTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioAnalyseController);
+        portfolioBenchmarkTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioBenchmarkController);
+        portfolioStrukturTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioStrukturController);
+        portfolioDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioDepotsController);
+        portfolioKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioKontosController);
 
-        portfolioBenchmarkController = new PortfolioBenchmarkController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioBenchmarks.fxml", portfolioBenchmarkController);
-        portfolioBenchmarkTab = createSubTab("Benchmarks", parent);
-        portfolioManagementTabPane.getTabs().add(portfolioBenchmarkTab);
+        portfolioTabs = Set.of(portfolioStrukturTab, portfolioAnalyseTab, portfolioBenchmarkTab);
+        portfolioManagementTabPane.getTabs().addAll(portfolioTabs);
 
-        portfolioStrukturController = new PortfolioStrukturController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioStruktur.fxml", portfolioStrukturController);
-        portfolioStrukturTab = createSubTab("Struktur", parent);
-        portfolioManagementTabPane.getTabs().add(portfolioStrukturTab);
-
-        portfolioDepotsController = new PortfolioDepotsController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioDepots.fxml", portfolioDepotsController);
-        portfolioDepotsTab = createSubTab("Depots", parent);
-        portfolioManagementTabPane.getTabs().add(portfolioDepotsTab);
-
-        portfolioKontosController = new PortfolioKontosController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioKontos.fxml", portfolioKontosController);
-        portfolioKontosTab = createSubTab("Kontos", parent);
-        portfolioManagementTabPane.getTabs().add(portfolioKontosTab);
-
+        //
+        Parent parent;
 
         depotListController = new DepotListController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depots.fxml", depotListController);
@@ -257,53 +264,41 @@ public class PortfolioManagementTabController {
                 "Inhaber",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owners.fxml", ownerController)
         );
-
         inhaberÜbersichtTab = createSubTab(
                 "Übersicht",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerOverview.fxml", ownerOverviewController)
         );
-        inhaberÜbersichtTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerOverviewController);
-
         inhaberVermögenTab = createSubTab(
                 "Vermögen",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerVermögen.fxml", ownerVermögenController)
         );
-        inhaberVermögenTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerVermögenController);
-
         inhaberPortfoliosTab = createSubTab(
                 "Portfolios",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerPortfolios.fxml", ownerPortfoliosController)
         );
-        inhaberPortfoliosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerPortfoliosController);
-
         inhaberKontosTab = createSubTab(
                 "Kontos",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerKontos.fxml", ownerKontosController)
         );
-        inhaberKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerKontosController);
-
         inhaberDepotsTab = createSubTab(
                 "Depots",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerDepots.fxml", ownerDepotsController)
         );
+
+        inhaberÜbersichtTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerOverviewController);
+        inhaberVermögenTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerVermögenController);
+        inhaberPortfoliosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerPortfoliosController);
+        inhaberKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerKontosController);
         inhaberDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerDepotsController);
 
-        portfolioManagementTabPane.getTabs().addAll(
-                inhaberTab,
-                inhaberÜbersichtTab,
-                inhaberVermögenTab,
-                inhaberPortfoliosTab,
-                inhaberKontosTab,
-                inhaberDepotsTab
-        );
         ownerTabs = Set.of(inhaberÜbersichtTab, inhaberVermögenTab, inhaberPortfoliosTab, inhaberDepotsTab, inhaberKontosTab);
+        portfolioManagementTabPane.getTabs().addAll(ownerTabs);
 
         // Set TabPane-style
         portfolioManagementTabPane.setStyle("-fx-tab-min-height: 30px;" + "-fx-tab-max-height: 30px;" + "-fx-tab-min-width: 150px;" + "-fx-tab-max-width: 150px;" + "-fx-alignment: CENTER;");
 
         //
         depotTabs = Set.of(depotWertpapierTab, depotStrukturTab, depotTransaktionenTab, depotAnlageStrategieTab, depotPlanungTab);
-        portfolioTabs = Set.of(portfolioStrukturTab, portfolioAnalyseTab, portfolioBenchmarkTab);
         kontoTabs = Set.of(kontoÜbersichtTab, kontoTransaktionenTab);
         showPortfolioManagementTabs();
 
