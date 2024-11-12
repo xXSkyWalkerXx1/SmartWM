@@ -135,15 +135,13 @@ public class TableFactory {
                                                                   @NonNull Region parentAccountsTable,
                                                                   @NonNull Region parentDepotsTable,
                                                                   @NonNull List<Portfolio> tableItems,
-                                                                  @NonNull OwnerPortfoliosController ownerPortfoliosController) {
+                                                                  @NonNull OwnerPortfoliosController ownerPortfoliosController,
+                                                                  @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
 
         TableBuilder<Portfolio> tableBuilder = new TableBuilder<>(parentPortfolioTable, tableItems);
         Consumer<Portfolio> openPortfolioOverviewAction = portfolio -> {
-            Navigator.navigateToPortfolio(ownerPortfoliosController.getPortfolioManagementManager(), portfolio);
-
-            ownerPortfoliosController
-                    .getPortfolioManagementManager()
-                    .addCurrentlyDisplayedElement(new BreadcrumbElement(portfolio.toString(), "portfolio"));
+            Navigator.navigateToPortfolio(portfolioManagementTabManager, portfolio);
+            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(portfolio.toString(), "portfolio"));
         };
 
         tableBuilder.addColumn(
@@ -169,12 +167,12 @@ public class TableFactory {
             ownerPortfoliosController.setAccountTable(TableFactory.createOwnerPortfolioAccountTable(
                     parentAccountsTable,
                     portfolio.getAccounts(),
-                    ownerPortfoliosController.getPortfolioManagementManager()
+                    portfolioManagementTabManager
             ));
             ownerPortfoliosController.setDepotTable(TableFactory.createOwnerPortfolioDepotTable(
                     parentDepotsTable,
                     portfolio.getDepots(),
-                    ownerPortfoliosController.getPortfolioManagementManager()
+                    portfolioManagementTabManager
             ));
         });
         tableBuilder.setActionOnDoubleClickRow(openPortfolioOverviewAction);
