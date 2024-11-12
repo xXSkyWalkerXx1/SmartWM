@@ -176,13 +176,13 @@ public class Owner {
     @Column(name = "notice")
     private String notice;
 
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "address") // ToDo: rename to address_id
-    private Address address;
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "address_id")
+    private Address address = new Address();
 
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "tax_information_id") // creates foreign-key
-    private TaxInformation taxInformation;
+    private TaxInformation taxInformation = new TaxInformation();
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<Portfolio> portfolios = Collections.emptySet();
@@ -263,16 +263,8 @@ public class Owner {
         return address;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
     public TaxInformation getTaxInformation() {
         return taxInformation;
-    }
-
-    public void setTaxInformation(TaxInformation taxInformation) {
-        this.taxInformation = taxInformation;
     }
 
     public Set<Portfolio> getPortfolios() {

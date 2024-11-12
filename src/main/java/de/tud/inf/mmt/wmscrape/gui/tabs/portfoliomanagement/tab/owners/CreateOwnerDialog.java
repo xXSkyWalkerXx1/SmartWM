@@ -89,14 +89,14 @@ public class CreateOwnerDialog {
         newOwner.setNotice(inputNotice.getText());
         newOwner.setCreatedAt(Calendar.getInstance().getTime());
 
-        Owner.Address ownerAddress = new Owner.Address();
+        Owner.Address ownerAddress = newOwner.getAddress();
         ownerAddress.setCountry(inputCountry.getText());
         ownerAddress.setPlz(inputPlz.getText());
         ownerAddress.setLocation(inputLocation.getText());
         ownerAddress.setStreet(inputStreet.getText());
         ownerAddress.setStreetNumber(inputStreetNumber.getText());
 
-        Owner.TaxInformation ownerTaxInfo = new Owner.TaxInformation();
+        Owner.TaxInformation ownerTaxInfo = newOwner.getTaxInformation();
         ownerTaxInfo.setTaxNumber(inputTaxNumber.getText());
         ownerTaxInfo.setMaritalState(inputMaritalState.getValue());
         ownerTaxInfo.setTaxRate(Double.parseDouble(inputTaxRate.getText()));
@@ -104,8 +104,6 @@ public class CreateOwnerDialog {
         ownerTaxInfo.setCapitalGainsTaxRate(Double.parseDouble(inputCapitalGainsTaxRate.getText()));
         ownerTaxInfo.setSolidaritySurchargeTaxRate(Double.parseDouble(inputSolidaritySurchargeTaxRate.getText()));
 
-        newOwner.setAddress(ownerAddress);
-        newOwner.setTaxInformation(ownerTaxInfo);
         ownerService.saveOwner(newOwner);
         onCancel();
 
