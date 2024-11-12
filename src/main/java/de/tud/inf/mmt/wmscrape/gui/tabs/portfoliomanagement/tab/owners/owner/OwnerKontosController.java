@@ -32,11 +32,7 @@ public class OwnerKontosController implements Openable {
         accountsTablePane.getChildren().add(TableFactory.createOwnerAccountsTable(
                 accountsTablePane,
                 owner.getAccounts().stream().toList(),
-                this
+                portfolioManagementTabManager
         ));
-    }
-
-    public PortfolioManagementTabManager getPortfolioManagementManager() {
-        return portfolioManagementTabManager;
     }
 }

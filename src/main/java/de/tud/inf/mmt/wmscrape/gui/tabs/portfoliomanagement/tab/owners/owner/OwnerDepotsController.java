@@ -47,7 +47,7 @@ public class OwnerDepotsController implements Openable {
         setDepotAccountsTable(TableFactory.createOwnerDepotAccountsTable(
                 depotAccountsTablePane,
                 new ArrayList<>(),
-                this
+                portfolioManagementManager
         ));
     }
 

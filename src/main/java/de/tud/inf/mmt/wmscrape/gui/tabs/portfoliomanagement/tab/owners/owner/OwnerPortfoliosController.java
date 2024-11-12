@@ -46,19 +46,20 @@ public class OwnerPortfoliosController implements Openable {
                 accountsTablePane,
                 depotsTablePane,
                 owner.getPortfolios().stream().toList(),
-                this
+                this,
+                portfolioManagementManager
         ));
 
         setAccountTable(TableFactory.createOwnerPortfolioAccountTable(
                 accountsTablePane,
                 new ArrayList<>(),
-                this
+                portfolioManagementManager
         ));
 
         setDepotTable(TableFactory.createOwnerPortfolioDepotTable(
                 depotsTablePane,
                 new ArrayList<>(),
-                this
+                portfolioManagementManager
         ));
     }
 
@@ -70,9 +71,5 @@ public class OwnerPortfoliosController implements Openable {
     public void setDepotTable(TableView<Depot> table) {
         depotsTablePane.getChildren().clear();
         depotsTablePane.getChildren().add(table);
-    }
-
-    public PortfolioManagementTabManager getPortfolioManagementManager() {
-        return portfolioManagementManager;
     }
 }
