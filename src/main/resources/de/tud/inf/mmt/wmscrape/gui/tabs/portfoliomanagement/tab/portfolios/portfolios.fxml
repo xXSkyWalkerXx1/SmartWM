@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController">
+<AnchorPane prefHeight="756.0" prefWidth="1337.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController">
     <children>
-        <Label layoutX="62.0" layoutY="49.0" prefHeight="71.0" prefWidth="298.0" text="PortfolioListe">
-            <font>
-                <Font size="49.0" />
-            </font>
-        </Label>
-        <Button fx:id="switchToPortfolio1Button" layoutX="570.0" layoutY="290.0" mnemonicParsing="false" text="zu Portfolio 1">
-            <font>
-                <Font size="32.0" />
-            </font>
-        </Button>
-        <Button fx:id="switchToPortfolio2Button" layoutX="570.0" layoutY="413.0" mnemonicParsing="false" text="zu Portfolio 2">
-            <font>
-                <Font size="32.0" />
-            </font>
-        </Button>
+        <SplitPane dividerPositions="0.5812734082397004" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <items>
+                <AnchorPane fx:id="portfoliosTablePane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <children>
+                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <items>
+                                <AnchorPane fx:id="accountsTablePane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                                <AnchorPane fx:id="depotsTablePane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                            </items>
+                        </SplitPane>
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
     </children>
+
 </AnchorPane>
