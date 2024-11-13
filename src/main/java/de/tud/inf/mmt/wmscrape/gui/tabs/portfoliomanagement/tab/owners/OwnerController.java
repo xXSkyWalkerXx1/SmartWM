@@ -46,14 +46,14 @@ public class OwnerController {
         defaultOwner.setAftername("Owner");
         defaultOwner.setCreatedAt(Calendar.getInstance().getTime());
 
-        Owner.Address defaultOwnerAddress = new Owner.Address();
+        Owner.Address defaultOwnerAddress = defaultOwner.getAddress();
         defaultOwnerAddress.setCountry("Deutschland");
         defaultOwnerAddress.setPlz("01609");
         defaultOwnerAddress.setLocation("Frauenhain");
         defaultOwnerAddress.setStreet("Hauptstraße");
         defaultOwnerAddress.setStreetNumber("123");
 
-        Owner.TaxInformation defaultOwnerTaxInformation = new Owner.TaxInformation();
+        Owner.TaxInformation defaultOwnerTaxInformation = defaultOwner.getTaxInformation();
         defaultOwnerTaxInformation.setTaxNumber("10314141");
         defaultOwnerTaxInformation.setMaritalState(MaritalState.SINGLE);
 
@@ -85,8 +85,6 @@ public class OwnerController {
         depot.setBank(depotBank);
         depot.setPortfolio(portfolio);
 
-        defaultOwner.setAddress(defaultOwnerAddress);
-        defaultOwner.setTaxInformation(defaultOwnerTaxInformation);
         defaultOwner.setPortfolios(Collections.singleton(portfolio));
         defaultOwner.setAccounts(Collections.singleton(account));
         defaultOwner.setDepots(Collections.singleton(depot));
