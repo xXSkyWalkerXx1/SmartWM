@@ -11,7 +11,7 @@
                     <children>
                         <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
                             <children>
-                                <Button mnemonicParsing="false" onAction="#onClickCreatePortfolio" text="Portfolio erstellen" textAlignment="CENTER" />
+                                <Button fx:id="createPortfolioButton" mnemonicParsing="false" onAction="#onClickCreatePortfolio" text="Portfolio erstellen" textAlignment="CENTER" />
                             </children>
                         </HBox>
                     </children>
