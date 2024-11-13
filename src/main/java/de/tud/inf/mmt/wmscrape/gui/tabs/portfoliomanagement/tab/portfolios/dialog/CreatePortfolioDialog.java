@@ -41,7 +41,10 @@ public class CreatePortfolioDialog {
                 commissionSchemeLocationTablePane,
                 portfolio.getInvestmentGuideline().getDivisionByLocation()
         ));
-
+        commissionSchemeCurrencyTablePane.getChildren().add(TableFactory.createPortfolioDivisionByCurrencyTable(
+                commissionSchemeCurrencyTablePane,
+                portfolio.getInvestmentGuideline().getDivisionByCurrency()
+        ));
     }
 
     @FXML
