@@ -3,16 +3,13 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerDepotsController;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerKontosController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerPortfoliosController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
@@ -374,8 +371,8 @@ public class TableFactory {
      * @param tableItems Items of table.
      */
     public static TableView<Account> createOwnerDepotAccountsTable(@NonNull Region parent,
-                                                              @NonNull List<Account> tableItems,
-                                                              @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
+                                                                   @NonNull List<Account> tableItems,
+                                                                   @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Account> openAccountOverviewAction = account -> {
@@ -557,6 +554,126 @@ public class TableFactory {
                         // ToDo: implement
                     }
                 }
+        );
+
+        return tableBuilder.getResult();
+    }
+
+    /**
+     * @param tableParent JavaFX node-based UI-Controls and all layout containers (f.e. Pane).
+     * @param divisionByLocation Instance to be edited.
+     */
+    public static TableView<InvestmentGuideline.DivisionByLocation> createPortfolioDivisionByLocationTable(@NonNull Region tableParent,
+                                                                                                           @NonNull InvestmentGuideline.DivisionByLocation divisionByLocation) {
+        TableBuilder<InvestmentGuideline.DivisionByLocation> tableBuilder = new TableBuilder<>(tableParent, List.of(divisionByLocation));
+
+        tableBuilder.addColumn(
+                "",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<InvestmentGuideline.DivisionByLocation, String>, ObservableValue<String>>) cellDataFeatures
+                        -> new SimpleStringProperty("%")
+        );
+        tableBuilder.addEditableColumn(
+                "Deutschland",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getGermany()),
+                col -> col.getRowValue().setGermany((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Europa ohne BRD",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getEurope_without_brd()),
+                col -> col.getRowValue().setEurope_without_brd((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Nordamerika, USA",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getNorthamerica_with_usa()),
+                col -> col.getRowValue().setNorthamerica_with_usa((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Asien (ohne China)",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getAsia_without_china()),
+                col -> col.getRowValue().setAsia_without_china((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "China",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getChina()),
+                col -> col.getRowValue().setChina((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Japan",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getJapan()),
+                col -> col.getRowValue().setJapan((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Emergine Markets",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getEmergine_markets()),
+                col -> col.getRowValue().setEmergine_markets((float) col.getNewValue())
+        );
+
+        return tableBuilder.getResult();
+    }
+
+    /**
+     * @param tableParent JavaFX node-based UI-Controls and all layout containers (f.e. Pane).
+     * @param divisionByLocation Instance to be edited.
+     */
+    public static TableView<InvestmentGuideline.DivisionByCurrency> createPortfolioDivisionByCurrencyTable(@NonNull Region tableParent,
+                                                                                                           @NonNull InvestmentGuideline.DivisionByCurrency divisionByLocation) {
+        TableBuilder<InvestmentGuideline.DivisionByCurrency> tableBuilder = new TableBuilder<>(tableParent, List.of(divisionByLocation));
+
+        tableBuilder.addColumn(
+                "",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<InvestmentGuideline.DivisionByCurrency, String>, ObservableValue<String>>) cellDataFeatures
+                        -> new SimpleStringProperty("%")
+        );
+        tableBuilder.addEditableColumn(
+                "Euro",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getEuro()),
+                col -> col.getRowValue().setEuro((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "US-Dollar",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getUsd()),
+                col -> col.getRowValue().setUsd((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Schweizer Franken",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getChf()),
+                col -> col.getRowValue().setChf((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Britische Pfunds",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getGbp()),
+                col -> col.getRowValue().setGbp((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Japanischer Yen",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getYen()),
+                col -> col.getRowValue().setYen((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Asiatische Währungen",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getAsiaCurrencies()),
+                col -> col.getRowValue().setAsia_currencies((float) col.getNewValue())
+        );
+        tableBuilder.addEditableColumn(
+                "Alle andere",
+                0.12f,
+                cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getOthers()),
+                col -> col.getRowValue().setOthers((float) col.getNewValue())
         );
 
         return tableBuilder.getResult();
