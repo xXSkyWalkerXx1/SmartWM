@@ -1,6 +1,8 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
@@ -26,6 +28,7 @@ public class TableBuilder<S> {
      */
     public TableBuilder(@NonNull Region parent, @NonNull List<S> tableItems){
         tableView.getItems().addAll(tableItems);
+        tableView.setEditable(true);
         tableView.prefWidthProperty().bind(parent.widthProperty());
         tableView.prefHeightProperty().bind(parent.heightProperty());
     }
@@ -44,16 +47,73 @@ public class TableBuilder<S> {
      * @param columnWidth (%), defines column width depending on table width.
      * @param cellValueFactory Defines what is shown in a cell.
      * @param cellFactory Defines how the cell is build, f.e.: with a button, checkbox, etc.
-     * @implNote Do not use this method, if passing {@code cellFactory = null}
+     * @implNote Use {@link TableBuilder#addColumn(String, float, Callback)}, if passing {@code cellFactory = null}
      */
     public <T> void addColumn(@NonNull String columnName,
                               float columnWidth,
                               @NonNull Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> cellValueFactory,
                               @Nullable Callback<TableColumn<S, T>, TableCell<S, T>> cellFactory){
-        TableColumn<S, T> newColumn = new TableColumn<>(columnName);
-        newColumn.setCellValueFactory(cellValueFactory);
-        if (cellFactory != null) newColumn.setCellFactory(cellFactory);
+        TableColumn<S, T> newColumn = createDefaultColumn(columnName, cellValueFactory, cellFactory);
         newColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(columnWidth));
+        tableView.getColumns().add(newColumn);
+    }
+
+    /**
+     * Creates and adds a new editable (with text-field) column in decimal-format.
+     * @param columnWidth (%), defines column width depending on table width.
+     * @param cellValueFactory Defines what is shown in a cell.
+     * @param onCommit Defines what will be updated on commit.
+     */
+    public <T> void addEditableColumn(@NonNull String columnName,
+                                      float columnWidth,
+                                      @NonNull Callback<TableColumn.CellDataFeatures<S, Number>, ObservableValue<Number>> cellValueFactory,
+                                      @NonNull EventHandler<TableColumn.CellEditEvent<S, Number>> onCommit) {
+        Callback<TableColumn<S, Number>, TableCell<S, Number>> cellFactory = new Callback<>() {
+            @Override
+            public TableCell<S, Number> call(TableColumn<S, Number> column) {
+                return new TableCell<>() {
+
+                    final TextField inputField = new TextField();
+
+                    {
+                        PrimaryTabManager.setInputOnlyDecimalNumbers(inputField);
+                        inputField.setOnAction(commit -> commitEdit(Float.parseFloat(inputField.getText())));
+                    }
+
+                    @Override
+                    public void startEdit() {
+                        super.startEdit();
+                        graphicProperty().setValue(inputField);
+                        setText(null);
+                        inputField.setText(getItem() != null ? getItem().toString() : "");
+                        inputField.requestFocus();
+                    }
+
+                    @Override
+                    public void cancelEdit() {
+                        super.cancelEdit();
+                        setText(getItem() != null ? getItem().toString() : "");
+                        graphicProperty().setValue(null);
+                    }
+
+                    @Override
+                    protected void updateItem(Number number, boolean empty) {
+                        super.updateItem(number, empty);
+                        if (empty || number == null) {
+                            setText(null);
+                        } else {
+                            setText(number.toString());
+                        }
+                        setGraphic(null);
+                    }
+                };
+            }
+        };
+
+        TableColumn<S, Number> newColumn = createDefaultColumn(columnName, cellValueFactory, cellFactory);
+        newColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(columnWidth));
+        newColumn.setEditable(true);
+        newColumn.setOnEditCommit(onCommit);
         tableView.getColumns().add(newColumn);
     }
 
@@ -63,17 +123,25 @@ public class TableBuilder<S> {
     public <T> void addNestedColumn(@NonNull String parentColName,
                                     float parentColumnWidth,
                                     @NonNull Map.Entry<String, Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>>>... subCols) {
-        TableColumn<S, T> newColumn = new TableColumn<>(parentColName);
+        TableColumn<S, T> newColumn = createDefaultColumn(parentColName, null, null);
 
         for (var subCol : subCols) {
-            TableColumn<S, T> newSubCol = new TableColumn<>(subCol.getKey());
-            newSubCol.setCellValueFactory(subCol.getValue());
-            newSubCol.prefWidthProperty().bind(newColumn.widthProperty().divide(subCols.length)); // that's just a little nice hack
+            TableColumn<S, T> newSubCol = createDefaultColumn(subCol.getKey(), subCol.getValue(), null);
+            newSubCol.prefWidthProperty().bind(newColumn.widthProperty().divide(subCols.length));
             newColumn.getColumns().add(newSubCol);
         }
-
         newColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(parentColumnWidth));
         tableView.getColumns().add(newColumn);
+    }
+
+    private <T> TableColumn<S, T> createDefaultColumn (@NonNull String columnName,
+                                                       @Nullable Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> cellValueFactory,
+                                                       @Nullable Callback<TableColumn<S, T>, TableCell<S, T>> cellFactory) {
+        TableColumn<S, T> newColumn = new TableColumn<>(columnName);
+        newColumn.setEditable(false);
+        if (cellValueFactory != null) newColumn.setCellValueFactory(cellValueFactory);
+        if (cellFactory != null) newColumn.setCellFactory(cellFactory);
+        return newColumn;
     }
 
     /**
