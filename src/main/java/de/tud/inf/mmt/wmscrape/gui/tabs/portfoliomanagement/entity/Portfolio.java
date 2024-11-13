@@ -25,9 +25,9 @@ public class Portfolio extends FinancialAsset {
     @Column(name = "state", nullable = false)
     private State state = State.ACTIVATED;
 
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "investment_guideline_id", nullable = false)
-    private InvestmentGuideline investmentGuideline;
+    private InvestmentGuideline investmentGuideline = new InvestmentGuideline();
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "depot_id", nullable = false)
