@@ -13,7 +13,11 @@ public class InvestmentGuideline {
     // region Entities as inner-classes
     @Entity
     @Table(name = "anlagen_richtlinie_eintrag")
-    public static class Entry {}
+    public static class Entry {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+    }
 
     @Entity
     @Table(name = "anlagen_richtlinie_unterteilung_ort")
@@ -150,7 +154,7 @@ public class InvestmentGuideline {
             this.yen = yen;
         }
 
-        public float getAsia_currencies() {
+        public float getAsiaCurrencies() {
             return asia_currencies;
         }
 
@@ -182,7 +186,7 @@ public class InvestmentGuideline {
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "division_by_currency_id")
-    private DivisionByLocation divisionByCurrency = new DivisionByLocation();
+    private DivisionByCurrency divisionByCurrency = new DivisionByCurrency();
 
     // region Getters & Setters
     public Long getId() {
@@ -201,7 +205,7 @@ public class InvestmentGuideline {
         return divisionByLocation;
     }
 
-    public DivisionByLocation getDivisionByCurrency() {
+    public DivisionByCurrency getDivisionByCurrency() {
         return divisionByCurrency;
     }
     // endregion
