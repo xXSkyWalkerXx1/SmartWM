@@ -18,6 +18,23 @@ public class Navigator {
     }
 
     /**
+     * Navigates to assets of specific owner.
+     */
+    public static void navigateToOwnerAssets(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
+                                             @NonNull Owner owner) {
+        portfolioManagementTabManager.showInhaberTabs(owner);
+
+        var portfolioManagementController = portfolioManagementTabManager.getPortfolioController();
+        portfolioManagementController
+                .getOwnerVermögenController()
+                .open();
+        portfolioManagementController
+                .getPortfolioManagementTabPane()
+                .getSelectionModel()
+                .select(portfolioManagementController.getInhaberVermögenTab());
+    }
+
+    /**
      * Navigates to overview of specific portfolio.
      */
     public static void navigateToPortfolio(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
