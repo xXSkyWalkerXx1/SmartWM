@@ -64,7 +64,7 @@ public class CreateOwnerDialog {
 
     @FXML
     private void onCancel() {
-        portfolioManagementTabManager.getPortfolioController().getOwnerController().initialize();
+        portfolioManagementTabManager.getPortfolioController().getOwnerController().open();
         inputForename.getParent().getScene().getWindow().hide();
     }
 
