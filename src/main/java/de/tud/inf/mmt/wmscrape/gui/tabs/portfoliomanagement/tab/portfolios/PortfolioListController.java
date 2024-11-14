@@ -45,7 +45,7 @@ public class PortfolioListController implements Openable {
         portf.setOwner(new Owner());
          */
 
-        if (ownerService.getAllOwners().size() == 0) createPortfolioButton.setDisable(true);
+        createPortfolioButton.setDisable(ownerService.getAllOwners().size() == 0);
 
         portfoliosTablePane.getChildren().add(TableFactory.createPortfolioTable(
                 portfoliosTablePane,
