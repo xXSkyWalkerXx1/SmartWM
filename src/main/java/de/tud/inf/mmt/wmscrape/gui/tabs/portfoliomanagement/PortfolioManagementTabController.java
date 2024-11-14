@@ -192,6 +192,7 @@ public class PortfolioManagementTabController {
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioKontos.fxml", portfolioKontosController)
         );
 
+        portfoliosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioListController);
         portfolioAnalyseTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioAnalyseController);
         portfolioBenchmarkTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioBenchmarkController);
         portfolioStrukturTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioStrukturController);
