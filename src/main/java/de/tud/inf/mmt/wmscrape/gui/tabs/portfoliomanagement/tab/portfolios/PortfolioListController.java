@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.CreatePortfolioDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 
 @Controller
-public class PortfolioListController {
+public class PortfolioListController implements Openable {
 
     @Autowired
     private PortfolioService portfolioService;
@@ -37,8 +38,7 @@ public class PortfolioListController {
     @FXML
     AnchorPane depotsTablePane;
 
-    @FXML
-    public void initialize() {
+    public void open() {
         /*
         var portf = new Portfolio();
         portf.setName("Test-Portfolio");
