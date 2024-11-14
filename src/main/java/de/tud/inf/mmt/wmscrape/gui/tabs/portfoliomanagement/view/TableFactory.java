@@ -177,12 +177,8 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem("Details anzeigen", openPortfolioOverviewAction);
         tableBuilder.addRowContextMenuItem(
                 "Vermögen anzeigen",
-                new Consumer<Portfolio>() {
-                    @Override
-                    public void accept(Portfolio portfolio) {
-                        // ToDo: implement
-                    }
-                }
+                portfolio -> Navigator.navigateToOwnerAssets(portfolioManagementTabManager, portfolio.getOwner())
+                // ^ just a little workaround, not nice, but reduces code
         );
 
         return tableBuilder.getResult();
