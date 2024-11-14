@@ -1,11 +1,14 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.CreatePortfolioDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +22,14 @@ public class PortfolioListController {
     @Autowired
     private PortfolioService portfolioService;
     @Autowired
+    private OwnerService ownerService;
+    @Autowired
     private PortfolioManagementTabManager portfolioManagementTabManager;
+    @Autowired
+    private CreatePortfolioDialog createPortfolioDialog;
 
+    @FXML
+    Button createPortfolioButton;
     @FXML
     AnchorPane portfoliosTablePane;
     @FXML
@@ -29,12 +38,20 @@ public class PortfolioListController {
     AnchorPane depotsTablePane;
 
     @FXML
-    private void initialize() {
+    public void initialize() {
+        /*
+        var portf = new Portfolio();
+        portf.setName("Test-Portfolio");
+        portf.setOwner(new Owner());
+         */
+
+        if (ownerService.getAllOwners().size() == 0) createPortfolioButton.setDisable(true);
+
         portfoliosTablePane.getChildren().add(TableFactory.createPortfolioTable(
                 portfoliosTablePane,
                 accountsTablePane,
                 depotsTablePane,
-                portfolioService.getAll(),
+                portfolioService.getAll(), //List.of(portf),
                 this
         ));
         setAccountTable(TableFactory.createOwnerPortfolioAccountTable(
@@ -51,7 +68,14 @@ public class PortfolioListController {
 
     @FXML
     private void onClickCreatePortfolio() {
-
+        PrimaryTabManager.loadFxml(
+                "gui/tabs/portfoliomanagement/tab/portfolios/dialog/create_portfolio_dialog.fxml",
+                "Neues Portfolio erstellen",
+                createPortfolioButton,
+                true,
+                createPortfolioDialog,
+                false
+        );
     }
 
     public void setAccountTable(TableView<Account> table){
