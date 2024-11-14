@@ -9,6 +9,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
@@ -22,7 +23,7 @@ import java.util.*;
 
 
 @Controller
-public class OwnerController {
+public class OwnerController implements Openable {
 
     @Autowired
     private OwnerService ownerService;
@@ -38,8 +39,7 @@ public class OwnerController {
     @FXML
     AnchorPane ownerTreeViewPane;
 
-    @FXML
-    public void initialize() {
+    public void open() {
         /*
         Owner defaultOwner = new Owner();
         defaultOwner.setForename("Initial");
