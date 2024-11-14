@@ -133,7 +133,7 @@ public class OwnerOverviewController implements Openable {
         inputForename.setText(owner.getForename());
         inputAftername.setText(owner.getAftername());
         inputNotice.setText(owner.getNotice());
-        outputCreatedAt.setText(owner.getCreatedAt().toString());
+        outputCreatedAt.setText(owner.getCreatedAt().toLocaleString());
         outputDeactivatedAt.setText(owner.getDeactivatedAt() == null ? "" : owner.getDeactivatedAt().toString());
         inputCountry.setText(owner.getAddress().getCountry());
         inputPlz.setText(owner.getAddress().getPlz());
