@@ -719,5 +719,9 @@ public class PortfolioManagementTabController {
         return inhaberKontosTab;
     }
 
-// endregion
+    public TabPane getPortfolioManagementTabPane() {
+        return portfolioManagementTabPane;
+    }
+
+    // endregion
 }
