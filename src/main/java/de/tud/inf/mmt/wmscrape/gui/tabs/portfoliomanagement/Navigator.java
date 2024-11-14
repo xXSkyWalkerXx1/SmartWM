@@ -14,7 +14,6 @@ public class Navigator {
     public static void navigateToOwner(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
                                        @NonNull Owner owner) {
         portfolioManagementTabManager.showInhaberTabs(owner);
-        portfolioManagementTabManager.getPortfolioController().getOwnerOverviewController().open();
     }
 
     /**
@@ -25,9 +24,6 @@ public class Navigator {
         portfolioManagementTabManager.showInhaberTabs(owner);
 
         var portfolioManagementController = portfolioManagementTabManager.getPortfolioController();
-        portfolioManagementController
-                .getOwnerVermögenController()
-                .open();
         portfolioManagementController
                 .getPortfolioManagementTabPane()
                 .getSelectionModel()
@@ -40,7 +36,6 @@ public class Navigator {
     public static void navigateToPortfolio(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
                                            @NonNull Portfolio portfolio) {
         portfolioManagementTabManager.showPortfolioTabs();
-        // ToDo: portfolioManagementTabManager.getPortfolioController().getPortfolioOverviewController().open()
     }
 
     /**
@@ -49,7 +44,6 @@ public class Navigator {
     public static void navigateToAccount(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
                                          @NonNull Account account) {
         portfolioManagementTabManager.showKontoTabs(account);
-        portfolioManagementTabManager.getPortfolioController().getKontoOverviewController().open();
     }
 
     /**
@@ -58,6 +52,5 @@ public class Navigator {
     public static void navigateToDepot(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
                                        @NonNull Depot depot) {
         portfolioManagementTabManager.showDepotTabs();
-        // ToDo: portfolioManagementTabManager.getPortfolioController().getDepotOverviewController().open()
     }
 }
