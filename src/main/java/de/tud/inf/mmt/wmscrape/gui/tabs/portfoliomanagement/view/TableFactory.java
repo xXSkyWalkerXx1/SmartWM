@@ -177,8 +177,11 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem("Details anzeigen", openPortfolioOverviewAction);
         tableBuilder.addRowContextMenuItem(
                 "Vermögen anzeigen",
-                portfolio -> Navigator.navigateToOwnerAssets(portfolioManagementTabManager, portfolio.getOwner())
-                // ^ just a little workaround, not nice, but reduces code
+                portfolio -> {
+                    Navigator.navigateToOwnerAssets(portfolioManagementTabManager, portfolio.getOwner());
+                    portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(portfolio.getOwner().toString(), "owner"));
+                    // ^ just a little workaround, not nice, but reduces code
+                }
         );
 
         return tableBuilder.getResult();
