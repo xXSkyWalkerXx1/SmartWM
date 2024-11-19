@@ -653,6 +653,10 @@ public class PortfolioManagementTabController {
         return ownerPortfoliosController;
     }
 
+    public Tab getPortfolioOverviewTab() {
+        return portfolioOverviewTab;
+    }
+
     public Tab getPortfolioAnalyseTab() {
         return portfolioAnalyseTab;
     }
