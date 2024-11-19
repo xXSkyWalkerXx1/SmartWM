@@ -5,9 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "portfolio")
@@ -29,13 +27,13 @@ public class Portfolio extends FinancialAsset {
     @JoinColumn(name = "investment_guideline_id", nullable = false)
     private InvestmentGuideline investmentGuideline = new InvestmentGuideline();
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "depot_id", nullable = false)
-    private List<Depot> depots = new ArrayList<>();
+    private Set<Depot> depots = Collections.emptySet();
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id", nullable = false)
-    private List<Account> accounts = new ArrayList<>();
+    private Set<Account> accounts = Collections.emptySet();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
@@ -99,19 +97,19 @@ public class Portfolio extends FinancialAsset {
     }
 
     public List<Depot> getDepots() {
-        return depots;
+        return depots.stream().toList();
     }
 
     public void setDepots(List<Depot> depots) {
-        this.depots = depots;
+        this.depots = new HashSet<>(depots);
     }
 
     public List<Account> getAccounts() {
-        return accounts;
+        return accounts.stream().toList();
     }
 
     public void setAccounts(List<Account> accounts) {
-        this.accounts = accounts;
+        this.accounts = new HashSet<>(accounts);
     }
 
     public Date getCreatedAt() {
