@@ -1,6 +1,10 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InvestmentType;
+import org.checkerframework.common.value.qual.IntRange;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +21,108 @@ public class InvestmentGuideline {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "investment_type", nullable = false)
+        private InvestmentType type;
+
+        @Column(name = "asset_allocation")
+        private float assetAllocation; // %
+
+        @IntRange(from = 1, to = 12)
+        @Column(name = "max_riskclass")
+        private int maxRiskclass;
+
+        @Column(name = "max_volatility")
+        private float maxVolatility; // %, within 1 year
+
+        @Column(name = "performance")
+        private float performance; // %, within 1 year
+
+        @Column(name = "rendite")
+        private float rendite; // %, since buy
+
+        @Column(name = "chance_risk_number")
+        private float chanceRiskNumber; // %
+
+        @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+        @JoinColumn(name = "child_entry_id")
+        private List<Entry> childEntries = new ArrayList<>();
+
+        @Override
+        public String toString(){
+            return type.toString();
+        }
+
+        // region Getters & Setters
+        public Long getId() {
+            return id;
+        }
+
+        public InvestmentType getType() {
+            return type;
+        }
+
+        public void setType(InvestmentType type) {
+            this.type = type;
+        }
+
+        public float getAssetAllocation() {
+            return assetAllocation;
+        }
+
+        public void setAssetAllocation(float assetAllocation) {
+            this.assetAllocation = assetAllocation;
+        }
+
+        public int getMaxRiskclass() {
+            return maxRiskclass;
+        }
+
+        public void setMaxRiskclass(int maxRiskclass) {
+            this.maxRiskclass = maxRiskclass;
+        }
+
+        public float getMaxVolatility() {
+            return maxVolatility;
+        }
+
+        public void setMaxVolatility(float maxVolatility) {
+            this.maxVolatility = maxVolatility;
+        }
+
+        public float getPerformance() {
+            return performance;
+        }
+
+        public void setPerformance(float performance) {
+            this.performance = performance;
+        }
+
+        public float getRendite() {
+            return rendite;
+        }
+
+        public void setRendite(float rendite) {
+            this.rendite = rendite;
+        }
+
+        public float getChanceRiskNumber() {
+            return chanceRiskNumber;
+        }
+
+        public void setChanceRiskNumber(float chanceRiskNumber) {
+            this.chanceRiskNumber = chanceRiskNumber;
+        }
+
+        public List<Entry> getChildEntries() {
+            return childEntries;
+        }
+
+        public void addChildEntry(Entry childEntry) {
+            this.childEntries.add(childEntry);
+        }
+        // endregion
     }
 
     @Entity
@@ -176,9 +282,9 @@ public class InvestmentGuideline {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ToDo: implement!
-    @Transient
-    private List<Entry> entries;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "entry_id")
+    private List<Entry> entries = new ArrayList<>();
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "division_by_location_id")
@@ -188,6 +294,29 @@ public class InvestmentGuideline {
     @JoinColumn(name = "division_by_currency_id")
     private DivisionByCurrency divisionByCurrency = new DivisionByCurrency();
 
+    /**
+     * Creates initial entries for the investment guideline.
+     */
+    public void initializeEntries() {
+        if (!entries.isEmpty()) throw new IllegalStateException("Entries are already initialized!");
+
+        for (InvestmentType type : InvestmentType.values()) {
+            Entry parentEntry;
+
+            if (!type.isChild()) { // is parent
+                parentEntry = new Entry();
+                parentEntry.setType(type);
+
+                for (InvestmentType childType : type.getChilds()) {
+                    var childEntry = new Entry();
+                    childEntry.setType(childType);
+                    parentEntry.addChildEntry(childEntry);
+                }
+                entries.add(parentEntry);
+            }
+        }
+    }
+
     // region Getters & Setters
     public Long getId() {
         return id;
@@ -195,10 +324,6 @@ public class InvestmentGuideline {
 
     public List<Entry> getEntries() {
         return entries;
-    }
-
-    public void setEntries(List<Entry> entries) {
-        this.entries = entries;
     }
 
     public DivisionByLocation getDivisionByLocation() {
