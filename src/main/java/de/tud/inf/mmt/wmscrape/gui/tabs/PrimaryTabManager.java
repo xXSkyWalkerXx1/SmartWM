@@ -7,11 +7,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.function.UnaryOperator;
 
 @Service
 public class PrimaryTabManager {
@@ -142,16 +140,15 @@ public class PrimaryTabManager {
         }
     }
 
-    public static void setInputOnlyDecimalNumbers(@NonNull TextField textField) {
-        textField.setTextFormatter(new TextFormatter<String>(change -> {
-            String textChange = change.getText();
-
-            if (textChange.isEmpty() // removed anything
-                    || textChange.matches("^\\d$") // allow numerics
-                    || textChange.matches("^[,]$") && !textField.getText().contains(",")) { // allow ',' and only once
-                return change;
-            }
-            return null;
-        }));
+    /**
+     * Shows an alert dialog with a warning message.
+     * @param control Some element inside the controller class used as a reference to get the stage/scene.
+     */
+    public static void showInfoDialog(String title, String content, Control control) {
+        Alert successAlert = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
+        successAlert.setTitle(title);
+        PrimaryTabManager.setAlertPosition(successAlert, control);
+        successAlert.show();
     }
+
 }
