@@ -570,6 +570,10 @@ public class PortfolioManagementTabController {
         return ownerController;
     }
 
+    public PortfolioListController getPortfolioListController() {
+        return portfolioListController;
+    }
+
     public PortfolioStrukturController getPortfolioStrukturController() {
         return portfolioStrukturController;
     }
