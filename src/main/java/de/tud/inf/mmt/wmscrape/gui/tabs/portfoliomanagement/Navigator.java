@@ -35,7 +35,7 @@ public class Navigator {
      */
     public static void navigateToPortfolio(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
                                            @NonNull Portfolio portfolio) {
-        portfolioManagementTabManager.showPortfolioTabs();
+        portfolioManagementTabManager.showPortfolioTabs(portfolio);
     }
 
     /**
