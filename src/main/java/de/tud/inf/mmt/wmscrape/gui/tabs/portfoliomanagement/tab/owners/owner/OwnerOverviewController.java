@@ -7,6 +7,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
 import javafx.fxml.FXML;
@@ -62,6 +63,17 @@ public class OwnerOverviewController implements Openable {
     @FXML
     AnchorPane ownerTreeViewPane;
 
+    @FXML
+    private void initialize() {
+        inputMaritalState.getItems().addAll(MaritalState.values());
+
+        // Change TextFields so that they only accept integers
+        FieldFormatter.setInputFloatRange(inputTaxRate, 0, 100);
+        FieldFormatter.setInputFloatRange(inputChurchTaxRate, 0, 100);
+        FieldFormatter.setInputFloatRange(inputCapitalGainsTaxRate, 0, 100);
+        FieldFormatter.setInputFloatRange(inputSolidaritySurchargeTaxRate, 0, 100);
+    }
+
     @Override
     public void open() {
         owner = (Owner) portfolioManagementManager
@@ -90,12 +102,6 @@ public class OwnerOverviewController implements Openable {
         if (FieldValidator.isInputEmpty(
                 inputForename, inputAftername, inputCountry, inputPlz, inputLocation, inputStreet, inputStreetNumber,
                 inputTaxNumber, inputTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
-        )) return;
-
-        if (!FieldValidator.isInRange(
-                0,
-                100,
-                inputTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         )) return;
 
         // If everything is valid, we can update and save the owner
@@ -141,7 +147,6 @@ public class OwnerOverviewController implements Openable {
         inputStreet.setText(owner.getAddress().getStreet());
         inputStreetNumber.setText(owner.getAddress().getStreetNumber());
         inputTaxNumber.setText(owner.getTaxInformation().getTaxNumber());
-        inputMaritalState.getItems().addAll(MaritalState.values());
         inputMaritalState.getSelectionModel().select(owner.getTaxInformation().getMaritalState());
         inputTaxRate.setText(String.valueOf(owner.getTaxInformation().getTaxRate()));
         inputChurchTaxRate.setText(String.valueOf(owner.getTaxInformation().getChurchTaxRate()));
