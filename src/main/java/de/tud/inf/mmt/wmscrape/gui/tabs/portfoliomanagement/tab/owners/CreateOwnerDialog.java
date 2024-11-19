@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -56,10 +57,10 @@ public class CreateOwnerDialog {
         inputMaritalState.getSelectionModel().selectFirst();
 
         // Change TextFields so that they only accept integers
-        PrimaryTabManager.setInputOnlyDecimalNumbers(inputTaxRate);
-        PrimaryTabManager.setInputOnlyDecimalNumbers(inputChurchTaxRate);
-        PrimaryTabManager.setInputOnlyDecimalNumbers(inputCapitalGainsTaxRate);
-        PrimaryTabManager.setInputOnlyDecimalNumbers(inputSolidaritySurchargeTaxRate);
+        FieldFormatter.setInputFloatRange(inputTaxRate, 0, 100);
+        FieldFormatter.setInputFloatRange(inputChurchTaxRate, 0, 100);
+        FieldFormatter.setInputFloatRange(inputCapitalGainsTaxRate, 0, 100);
+        FieldFormatter.setInputFloatRange(inputSolidaritySurchargeTaxRate, 0, 100);
     }
 
     @FXML
@@ -74,12 +75,6 @@ public class CreateOwnerDialog {
         if (FieldValidator.isInputEmpty(
                 inputForename, inputAftername, inputCountry, inputPlz, inputLocation, inputStreet, inputStreetNumber,
                 inputTaxNumber, inputTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
-        )) return;
-
-        if (!FieldValidator.isInRange(
-                0,
-                100,
-                inputTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         )) return;
 
         // If everything is valid, we can create and save the new owner
@@ -108,9 +103,10 @@ public class CreateOwnerDialog {
         onCancel();
 
         // Finally, show success-dialog
-        Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "Der neue Inhaber wurde erfolgreich angelegt.", ButtonType.OK);
-        successAlert.setTitle("Inhaber angelegt");
-        PrimaryTabManager.setAlertPosition(successAlert, inputForename);
-        successAlert.show();
+        PrimaryTabManager.showInfoDialog(
+                "Inhaber angelegt",
+                "Der neue Inhaber wurde erfolgreich angelegt.",
+                inputForename
+        );
     }
 }
