@@ -151,12 +151,12 @@ public class PrimaryTabManager {
 
     /**
      * Shows an alert dialog of the given alert-type.
-     * @param region Some element inside the controller class used as a reference to get the stage/scene.
+     * @param control Some element inside the controller class used as a reference to get the stage/scene.
      */
-    public static void showDialog(Alert.AlertType alertType, String title, String content, Region region) {
+    public static void showDialog(Alert.AlertType alertType, String title, String content, Control control) {
         Alert alert = new Alert(alertType, content, ButtonType.OK);
         alert.setTitle(title);
-        PrimaryTabManager.setAlertPosition(alert, (Control) region);
+        PrimaryTabManager.setAlertPosition(alert, control);
         alert.show();
     }
 
