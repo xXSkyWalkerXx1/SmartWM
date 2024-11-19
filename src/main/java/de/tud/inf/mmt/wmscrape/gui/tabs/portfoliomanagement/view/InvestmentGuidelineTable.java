@@ -31,7 +31,16 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         getColumns().add(createDynamicColumn(
                 "Aufteilung Gesamtvermögen (%)",
                 entry -> new SimpleFloatProperty(entry.getAssetAllocation()),
-                col -> col.getRowValue().getValue().setAssetAllocation((float) col.getNewValue()),
+                col -> {
+                    var parentRow = col.getRowValue().getParent();
+
+                    // Only allow editing of parent-entries if the parent is not the root-item and the asset allocation is set
+                    if (parentRow != null && !rootItem.equals(parentRow)) {
+                        if (parentRow.getValue().getAssetAllocation() == 0) return;
+                    }
+
+                    col.getRowValue().getValue().setAssetAllocation((float) col.getNewValue());
+                },
                 textField -> FieldFormatter.setInputFloatRange(textField, 0, 100),
                 Float::parseFloat,
                 false
@@ -164,14 +173,12 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
         if (cellValueFactory != null) newColumn.setCellValueFactory(cell -> {
             InvestmentGuideline.Entry entry = cell.getValue().getValue();
-
             if (isOnlyParentEditable && entry.getType().isChild()) return null;
             return cellValueFactory.call(entry);
         });
 
         if (onCommit != null) newColumn.setOnEditCommit(event -> {
             InvestmentGuideline.Entry entry = event.getRowValue().getValue();
-
             if (isOnlyParentEditable && entry.getType().isChild()) return;
             onCommit.handle(event);
         });
