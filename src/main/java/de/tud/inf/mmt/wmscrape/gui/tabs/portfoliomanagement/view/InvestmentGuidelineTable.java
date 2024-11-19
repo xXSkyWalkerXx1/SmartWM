@@ -19,6 +19,9 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
     private final TreeItem<InvestmentGuideline.Entry> rootItem = new TreeItem<>(new InvestmentGuideline.Entry());
 
+    /**
+     * @param parent JavaFX node-based UI Controls and all layout containers (f.e. Pane). Only used for view-sizing.
+     */
     public InvestmentGuidelineTable(@NonNull Region parent, @NonNull List<InvestmentGuideline.Entry> entries) {
         // Define columns
         getColumns().add(createStaticColumn(
