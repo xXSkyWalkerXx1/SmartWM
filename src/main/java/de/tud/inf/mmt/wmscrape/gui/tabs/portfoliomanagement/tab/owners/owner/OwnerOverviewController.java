@@ -108,7 +108,6 @@ public class OwnerOverviewController implements Openable {
         owner.setForename(inputForename.getText());
         owner.setAftername(inputAftername.getText());
         owner.setNotice(inputNotice.getText());
-        owner.setCreatedAt(Calendar.getInstance().getTime());
 
         Owner.Address ownerAddress = owner.getAddress();
         ownerAddress.setCountry(inputCountry.getText());
