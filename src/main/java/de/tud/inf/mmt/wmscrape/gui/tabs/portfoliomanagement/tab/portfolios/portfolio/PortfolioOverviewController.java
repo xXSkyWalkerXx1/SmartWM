@@ -30,18 +30,16 @@ public class PortfolioOverviewController implements Openable {
 
     @FXML
     TextField inputPortfolioName;
-
     @FXML
     ComboBox<Owner> inputOwner;
-
     @FXML
     AnchorPane commissionSchemeTablePane;
-
     @FXML
     AnchorPane commissionSchemeLocationTablePane;
-
     @FXML
     AnchorPane commissionSchemeCurrencyTablePane;
+    @FXML
+    AnchorPane portfolioTreeViewPane;
 
     @Override
     public void open() {
