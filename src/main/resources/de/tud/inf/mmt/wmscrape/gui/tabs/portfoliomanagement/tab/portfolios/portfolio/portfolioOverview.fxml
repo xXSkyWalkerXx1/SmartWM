@@ -37,9 +37,9 @@
                         </ButtonBar>
                         <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1">
                           <buttons>
-                            <Button mnemonicParsing="false" text="Zurücksetzen" />
+                            <Button mnemonicParsing="false" onAction="#onReset" text="Zurücksetzen" />
                               <Button mnemonicParsing="false" text="Snapshot verwalten" />
-                              <Button mnemonicParsing="false" text="Änderungen speichern" />
+                              <Button mnemonicParsing="false" onAction="#onSave" text="Änderungen speichern" />
                           </buttons>
                         </ButtonBar>
                      </children>
@@ -117,7 +117,7 @@
                                     </SplitPane>
                                 </children>
                             </AnchorPane>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                            <AnchorPane fx:id="portfolioTreeViewPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
                         </items>
                     </SplitPane>
                 </AnchorPane>
