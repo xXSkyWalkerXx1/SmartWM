@@ -145,10 +145,18 @@ public class PrimaryTabManager {
      * @param control Some element inside the controller class used as a reference to get the stage/scene.
      */
     public static void showInfoDialog(String title, String content, Control control) {
-        Alert successAlert = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
-        successAlert.setTitle(title);
-        PrimaryTabManager.setAlertPosition(successAlert, control);
-        successAlert.show();
+        showDialog(Alert.AlertType.INFORMATION, title, content, control);
+    }
+
+    /**
+     * Shows an alert dialog of the given alert-type.
+     * @param control Some element inside the controller class used as a reference to get the stage/scene.
+     */
+    public static void showDialog(Alert.AlertType alertType, String title, String content, Control control) {
+        Alert alert = new Alert(alertType, content, ButtonType.OK);
+        alert.setTitle(title);
+        PrimaryTabManager.setAlertPosition(alert, control);
+        alert.show();
     }
 
 }
