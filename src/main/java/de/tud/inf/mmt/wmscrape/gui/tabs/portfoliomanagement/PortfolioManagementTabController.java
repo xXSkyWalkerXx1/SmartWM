@@ -127,9 +127,9 @@ public class PortfolioManagementTabController {
     private Tab inhaberKontosTab;
 
     private Set<Tab> depotTabs;
-    private Set<Tab> portfolioTabs;
+    private List<Tab> portfolioTabs;
     private Set<Tab> kontoTabs;
-    private Set<Tab> ownerTabs;
+    private List<Tab> ownerTabs;
 
     public class ContexMenuItem {
         private String label;
@@ -206,7 +206,7 @@ public class PortfolioManagementTabController {
         portfolioDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioDepotsController);
         portfolioKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioKontosController);
 
-        portfolioTabs = Set.of(portfolioOverviewTab, portfolioDepotsTab, portfolioStrukturTab, portfolioKontosTab, portfolioAnalyseTab, portfolioBenchmarkTab);
+        portfolioTabs = List.of(portfolioOverviewTab, portfolioDepotsTab, portfolioStrukturTab, portfolioKontosTab, portfolioAnalyseTab, portfolioBenchmarkTab);
         portfolioManagementTabPane.getTabs().addAll(portfolioTabs);
 
         //
@@ -301,7 +301,7 @@ public class PortfolioManagementTabController {
         inhaberKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerKontosController);
         inhaberDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerDepotsController);
 
-        ownerTabs = Set.of(inhaberÜbersichtTab, inhaberVermögenTab, inhaberPortfoliosTab, inhaberDepotsTab, inhaberKontosTab);
+        ownerTabs = List.of(inhaberÜbersichtTab, inhaberVermögenTab, inhaberPortfoliosTab, inhaberDepotsTab, inhaberKontosTab);
         portfolioManagementTabPane.getTabs().addAll(ownerTabs);
 
         // Set TabPane-style
