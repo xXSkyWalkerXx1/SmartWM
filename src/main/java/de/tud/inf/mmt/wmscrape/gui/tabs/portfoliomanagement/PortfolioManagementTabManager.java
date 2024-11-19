@@ -2,6 +2,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -68,9 +69,9 @@ public class PortfolioManagementTabManager {
         }
     }
 
-    public void showPortfolioTabs() {
+    public void showPortfolioTabs(@Nullable Portfolio portfolio) {
         if (portfolioController != null) {
-            portfolioController.showPortfolioTabs();
+            portfolioController.showPortfolioTabs(portfolio);
         }
     }
 
