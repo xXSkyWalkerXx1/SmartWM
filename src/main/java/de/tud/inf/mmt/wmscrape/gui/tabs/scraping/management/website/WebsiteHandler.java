@@ -759,13 +759,13 @@ public abstract class WebsiteHandler extends Service<Void> {
             driver.executeScript("arguments[0].blur()", dateFromDayElement);
 
             // set date for end on browser; don't set if there is nothing set on the config to use the current date
+            scrollIntoView(dateUntilDayElement);
+            clickElement(dateUntilDayElement);
             if (dateUntil != null && !dateUntil.isBlank()) {
-                scrollIntoView(dateUntilDayElement);
                 dateUntilDayElement.clear();
-                clickElement(dateUntilDayElement);
                 setText(dateUntilDayElement, dateUntil);
-                driver.executeScript("arguments[0].blur()", dateUntilDayElement);
             }
+            driver.executeScript("arguments[0].blur()", dateUntilDayElement);
 
             addToLog("INFO:\tDatum gesetzt");
             return true;
