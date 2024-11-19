@@ -1,6 +1,5 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
-import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -76,7 +75,7 @@ public class TableBuilder<S> {
                     final TextField inputField = new TextField();
 
                     {
-                        PrimaryTabManager.setInputOnlyDecimalNumbers(inputField);
+                        FieldFormatter.setInputOnlyDecimalNumbers(inputField);
                         inputField.setOnAction(commit -> commitEdit(Float.parseFloat(inputField.getText())));
                     }
 
