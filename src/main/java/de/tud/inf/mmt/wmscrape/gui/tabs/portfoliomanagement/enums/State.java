@@ -13,4 +13,9 @@ public enum State {
     public String getDisplayText() {
         return displayText;
     }
+
+    @Override
+    public String toString() {
+        return displayText;
+    }
 }
