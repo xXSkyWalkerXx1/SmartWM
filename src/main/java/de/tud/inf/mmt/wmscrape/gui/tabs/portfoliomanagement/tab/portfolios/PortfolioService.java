@@ -38,8 +38,7 @@ public class PortfolioService {
     }
 
     public boolean isPortfolioInputInvalid(@NonNull TextField inputPortfolioName, @NonNull Portfolio portfolio,
-                                         @NonNull Pane commissionSchemeTablePane, @NonNull Pane commissionSchemeLocationTablePane,
-                                         @NonNull Pane commissionSchemeCurrencyTablePane) {
+                                           @NonNull Control control) {
         if (FieldValidator.isInputEmpty(inputPortfolioName)) return true;
 
         float sum_ = 0;
@@ -55,7 +54,7 @@ public class PortfolioService {
                             Alert.AlertType.ERROR,
                             "Fehler",
                             String.format("Die Aufteilung des Gesamtvermögens für %s muss in Summe 100 ergeben (Ist: %s).", entry.getType(), childsSum),
-                            (TreeTableView<?>) commissionSchemeTablePane.getChildren().get(0)
+                            control
                     );
                     return true;
                 }
@@ -67,7 +66,7 @@ public class PortfolioService {
                     Alert.AlertType.ERROR,
                     "Fehler",
                     String.format("Die Aufteilung des Gesamtvermögens muss in Summe 100 ergeben (Ist: %s).", sum_),
-                    (TreeTableView<?>) commissionSchemeTablePane.getChildren().get(0)
+                    control
             );
             return true;
         }
@@ -83,7 +82,7 @@ public class PortfolioService {
                     Alert.AlertType.ERROR,
                     "Fehler",
                     String.format("Die Aufteilung des Gesamtvermögens nach Ländern bzw. Regionen muss in Summe 100 ergeben (Ist: %s).", sumDivByLoc),
-                    (TableView<?>) commissionSchemeLocationTablePane.getChildren().get(0)
+                    control
             );
             return true;
         }
@@ -99,7 +98,7 @@ public class PortfolioService {
                     Alert.AlertType.ERROR,
                     "Fehler",
                     String.format("Die Aufteilung des Gesamtvermögens nach Währung muss in Summe 100 ergeben (Ist: %s).", sumDivByCurr),
-                    (TableView<?>) commissionSchemeCurrencyTablePane.getChildren().get(0)
+                    control
             );
             return true;
         }
