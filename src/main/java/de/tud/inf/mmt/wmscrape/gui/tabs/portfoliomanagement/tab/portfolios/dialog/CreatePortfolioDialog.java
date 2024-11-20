@@ -75,7 +75,7 @@ public class CreatePortfolioDialog {
         // Validate first
         if (portfolioService.isPortfolioInputInvalid(
                 inputPortfolioName, portfolio,
-                commissionSchemeTablePane, commissionSchemeLocationTablePane, commissionSchemeCurrencyTablePane
+                (Control) commissionSchemeTablePane.getChildren().get(0)
         )) return;
 
         // If everything is valid, we can create and save the new portfolio

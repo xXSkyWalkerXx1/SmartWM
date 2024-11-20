@@ -14,6 +14,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeVi
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,7 @@ public class PortfolioOverviewController implements Openable {
         // Validate first
         if (portfolioService.isPortfolioInputInvalid(
                 inputPortfolioName, portfolio,
-                commissionSchemeTablePane, commissionSchemeLocationTablePane, commissionSchemeCurrencyTablePane
+                (Control) commissionSchemeTablePane.getChildren().get(0)
         )) return;
 
         // If everything is valid, we can create and save the new portfolio
