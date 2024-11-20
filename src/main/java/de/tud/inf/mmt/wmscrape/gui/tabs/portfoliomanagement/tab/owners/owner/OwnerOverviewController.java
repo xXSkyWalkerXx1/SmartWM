@@ -127,11 +127,11 @@ public class OwnerOverviewController implements Openable {
         ownerService.saveOwner(owner);
 
         // Finally, show success-dialog
-        Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "Der aktuelle Inhaber wurde erfolgreich aktualisiert.", ButtonType.OK);
-        successAlert.setTitle("Inhaber aktualisiert");
-        PrimaryTabManager.setAlertPosition(successAlert, inputForename);
-        successAlert.show();
-
+        PrimaryTabManager.showInfoDialog(
+                "Inhaber aktualisiert",
+                "Der aktuelle Inhaber wurde erfolgreich aktualisiert.",
+                inputForename
+        );
     }
 
     private void loadOwnerData() {
