@@ -16,7 +16,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -45,7 +45,11 @@ public class PortfolioOverviewController implements Openable {
     @FXML
     TextField outputDeactivatedAt;
     @FXML
-    VBox commissionSchemeViewBox;
+    Pane commissionSchemeTablePane;
+    @FXML
+    Pane commissionSchemeLocationTablePane;
+    @FXML
+    Pane commissionSchemeCurrencyTablePane;
     @FXML
     AnchorPane portfolioTreeViewPane;
 
@@ -93,17 +97,21 @@ public class PortfolioOverviewController implements Openable {
         outputCreatedAt.setText(portfolio.getCreatedAt().toString());
         outputDeactivatedAt.setText(portfolio.getDeactivatedAt() != null ? portfolio.getDeactivatedAt().toString() : "");
 
-        commissionSchemeViewBox.getChildren().clear();
-        commissionSchemeViewBox.getChildren().add(new InvestmentGuidelineTable(
-                commissionSchemeViewBox,
+        commissionSchemeTablePane.getChildren().clear();
+        commissionSchemeTablePane.getChildren().add(new InvestmentGuidelineTable(
+                commissionSchemeTablePane,
                 portfolio.getInvestmentGuideline().getEntries()
         ));
-        commissionSchemeViewBox.getChildren().add(TableFactory.createPortfolioDivisionByLocationTable(
-                commissionSchemeViewBox,
+
+        commissionSchemeLocationTablePane.getChildren().clear();
+        commissionSchemeLocationTablePane.getChildren().add(TableFactory.createPortfolioDivisionByLocationTable(
+                commissionSchemeLocationTablePane,
                 portfolio.getInvestmentGuideline().getDivisionByLocation()
         ));
-        commissionSchemeViewBox.getChildren().add(TableFactory.createPortfolioDivisionByCurrencyTable(
-                commissionSchemeViewBox,
+
+        commissionSchemeCurrencyTablePane.getChildren().clear();
+        commissionSchemeCurrencyTablePane.getChildren().add(TableFactory.createPortfolioDivisionByCurrencyTable(
+                commissionSchemeCurrencyTablePane,
                 portfolio.getInvestmentGuideline().getDivisionByCurrency()
         ));
 
