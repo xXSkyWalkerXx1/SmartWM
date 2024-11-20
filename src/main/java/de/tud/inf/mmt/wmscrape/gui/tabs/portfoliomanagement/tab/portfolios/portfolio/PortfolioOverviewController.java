@@ -14,9 +14,9 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeVi
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -45,11 +45,7 @@ public class PortfolioOverviewController implements Openable {
     @FXML
     TextField outputDeactivatedAt;
     @FXML
-    AnchorPane commissionSchemeTablePane;
-    @FXML
-    AnchorPane commissionSchemeLocationTablePane;
-    @FXML
-    AnchorPane commissionSchemeCurrencyTablePane;
+    VBox commissionSchemeViewBox;
     @FXML
     AnchorPane portfolioTreeViewPane;
 
@@ -72,10 +68,7 @@ public class PortfolioOverviewController implements Openable {
     @FXML
     private void onSave() {
         // Validate first
-        if (portfolioService.isPortfolioInputInvalid(
-                inputPortfolioName, portfolio,
-                (Control) commissionSchemeTablePane.getChildren().get(0)
-        )) return;
+        if (portfolioService.isPortfolioInputInvalid(inputPortfolioName, portfolio, outputDeactivatedAt)) return;
 
         // If everything is valid, we can create and save the new portfolio
         portfolioService.savePortfolio(portfolio, false, inputPortfolioName, inputOwner);
@@ -100,21 +93,17 @@ public class PortfolioOverviewController implements Openable {
         outputCreatedAt.setText(portfolio.getCreatedAt().toString());
         outputDeactivatedAt.setText(portfolio.getDeactivatedAt() != null ? portfolio.getDeactivatedAt().toString() : "");
 
-        commissionSchemeTablePane.getChildren().clear();
-        commissionSchemeTablePane.getChildren().add(new InvestmentGuidelineTable(
-                commissionSchemeTablePane,
+        commissionSchemeViewBox.getChildren().clear();
+        commissionSchemeViewBox.getChildren().add(new InvestmentGuidelineTable(
+                commissionSchemeViewBox,
                 portfolio.getInvestmentGuideline().getEntries()
         ));
-
-        commissionSchemeLocationTablePane.getChildren().clear();
-        commissionSchemeLocationTablePane.getChildren().add(TableFactory.createPortfolioDivisionByLocationTable(
-                commissionSchemeLocationTablePane,
+        commissionSchemeViewBox.getChildren().add(TableFactory.createPortfolioDivisionByLocationTable(
+                commissionSchemeViewBox,
                 portfolio.getInvestmentGuideline().getDivisionByLocation()
         ));
-
-        commissionSchemeCurrencyTablePane.getChildren().clear();
-        commissionSchemeCurrencyTablePane.getChildren().add(TableFactory.createPortfolioDivisionByCurrencyTable(
-                commissionSchemeCurrencyTablePane,
+        commissionSchemeViewBox.getChildren().add(TableFactory.createPortfolioDivisionByCurrencyTable(
+                commissionSchemeViewBox,
                 portfolio.getInvestmentGuideline().getDivisionByCurrency()
         ));
 
