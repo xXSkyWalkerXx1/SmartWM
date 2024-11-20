@@ -4,8 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InvestmentType
 import org.checkerframework.common.value.qual.IntRange;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Anlagen-Richtlinie
@@ -45,8 +44,8 @@ public class InvestmentGuideline {
         @Column(name = "chance_risk_number")
         private float chanceRiskNumber; // %
 
-        @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-        @JoinColumn(name = "child_entry_id")
+        @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+        @JoinColumn(name = "child_entry_id") // ToDo: rename to parent_entry_id
         private List<Entry> childEntries = new ArrayList<>();
 
         @Override
@@ -116,7 +115,7 @@ public class InvestmentGuideline {
         }
 
         public List<Entry> getChildEntries() {
-            return childEntries;
+            return childEntries.stream().toList();
         }
 
         public void addChildEntry(Entry childEntry) {
@@ -282,9 +281,9 @@ public class InvestmentGuideline {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "entry_id")
-    private List<Entry> entries = new ArrayList<>();
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "entry_id") // ToDo: rename to investment_guideline_id
+    private Set<Entry> entries = new HashSet<>();
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "division_by_location_id")
@@ -323,7 +322,9 @@ public class InvestmentGuideline {
     }
 
     public List<Entry> getEntries() {
-        return entries;
+        return entries.stream()
+                .sorted(Comparator.comparingInt(entry -> entry.getType().ordinal()))
+                .toList();
     }
 
     public DivisionByLocation getDivisionByLocation() {
