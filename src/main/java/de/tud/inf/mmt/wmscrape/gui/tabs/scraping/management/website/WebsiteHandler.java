@@ -267,7 +267,7 @@ public abstract class WebsiteHandler extends Service<Void> {
     protected void waitLoadEvent() {
         try {
             FluentWait<FirefoxDriver> wait = new FluentWait<>(driver)
-                    .withTimeout(Duration.ofSeconds(3))
+                    .withTimeout(Duration.ofSeconds(10))
                     .pollingEvery(Duration.ofMillis(300))
                     .ignoring(ElementNotInteractableException.class)
                     .ignoring(NoSuchElementException.class);
