@@ -272,14 +272,9 @@ public abstract class WebsiteHandler extends Service<Void> {
                     .ignoring(ElementNotInteractableException.class)
                     .ignoring(NoSuchElementException.class);
 
-            wait.until(webDriver -> ((JavascriptExecutor) driver)
-                    .executeScript("return document.readyState").equals("complete"));
-
-            wait.until(webDriver -> (Boolean) ((JavascriptExecutor) driver)
-                    .executeScript("return window.myApp && window.myApp.isInitialized === true;"));
-
-            wait.until(webDriver -> (Boolean) ((JavascriptExecutor) driver)
-                    .executeScript("return typeof window.someGlobalVariable !== 'undefined';"));
+            wait.until(webDriver
+                    -> driver.executeScript("return document.readyState").equals("complete")
+            );
 
             addToLog("INFO:\tWebseite vollständig geladen.");
         } catch (Exception e) {
