@@ -16,11 +16,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.PortfolioOverviewController">
+<AnchorPane prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.PortfolioOverviewController">
     <children>
-        <SplitPane dividerPositions="0.075" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <SplitPane dividerPositions="0.075" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane>
                <children>
                   <GridPane hgap="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columnConstraints>
@@ -51,12 +51,12 @@
                   </GridPane>
                </children>
                 </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane>
                     <SplitPane dividerPositions="0.7" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <items>
                      <ScrollPane fitToWidth="true">
                         <content>
-                           <SplitPane dividerPositions="0.28442437923250563" orientation="VERTICAL">
+                           <SplitPane dividerPositions="0.3" orientation="VERTICAL">
                               <items>
                                  <AnchorPane>
                                     <children>
@@ -97,17 +97,17 @@
                                              <Font name="System Bold" size="12.0" />
                                           </font>
                                        </Label>
-                                       <Pane fx:id="commissionSchemeTablePane">
+                                       <Pane fx:id="commissionSchemeTablePane" maxHeight="-Infinity" minHeight="-Infinity">
                                           <VBox.margin>
                                              <Insets />
                                           </VBox.margin>
                                        </Pane>
-                                       <Pane fx:id="commissionSchemeLocationTablePane" prefHeight="75.0">
+                                       <Pane fx:id="commissionSchemeLocationTablePane" prefHeight="90.0">
                                           <VBox.margin>
                                              <Insets />
                                           </VBox.margin>
                                        </Pane>
-                                       <Pane fx:id="commissionSchemeCurrencyTablePane" prefHeight="75.0">
+                                       <Pane fx:id="commissionSchemeCurrencyTablePane" prefHeight="90.0">
                                           <VBox.margin>
                                              <Insets />
                                           </VBox.margin>
