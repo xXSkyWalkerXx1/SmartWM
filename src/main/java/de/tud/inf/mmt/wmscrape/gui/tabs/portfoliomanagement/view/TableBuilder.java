@@ -24,12 +24,20 @@ public class TableBuilder<S> {
 
     /**
      * @param parent JavaFX node-based UI Controls and all layout containers (f.e. Pane). Only used for table-sizing.
+     * @implNote Height of table will be bind to parent height.
      */
     public TableBuilder(@NonNull Region parent, @NonNull List<S> tableItems){
+        this(parent, tableItems, true);
+    }
+
+    /**
+     * @param parent JavaFX node-based UI Controls and all layout containers (f.e. Pane). Only used for table-sizing.
+     */
+    public TableBuilder(@NonNull Region parent, @NonNull List<S> tableItems, boolean bindHeightToParent){
         tableView.getItems().addAll(tableItems);
         tableView.setEditable(true);
         tableView.prefWidthProperty().bind(parent.widthProperty());
-        tableView.prefHeightProperty().bind(parent.heightProperty());
+        if (bindHeightToParent) tableView.prefHeightProperty().bind(parent.heightProperty());
     }
 
     /**
