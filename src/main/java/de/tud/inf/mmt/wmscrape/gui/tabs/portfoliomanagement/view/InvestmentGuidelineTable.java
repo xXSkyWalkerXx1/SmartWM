@@ -97,6 +97,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         setEditable(true);
         initializeItems(entries);
         prefWidthProperty().bind(parent.widthProperty());
+        //prefHeightProperty().bind(parent.heightProperty());
     }
 
     /**
