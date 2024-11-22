@@ -278,6 +278,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
             addToLog("INFO:\tWebseite vollständig geladen.");
         } catch (Exception e) {
+            System.out.println(e.getMessage()+" <-> "+e.getCause());
             addToLog("WARN:\tFehler beim Laden der Webseite, Ladevorgang wird wiederholt.");
         }
     }
@@ -352,7 +353,7 @@ public abstract class WebsiteHandler extends Service<Void> {
     }
 
     private void switchToFrame(WebElement frame) {
-        if(frame != null) driver.switchTo().frame(frame);
+        if(frame != null) driver.switchTo().frame(frame); //ToDo: driver.executeScript("window.top = arguments[0];", frame);
         else driver.switchTo().defaultContent();
     }
 
