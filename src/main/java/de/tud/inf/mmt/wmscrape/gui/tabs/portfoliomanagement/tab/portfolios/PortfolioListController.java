@@ -68,7 +68,6 @@ public class PortfolioListController implements Openable {
 
     @FXML
     private void onClickCreatePortfolio() {
-        createPortfolioDialog.initialize();
         PrimaryTabManager.loadFxml(
                 "gui/tabs/portfoliomanagement/tab/portfolios/dialog/create_portfolio_dialog.fxml",
                 "Neues Portfolio erstellen",
@@ -77,6 +76,7 @@ public class PortfolioListController implements Openable {
                 createPortfolioDialog,
                 false
         );
+        createPortfolioDialog.initialize();
     }
 
     public void setAccountTable(TableView<Account> table){
