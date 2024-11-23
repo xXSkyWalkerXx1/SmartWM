@@ -46,7 +46,7 @@ public class CreatePortfolioDialog {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         inputOwner.getItems().addAll(ownerService.getAllOwners());
         inputOwner.getSelectionModel().selectFirst();
 
