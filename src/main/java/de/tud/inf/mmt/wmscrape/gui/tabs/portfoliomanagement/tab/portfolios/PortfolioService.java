@@ -33,7 +33,7 @@ public class PortfolioService {
                               @NonNull ComboBox<Owner> inputOwner) {
         portfolio.setName(inputPortfolioName.getText());
         portfolio.setOwner(inputOwner.getValue());
-        portfolio.setCreatedAt(Calendar.getInstance().getTime());
+        if (isOnCreate) portfolio.setCreatedAt(Calendar.getInstance().getTime());
         save(portfolio);
     }
 
