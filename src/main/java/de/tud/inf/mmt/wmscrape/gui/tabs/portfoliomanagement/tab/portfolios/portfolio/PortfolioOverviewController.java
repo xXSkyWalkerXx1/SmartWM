@@ -75,6 +75,7 @@ public class PortfolioOverviewController implements Openable {
         if (portfolioService.isPortfolioInputInvalid(inputPortfolioName, portfolio, outputDeactivatedAt)) return;
 
         // If everything is valid, we can create and save the new portfolio
+        portfolio.setState(inputState.getValue());
         portfolioService.savePortfolio(portfolio, false, inputPortfolioName, inputOwner);
 
         // Finally, show success-dialog
