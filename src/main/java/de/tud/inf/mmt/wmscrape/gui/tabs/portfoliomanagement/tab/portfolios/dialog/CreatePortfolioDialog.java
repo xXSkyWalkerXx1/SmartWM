@@ -17,7 +17,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class CreatePortfolioDialog {
 
-    Portfolio portfolio = new Portfolio();
+    Portfolio portfolio;
 
     @Autowired
     OwnerService ownerService;
@@ -41,15 +41,16 @@ public class CreatePortfolioDialog {
     @FXML
     AnchorPane commissionSchemeCurrencyTablePane;
 
-    CreatePortfolioDialog() {
-        portfolio.getInvestmentGuideline().initializeEntries();
-    }
-
     @FXML
     public void initialize() {
+        portfolio = new Portfolio();
+        portfolio.getInvestmentGuideline().initializeEntries();
+
+        // Initialize combo-box with all owners
         inputOwner.getItems().addAll(ownerService.getAllOwners());
         inputOwner.getSelectionModel().selectFirst();
 
+        // Create and show tables
         commissionSchemeTablePane.getChildren().add(new InvestmentGuidelineTable(
                 commissionSchemeTablePane,
                 portfolio.getInvestmentGuideline().getEntries()
