@@ -5,6 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.KontoListController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerDepotsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerPortfoliosController;
@@ -15,6 +16,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
+import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -674,6 +676,132 @@ public class TableFactory {
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getOthers()),
                 col -> col.getRowValue().setOthers((float) col.getNewValue())
         );
+
+        return tableBuilder.getResult();
+    }
+
+    /**
+     * @param parentAccountTable JavaFX node-based UI-Controls and all layout containers (f.e. Pane).
+     */
+    public static TableView<Account> createAccountsTable(@NonNull Region parentAccountTable,
+                                                         @NonNull Region parentDepotTable,
+                                                         @NonNull List<Account> tableItems,
+                                                         @NonNull KontoListController kontoListController,
+                                                         @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
+
+        TableBuilder<Account> tableBuilder = new TableBuilder<>(parentAccountTable, tableItems);
+        Consumer<Account> openAccountOverviewAction = account -> {
+            Navigator.navigateToAccount(portfolioManagementTabManager, account);
+            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
+        };
+
+        tableBuilder.addColumn(
+                "Konto-Bezeichnung",
+                0.2f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getDescription())
+        );
+        tableBuilder.addColumn(
+                "Typ",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getType().toString())
+        );
+        tableBuilder.addColumn(
+                "Status",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getState().getDisplayText())
+        );
+        tableBuilder.addColumn(
+                "Inhaber",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getOwner().toString())
+        );
+        tableBuilder.addNestedColumn(
+                "Bank",
+                0.2f,
+                Map.entry(
+                        "Name",
+                        accountCellDataFeatures -> new SimpleStringProperty(accountCellDataFeatures.getValue().getBankName())
+                ),
+                Map.entry(
+                        "IBAN",
+                        accountCellDataFeatures -> new SimpleStringProperty(accountCellDataFeatures.getValue().getIban())
+                ),
+                Map.entry(
+                        "Konto-Nr.",
+                        (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                                -> new SimpleStringProperty(accountCellDataFeatures.getValue().getKontoNumber())
+                )
+        );
+        tableBuilder.addColumn(
+                "Bemerkung",
+                0.2f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getNotice())
+        );
+        tableBuilder.addColumn(
+                "Betrag",
+                0.1f,
+                (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getValue().toString())
+        );
+
+        tableBuilder.setActionOnSingleClickRow(account
+                -> kontoListController.setDepotTable(TableFactory.createAccountDepotsTable(
+                        parentDepotTable,
+                        account.getMappedDepots(),
+                        portfolioManagementTabManager
+                )
+        ));
+        tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
+
+        tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
+        tableBuilder.addRowContextMenuItem("Transaktionen anzeigen", account -> {
+            throw new NotImplementedException("Not implemented yet");
+        });
+        tableBuilder.addRowContextMenuItem("Löschen", account -> {
+            throw new NotImplementedException("Not implemented yet");
+        });
+
+        return tableBuilder.getResult();
+    }
+
+    /**
+     * @param parent JavaFX node-based UI-Controls and all layout containers (f.e. Pane).
+     */
+    public static TableView<Depot> createAccountDepotsTable(@NonNull Region parent,
+                                                            @NonNull List<Depot> tableItems,
+                                                            @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
+        TableBuilder<Depot> tableBuilder = new TableBuilder<>(parent, tableItems);
+        Consumer<Depot> openDepotOverviewAction = depot -> {
+            Navigator.navigateToDepot(portfolioManagementTabManager, depot);
+            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(depot.toString(), "depot"));
+        };
+
+        tableBuilder.addColumn(
+                "Depot-Name",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
+                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getName())
+        );
+        tableBuilder.addColumn(
+                "Inhaber",
+                0.3f,
+                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
+                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getOwner().toString())
+        );
+        tableBuilder.addColumn(
+                "Bemerkung",
+                0.2f,
+                (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
+                        -> new SimpleStringProperty(depotCellDataFeatures.getValue().getNotice())
+        );
+
+        tableBuilder.setActionOnDoubleClickRow(openDepotOverviewAction);
+        tableBuilder.addRowContextMenuItem("Details anzeigen", openDepotOverviewAction);
 
         return tableBuilder.getResult();
     }
