@@ -34,7 +34,7 @@
                                 </ButtonBar>
                                 <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1">
                                     <buttons>
-                                        <Button mnemonicParsing="false" onAction="#onClickCreateAccount" text="Konto erstellen" />
+                                        <Button fx:id="createAccountButton" mnemonicParsing="false" onAction="#onClickCreateAccount" text="Konto erstellen" />
                                     </buttons>
                                 </ButtonBar>
                             </children>
