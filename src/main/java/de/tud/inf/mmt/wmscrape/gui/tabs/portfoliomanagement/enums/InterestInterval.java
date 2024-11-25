@@ -11,7 +11,8 @@ public enum InterestInterval {
         this.displayText = displayText;
     }
 
-    public String getDisplayText() {
+    @Override
+    public String toString() {
         return displayText;
     }
 }
