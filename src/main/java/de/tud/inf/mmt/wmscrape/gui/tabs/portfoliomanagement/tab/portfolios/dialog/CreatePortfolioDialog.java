@@ -46,6 +46,12 @@ public class CreatePortfolioDialog {
         portfolio = new Portfolio();
         portfolio.getInvestmentGuideline().initializeEntries();
 
+        // Reset data
+        inputOwner.getItems().clear();
+        commissionSchemeTablePane.getChildren().clear();
+        commissionSchemeLocationTablePane.getChildren().clear();
+        commissionSchemeCurrencyTablePane.getChildren().clear();
+
         // Initialize combo-box with all owners
         inputOwner.getItems().addAll(ownerService.getAllOwners());
         inputOwner.getSelectionModel().selectFirst();
