@@ -31,8 +31,7 @@ public class Portfolio extends FinancialAsset {
     @JoinColumn(name = "depot_id", nullable = false)
     private Set<Depot> depots = Collections.emptySet();
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
-    @JoinColumn(name = "account_id", nullable = false)
+    @OneToMany(mappedBy = "portfolio", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<Account> accounts = Collections.emptySet();
 
     @Temporal(TemporalType.TIMESTAMP)

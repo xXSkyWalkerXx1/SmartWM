@@ -37,10 +37,10 @@ public class Account extends FinancialAsset {
     private double balance;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "portfolio_id", nullable = false)
     private Portfolio portfolio;
 
