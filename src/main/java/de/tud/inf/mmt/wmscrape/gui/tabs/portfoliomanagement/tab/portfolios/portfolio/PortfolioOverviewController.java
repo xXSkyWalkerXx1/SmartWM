@@ -72,11 +72,12 @@ public class PortfolioOverviewController implements Openable {
     @FXML
     private void onSave() {
         // Validate first
-        if (portfolioService.isPortfolioInputInvalid(inputPortfolioName, portfolio, outputDeactivatedAt)) return;
+        if (portfolioService.isInputInvalid(inputPortfolioName, portfolio, outputDeactivatedAt)) return;
 
         // If everything is valid, we can create and save the new portfolio
+        portfolioService.writeInput(portfolio, false, inputPortfolioName, inputOwner);
         portfolio.setState(inputState.getValue());
-        portfolioService.savePortfolio(portfolio, false, inputPortfolioName, inputOwner);
+        portfolioService.save(portfolio);
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(

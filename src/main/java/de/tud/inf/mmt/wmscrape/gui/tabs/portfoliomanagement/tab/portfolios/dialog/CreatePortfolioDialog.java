@@ -74,13 +74,14 @@ public class CreatePortfolioDialog {
     @FXML
     private void onSave() {
         // Validate first
-        if (portfolioService.isPortfolioInputInvalid(
+        if (portfolioService.isInputInvalid(
                 inputPortfolioName, portfolio,
                 (Control) commissionSchemeTablePane.getChildren().get(0)
         )) return;
 
         // If everything is valid, we can create and save the new portfolio
-        portfolioService.savePortfolio(portfolio, true, inputPortfolioName, inputOwner);
+        portfolioService.writeInput(portfolio, true, inputPortfolioName, inputOwner);
+        portfolioService.save(portfolio);
         onCancel();
 
         // Finally, show success-dialog

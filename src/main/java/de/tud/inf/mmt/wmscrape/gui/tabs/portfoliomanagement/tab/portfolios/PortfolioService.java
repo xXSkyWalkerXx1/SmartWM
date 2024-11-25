@@ -7,7 +7,6 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.PortfolioRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -29,16 +28,15 @@ public class PortfolioService {
         portfolioRepository.save(portfolio);
     }
 
-    public void savePortfolio(@NonNull Portfolio portfolio, boolean isOnCreate, @NonNull TextField inputPortfolioName,
-                              @NonNull ComboBox<Owner> inputOwner) {
+    public void writeInput(@NonNull Portfolio portfolio, boolean isOnCreate, @NonNull TextField inputPortfolioName,
+                           @NonNull ComboBox<Owner> inputOwner) {
         portfolio.setName(inputPortfolioName.getText());
         portfolio.setOwner(inputOwner.getValue());
         if (isOnCreate) portfolio.setCreatedAt(Calendar.getInstance().getTime());
-        save(portfolio);
+
     }
 
-    public boolean isPortfolioInputInvalid(@NonNull TextField inputPortfolioName, @NonNull Portfolio portfolio,
-                                           @NonNull Control control) {
+    public boolean isInputInvalid(@NonNull TextField inputPortfolioName, @NonNull Portfolio portfolio, @NonNull Control control) {
         if (FieldValidator.isInputEmpty(inputPortfolioName)) return true;
 
         float sum_ = 0;
