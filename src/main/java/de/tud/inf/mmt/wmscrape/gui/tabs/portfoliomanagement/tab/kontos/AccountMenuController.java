@@ -6,8 +6,11 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog.CreateAccountDialog;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
@@ -23,10 +26,16 @@ public class AccountMenuController implements Openable {
     @Autowired
     AccountService accountService;
     @Autowired
+    OwnerService ownerService;
+    @Autowired
+    PortfolioService portfolioService;
+    @Autowired
     PortfolioManagementTabManager portfolioManagementTabManager;
     @Autowired
     CreateAccountDialog createAccountDialog;
 
+    @FXML
+    Button createAccountButton;
     @FXML
     AnchorPane accountTablePane;
     @FXML
@@ -37,6 +46,8 @@ public class AccountMenuController implements Openable {
     @Override
     public void open() {
         List<Account> accounts = accountService.getAll();
+
+        createAccountButton.setVisible(!ownerService.getAllOwners().isEmpty() && !portfolioService.getAll().isEmpty());
 
         accountTablePane.getChildren().add(TableFactory.createAccountsTable(
                 accountTablePane,
@@ -64,7 +75,7 @@ public class AccountMenuController implements Openable {
         PrimaryTabManager.loadFxml(
                 "gui/tabs/portfoliomanagement/tab/kontos/dialog/create_account_dialog.fxml",
                 "Neues Konto erstellen",
-                sumLabel,
+                createAccountButton,
                 true,
                 createAccountDialog,
                 false
