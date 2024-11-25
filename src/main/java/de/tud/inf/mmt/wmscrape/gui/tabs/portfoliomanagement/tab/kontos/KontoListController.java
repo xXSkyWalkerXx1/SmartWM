@@ -1,38 +1,34 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos;
 
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import org.springframework.beans.factory.annotation.Autowired;
+import javafx.scene.layout.AnchorPane;
+import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.springframework.stereotype.Controller;
+
+import java.awt.*;
 
 @Controller
 public class KontoListController {
 
     @FXML
-    PortfolioManagementTabManager portfolioManagementTabManager;
+    AnchorPane accountTablePane;
+    @FXML
+    AnchorPane accountDepotsTablePane;
+    @FXML
+    Label sumLabel;
 
     @FXML
-    Button switchToKonto1Button;
-    @FXML
-    Button switchToKonto2Button;
+    public void initialize() {
 
-    @Autowired
-    public KontoListController(PortfolioManagementTabManager portfolioManagementTabManager) {
-        this.portfolioManagementTabManager = portfolioManagementTabManager;
     }
 
     @FXML
-    private void initialize() {
-        switchToKonto1Button.setOnAction(actionEvent -> {
-            portfolioManagementTabManager.showKontoTabs(null);
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement("Konto 1", "konto"));
-        });
-        switchToKonto2Button.setOnAction(actionEvent -> {
-            portfolioManagementTabManager.showKontoTabs(null);
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement("Konto 2", "konto"));
-        });
+    private void onClickShowAccountHistory() {
+        throw new NotImplementedException("Not implemented yet");
     }
 
+    @FXML
+    private void onClickCreateAccount() {
+        throw new NotImplementedException("Not implemented yet");
+    }
 }
