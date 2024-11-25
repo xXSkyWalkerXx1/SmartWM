@@ -751,14 +751,18 @@ public class TableFactory {
         );
 
         tableBuilder.setActionOnSingleClickRow(account -> {
-            // Only clearing accounts are used in depots
-            if (!AccountType.CLEARING_ACCOUNT.equals(account.getType())) return;
+            TableView<Depot> table = null;
 
-            accountMenuController.setDepotTable(TableFactory.createAccountDepotsTable(
-                    parentDepotTable,
-                    account.getMappedDepots(),
-                    portfolioManagementTabManager
-            ));
+            // Only clearing accounts are used in depots
+            if (AccountType.CLEARING_ACCOUNT.equals(account.getType())) {
+                table = TableFactory.createAccountDepotsTable(
+                        parentDepotTable,
+                        account.getMappedDepots(),
+                        portfolioManagementTabManager
+                );
+            }
+
+            accountMenuController.setDepotTable(table);
         });
         tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
 
