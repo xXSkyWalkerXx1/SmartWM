@@ -49,14 +49,14 @@ public class AccountMenuController implements Openable {
 
         createAccountButton.setDisable(ownerService.getAllOwners().isEmpty() || portfolioService.getAll().isEmpty());
 
-        accountTablePane.getChildren().add(TableFactory.createAccountsTable(
+        accountTablePane.getChildren().setAll(TableFactory.createAccountsTable(
                 accountTablePane,
                 accountDepotsTablePane,
                 accounts,
                 this,
                 portfolioManagementTabManager
         ));
-        accountDepotsTablePane.getChildren().add(TableFactory.createAccountDepotsTable(
+        accountDepotsTablePane.getChildren().setAll(TableFactory.createAccountDepotsTable(
                 accountDepotsTablePane,
                 List.of(),
                 portfolioManagementTabManager
@@ -84,7 +84,6 @@ public class AccountMenuController implements Openable {
     }
 
     public void setDepotTable(TableView<Depot> table) {
-        accountDepotsTablePane.getChildren().clear();
-        accountDepotsTablePane.getChildren().add(table);
+        accountDepotsTablePane.getChildren().setAll(table);
     }
 }
