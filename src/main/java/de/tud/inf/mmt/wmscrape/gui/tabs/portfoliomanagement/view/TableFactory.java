@@ -5,7 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.KontoListController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerDepotsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerPortfoliosController;
@@ -686,7 +686,7 @@ public class TableFactory {
     public static TableView<Account> createAccountsTable(@NonNull Region parentAccountTable,
                                                          @NonNull Region parentDepotTable,
                                                          @NonNull List<Account> tableItems,
-                                                         @NonNull KontoListController kontoListController,
+                                                         @NonNull AccountMenuController accountMenuController,
                                                          @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parentAccountTable, tableItems);
@@ -750,7 +750,7 @@ public class TableFactory {
         );
 
         tableBuilder.setActionOnSingleClickRow(account
-                -> kontoListController.setDepotTable(TableFactory.createAccountDepotsTable(
+                -> accountMenuController.setDepotTable(TableFactory.createAccountDepotsTable(
                         parentDepotTable,
                         account.getMappedDepots(),
                         portfolioManagementTabManager

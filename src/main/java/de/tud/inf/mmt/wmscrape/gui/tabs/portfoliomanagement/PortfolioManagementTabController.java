@@ -9,7 +9,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.DepotList
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungOrderController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungWertpapiervergleichController;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.KontoListController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoOverviewController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoTransactionsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
@@ -49,7 +49,7 @@ public class PortfolioManagementTabController {
     @Autowired
     private DepotListController depotListController;
     @Autowired
-    private KontoListController kontoListController;
+    private AccountMenuController accountMenuController;
     @Autowired
     private OwnerController ownerController;
 
@@ -252,7 +252,7 @@ public class PortfolioManagementTabController {
         // Account-Management
         kontoTab = createSubTab(
                 "Konten",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/kontos.fxml", kontoListController)
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/kontos.fxml", accountMenuController)
         );
         kontoÜbersichtTab = createSubTab(
                 "Übersicht",
@@ -263,7 +263,7 @@ public class PortfolioManagementTabController {
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/konto/kontoTransactions.fxml", kontoTransactionsController)
         );
 
-        kontoTab.getProperties().put(TAB_PROPERTY_CONTROLLER, kontoListController);
+        kontoTab.getProperties().put(TAB_PROPERTY_CONTROLLER, accountMenuController);
         kontoÜbersichtTab.getProperties().put(TAB_PROPERTY_CONTROLLER, kontoOverviewController);
         kontoTransaktionenTab.getProperties().put(TAB_PROPERTY_CONTROLLER, kontoTransactionsController);
 
