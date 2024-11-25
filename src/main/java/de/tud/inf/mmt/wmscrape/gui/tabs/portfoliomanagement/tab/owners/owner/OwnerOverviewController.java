@@ -65,7 +65,7 @@ public class OwnerOverviewController implements Openable {
 
     @FXML
     private void initialize() {
-        inputMaritalState.getItems().addAll(MaritalState.values());
+        inputMaritalState.getItems().setAll(MaritalState.values());
 
         // Change TextFields so that they only accept integers
         FieldFormatter.setInputFloatRange(inputTaxRate, 0, 100);
@@ -83,7 +83,7 @@ public class OwnerOverviewController implements Openable {
                 .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
 
         loadOwnerData();
-        ownerTreeViewPane.getChildren().add(new PortfolioTreeView(
+        ownerTreeViewPane.getChildren().setAll(new PortfolioTreeView(
                 ownerTreeViewPane,
                 owner.getPortfolios().stream().toList(),
                 portfolioManagementManager,

@@ -53,7 +53,7 @@ public class CreateOwnerDialog {
     @FXML
     private void initialize() {
         // Set values for MaritalState and select the first one as default one
-        inputMaritalState.getItems().addAll(MaritalState.values());
+        inputMaritalState.getItems().setAll(MaritalState.values());
         inputMaritalState.getSelectionModel().selectFirst();
 
         // Change TextFields so that they only accept integers

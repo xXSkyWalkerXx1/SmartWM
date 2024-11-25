@@ -40,60 +40,7 @@ public class OwnerController implements Openable {
     AnchorPane ownerTreeViewPane;
 
     public void open() {
-        /*
-        Owner defaultOwner = new Owner();
-        defaultOwner.setForename("Initial");
-        defaultOwner.setAftername("Owner");
-        defaultOwner.setCreatedAt(Calendar.getInstance().getTime());
-
-        Owner.Address defaultOwnerAddress = defaultOwner.getAddress();
-        defaultOwnerAddress.setCountry("Deutschland");
-        defaultOwnerAddress.setPlz("01609");
-        defaultOwnerAddress.setLocation("Frauenhain");
-        defaultOwnerAddress.setStreet("Hauptstraße");
-        defaultOwnerAddress.setStreetNumber("123");
-
-        Owner.TaxInformation defaultOwnerTaxInformation = defaultOwner.getTaxInformation();
-        defaultOwnerTaxInformation.setTaxNumber("10314141");
-        defaultOwnerTaxInformation.setMaritalState(MaritalState.SINGLE);
-
-        Portfolio portfolio = new Portfolio();
-        portfolio.setName("Default");
-        portfolio.setCreatedAt(Calendar.getInstance().getTime());
-        portfolio.setOwner(defaultOwner);
-
-        Account account = new Account();
-        account.setBalance(410);
-        account.setCreatedAt(Calendar.getInstance().getTime());
-        account.setOwner(defaultOwner);
-        account.setBankName("Junges Konto");
-        account.setCurrencyCode(Currency.getInstance("EUR"));
-        account.setDescription("Mein standard Konto");
-        account.setIban("DE01234566789");
-        account.setInterestDays("Montags");
-        account.setInterestInterval(InterestInterval.YEARLY);
-        account.setInterestRate(1);
-        account.setKontoNumber("1313141442142");
-        account.setType(AccountType.CHECKING_ACCOUNT);
-
-        Depot depot = new Depot();
-        depot.setOwner(defaultOwner);
-        depot.setCreatedAt(Calendar.getInstance().getTime());
-        depot.setName("Krypto-Depot");
-        Depot.DepotBank depotBank = new Depot.DepotBank();
-        depotBank.setName("Sparkasse Meißen");
-        depot.setBank(depotBank);
-        depot.setPortfolio(portfolio);
-
-        defaultOwner.setPortfolios(Collections.singleton(portfolio));
-        defaultOwner.setAccounts(Collections.singleton(account));
-        defaultOwner.setDepots(Collections.singleton(depot));
-        portfolio.setAccounts(List.of(account));
-        portfolio.setDepots(List.of(depot));
-         */
-
-        //
-        ownerTablePane.getChildren().add(TableFactory.createOwnerTable(
+        ownerTablePane.getChildren().setAll(TableFactory.createOwnerTable(
                 ownerTablePane,
                 ownerService.getAllOwners(),
                 this
@@ -115,8 +62,7 @@ public class OwnerController implements Openable {
     }
 
     public void setOwnerTreeView(@NonNull PortfolioTreeView portfolioTreeView){
-        ownerTreeViewPane.getChildren().clear();
-        ownerTreeViewPane.getChildren().add(portfolioTreeView);
+        ownerTreeViewPane.getChildren().setAll(portfolioTreeView);
     }
 
     public PortfolioManagementTabManager getPortfolioManagementTabManager() {
