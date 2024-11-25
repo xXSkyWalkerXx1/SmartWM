@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.*;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
@@ -749,13 +750,16 @@ public class TableFactory {
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getValue().toString())
         );
 
-        tableBuilder.setActionOnSingleClickRow(account
-                -> accountMenuController.setDepotTable(TableFactory.createAccountDepotsTable(
-                        parentDepotTable,
-                        account.getMappedDepots(),
-                        portfolioManagementTabManager
-                )
-        ));
+        tableBuilder.setActionOnSingleClickRow(account -> {
+            // Only clearing accounts are used in depots
+            if (!AccountType.CLEARING_ACCOUNT.equals(account.getType())) return;
+
+            accountMenuController.setDepotTable(TableFactory.createAccountDepotsTable(
+                    parentDepotTable,
+                    account.getMappedDepots(),
+                    portfolioManagementTabManager
+            ));
+        });
         tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
 
         tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
