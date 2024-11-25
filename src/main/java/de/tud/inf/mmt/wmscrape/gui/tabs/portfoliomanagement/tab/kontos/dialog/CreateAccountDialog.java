@@ -72,22 +72,22 @@ public class CreateAccountDialog {
         FieldFormatter.setInputFloatRange(inputInterestRate, 0, 100);
 
         // Initialize elements with values
-        inputType.getItems().addAll(AccountType.values());
+        inputType.getItems().setAll(AccountType.values());
         inputType.getSelectionModel().selectFirst();
 
-        inputCurrencyCode.getItems().addAll(Currency.getAvailableCurrencies().stream()
+        inputCurrencyCode.getItems().setAll(Currency.getAvailableCurrencies().stream()
                 .sorted(Comparator.comparing(Currency::getCurrencyCode))
                 .toList()
         );
         inputCurrencyCode.getSelectionModel().selectFirst();
 
-        inputOwner.getItems().addAll(ownerService.getAllOwners());
+        inputOwner.getItems().setAll(ownerService.getAllOwners());
         inputOwner.getSelectionModel().selectFirst();
 
-        inputPortfolio.getItems().addAll(portfolioService.getAll());
+        inputPortfolio.getItems().setAll(portfolioService.getAll());
         inputPortfolio.getSelectionModel().selectFirst();
 
-        inputInterestInterval.getItems().addAll(InterestInterval.values());
+        inputInterestInterval.getItems().setAll(InterestInterval.values());
         inputInterestInterval.getSelectionModel().selectFirst();
     }
 
