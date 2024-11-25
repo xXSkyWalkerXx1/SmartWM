@@ -17,8 +17,6 @@ public class OwnerService {
         return ownerRepository.findAll();
     }
 
-    public Owner findBy(int id) { return ownerRepository.getById(id); }
-
     public void saveOwner(Owner owner) {
         ownerRepository.save(owner);
     }

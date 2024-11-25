@@ -10,5 +10,4 @@ import java.util.List;
 @Repository
 public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 
-    List<Owner> findAll();
 }
