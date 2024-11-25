@@ -69,7 +69,7 @@ public class AccountMenuController implements Openable {
                 createAccountDialog,
                 false
         );
-        //createAccountDialog.initialize();
+        createAccountDialog.initialize();
     }
 
     public void setDepotTable(TableView<Depot> table) {
