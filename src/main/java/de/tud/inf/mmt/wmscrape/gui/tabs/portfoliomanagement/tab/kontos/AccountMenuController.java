@@ -1,9 +1,11 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog.CreateAccountDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -22,6 +24,8 @@ public class AccountMenuController implements Openable {
     AccountService accountService;
     @Autowired
     PortfolioManagementTabManager portfolioManagementTabManager;
+    @Autowired
+    CreateAccountDialog createAccountDialog;
 
     @FXML
     AnchorPane accountTablePane;
@@ -57,7 +61,15 @@ public class AccountMenuController implements Openable {
 
     @FXML
     private void onClickCreateAccount() {
-        throw new NotImplementedException("Not implemented yet");
+        PrimaryTabManager.loadFxml(
+                "gui/tabs/portfoliomanagement/tab/kontos/dialog/create_account_dialog.fxml",
+                "Neues Konto erstellen",
+                sumLabel,
+                true,
+                createAccountDialog,
+                false
+        );
+        //createAccountDialog.initialize();
     }
 
     public void setDepotTable(TableView<Depot> table) {
