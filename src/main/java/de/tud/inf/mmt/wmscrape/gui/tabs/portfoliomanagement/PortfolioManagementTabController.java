@@ -576,6 +576,10 @@ public class PortfolioManagementTabController {
         return ownerController;
     }
 
+    public AccountMenuController getAccountMenuController() {
+        return accountMenuController;
+    }
+
     public PortfolioListController getPortfolioListController() {
         return portfolioListController;
     }
@@ -739,6 +743,5 @@ public class PortfolioManagementTabController {
     public TabPane getPortfolioManagementTabPane() {
         return portfolioManagementTabPane;
     }
-
     // endregion
 }
