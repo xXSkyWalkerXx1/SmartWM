@@ -40,6 +40,10 @@ public class Account extends FinancialAsset {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
+    @OneToOne
+    @JoinColumn(name = "portfolio_id", nullable = false)
+    private Portfolio portfolio;
+
     @Column(name = "notice")
     private String notice;
 
@@ -67,7 +71,7 @@ public class Account extends FinancialAsset {
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
-    @ManyToMany(mappedBy = "billingAccounts")
+    @ManyToMany(mappedBy = "billingAccounts", fetch = FetchType.EAGER)
     private Set<Depot> mappedDepots = Collections.emptySet();
 
     @Override
@@ -127,6 +131,14 @@ public class Account extends FinancialAsset {
 
     public void setOwner(Owner owner) {
         this.owner = owner;
+    }
+
+    public Portfolio getPortfolio() {
+        return portfolio;
+    }
+
+    public void setPortfolio(Portfolio portfolio) {
+        this.portfolio = portfolio;
     }
 
     public String getNotice() {
