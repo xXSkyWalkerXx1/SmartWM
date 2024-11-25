@@ -46,26 +46,20 @@ public class CreatePortfolioDialog {
         portfolio = new Portfolio();
         portfolio.getInvestmentGuideline().initializeEntries();
 
-        // Reset data
-        inputOwner.getItems().clear();
-        commissionSchemeTablePane.getChildren().clear();
-        commissionSchemeLocationTablePane.getChildren().clear();
-        commissionSchemeCurrencyTablePane.getChildren().clear();
-
         // Initialize combo-box with all owners
-        inputOwner.getItems().addAll(ownerService.getAllOwners());
+        inputOwner.getItems().setAll(ownerService.getAllOwners());
         inputOwner.getSelectionModel().selectFirst();
 
         // Create and show tables
-        commissionSchemeTablePane.getChildren().add(new InvestmentGuidelineTable(
+        commissionSchemeTablePane.getChildren().setAll(new InvestmentGuidelineTable(
                 commissionSchemeTablePane,
                 portfolio.getInvestmentGuideline().getEntries()
         ));
-        commissionSchemeLocationTablePane.getChildren().add(TableFactory.createPortfolioDivisionByLocationTable(
+        commissionSchemeLocationTablePane.getChildren().setAll(TableFactory.createPortfolioDivisionByLocationTable(
                 commissionSchemeLocationTablePane,
                 portfolio.getInvestmentGuideline().getDivisionByLocation()
         ));
-        commissionSchemeCurrencyTablePane.getChildren().add(TableFactory.createPortfolioDivisionByCurrencyTable(
+        commissionSchemeCurrencyTablePane.getChildren().setAll(TableFactory.createPortfolioDivisionByCurrencyTable(
                 commissionSchemeCurrencyTablePane,
                 portfolio.getInvestmentGuideline().getDivisionByCurrency()
         ));

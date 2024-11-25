@@ -90,29 +90,26 @@ public class PortfolioOverviewController implements Openable {
     private void loadPortfolioData() {
         inputPortfolioName.setText(portfolio.getName());
 
-        inputOwner.getItems().addAll(ownerService.getAllOwners());
+        inputOwner.getItems().setAll(ownerService.getAllOwners());
         inputOwner.getSelectionModel().select(portfolio.getOwner());
 
-        inputState.getItems().addAll(State.values());
+        inputState.getItems().setAll(State.values());
         inputState.getSelectionModel().select(portfolio.getState());
 
         outputCreatedAt.setText(portfolio.getCreatedAt().toString());
         outputDeactivatedAt.setText(portfolio.getDeactivatedAt() != null ? portfolio.getDeactivatedAt().toString() : "");
 
-        commissionSchemeTablePane.getChildren().clear();
-        commissionSchemeTablePane.getChildren().add(new InvestmentGuidelineTable(
+        commissionSchemeTablePane.getChildren().setAll(new InvestmentGuidelineTable(
                 commissionSchemeTablePane,
                 portfolio.getInvestmentGuideline().getEntries()
         ));
 
-        commissionSchemeLocationTablePane.getChildren().clear();
-        commissionSchemeLocationTablePane.getChildren().add(TableFactory.createPortfolioDivisionByLocationTable(
+        commissionSchemeLocationTablePane.getChildren().setAll(TableFactory.createPortfolioDivisionByLocationTable(
                 commissionSchemeLocationTablePane,
                 portfolio.getInvestmentGuideline().getDivisionByLocation()
         ));
 
-        commissionSchemeCurrencyTablePane.getChildren().clear();
-        commissionSchemeCurrencyTablePane.getChildren().add(TableFactory.createPortfolioDivisionByCurrencyTable(
+        commissionSchemeCurrencyTablePane.getChildren().setAll(TableFactory.createPortfolioDivisionByCurrencyTable(
                 commissionSchemeCurrencyTablePane,
                 portfolio.getInvestmentGuideline().getDivisionByCurrency()
         ));

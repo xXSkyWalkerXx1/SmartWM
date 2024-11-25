@@ -47,7 +47,7 @@ public class PortfolioListController implements Openable {
 
         createPortfolioButton.setDisable(ownerService.getAllOwners().isEmpty());
 
-        portfoliosTablePane.getChildren().add(TableFactory.createPortfolioTable(
+        portfoliosTablePane.getChildren().setAll(TableFactory.createPortfolioTable(
                 portfoliosTablePane,
                 accountsTablePane,
                 depotsTablePane,
@@ -80,13 +80,11 @@ public class PortfolioListController implements Openable {
     }
 
     public void setAccountTable(TableView<Account> table){
-        accountsTablePane.getChildren().clear();
-        accountsTablePane.getChildren().add(table);
+        accountsTablePane.getChildren().setAll(table);
     }
 
     public void setDepotTable(TableView<Depot> table){
-        depotsTablePane.getChildren().clear();
-        depotsTablePane.getChildren().add(table);
+        depotsTablePane.getChildren().setAll(table);
     }
 
     public PortfolioManagementTabManager getPortfolioManagementManager() {
