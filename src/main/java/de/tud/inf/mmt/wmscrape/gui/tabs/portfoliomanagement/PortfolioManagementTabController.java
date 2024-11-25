@@ -128,7 +128,7 @@ public class PortfolioManagementTabController {
 
     private Set<Tab> depotTabs;
     private List<Tab> portfolioTabs;
-    private Set<Tab> kontoTabs;
+    private List<Tab> kontoTabs;
     private List<Tab> ownerTabs;
 
     public class ContexMenuItem {
@@ -206,9 +206,6 @@ public class PortfolioManagementTabController {
         portfolioDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioDepotsController);
         portfolioKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioKontosController);
 
-        portfolioTabs = List.of(portfolioOverviewTab, portfolioDepotsTab, portfolioStrukturTab, portfolioKontosTab, portfolioAnalyseTab, portfolioBenchmarkTab);
-        portfolioManagementTabPane.getTabs().addAll(portfolioTabs);
-
         //
         Parent parent;
 
@@ -252,21 +249,23 @@ public class PortfolioManagementTabController {
         depotAnlageStrategieTab = createSubTab("Anlagestrategie", parent);
         portfolioManagementTabPane.getTabs().add(depotAnlageStrategieTab);
 
+        // Account-Management
+        kontoTab = createSubTab(
+                "Konten",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/kontos.fxml", kontoListController)
+        );
+        kontoÜbersichtTab = createSubTab(
+                "Übersicht",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/konto/kontoOverview.fxml", kontoOverviewController)
+        );
+        kontoTransaktionenTab = createSubTab(
+                "Transaktionen",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/konto/kontoTransactions.fxml", kontoTransactionsController)
+        );
 
-        kontoListController = new KontoListController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/kontos.fxml", kontoListController);
-        kontoTab = createSubTab("Konten", parent);
-        portfolioManagementTabPane.getTabs().add(kontoTab);
-
-        kontoOverviewController = new KontoOverviewController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/konto/kontoOverview.fxml", kontoOverviewController);
-        kontoÜbersichtTab = createSubTab("Übersicht", parent);
-        portfolioManagementTabPane.getTabs().add(kontoÜbersichtTab);
-
-        kontoTransactionsController = new KontoTransactionsController(portfolioManagementTabManager);
-        parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/kontos/konto/kontoTransactions.fxml", kontoTransactionsController);
-        kontoTransaktionenTab = createSubTab("Transaktionen", parent);
-        portfolioManagementTabPane.getTabs().add(kontoTransaktionenTab);
+        kontoTab.getProperties().put(TAB_PROPERTY_CONTROLLER, kontoListController);
+        kontoÜbersichtTab.getProperties().put(TAB_PROPERTY_CONTROLLER, kontoOverviewController);
+        kontoTransaktionenTab.getProperties().put(TAB_PROPERTY_CONTROLLER, kontoTransactionsController);
 
         // Owner-Management
         inhaberTab = createSubTab(
@@ -301,18 +300,20 @@ public class PortfolioManagementTabController {
         inhaberKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerKontosController);
         inhaberDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerDepotsController);
 
+        // Init tab-lists
+        portfolioTabs = List.of(portfolioOverviewTab, portfolioDepotsTab, portfolioStrukturTab, portfolioKontosTab, portfolioAnalyseTab, portfolioBenchmarkTab);
+        kontoTabs = List.of();
+        kontoTabs = List.of(kontoÜbersichtTab, kontoTransaktionenTab);
         ownerTabs = List.of(inhaberÜbersichtTab, inhaberVermögenTab, inhaberPortfoliosTab, inhaberDepotsTab, inhaberKontosTab);
-        portfolioManagementTabPane.getTabs().addAll(ownerTabs);
 
-        // Set TabPane-style
-        portfolioManagementTabPane.setStyle("-fx-tab-min-height: 30px;" + "-fx-tab-max-height: 30px;" + "-fx-tab-min-width: 150px;" + "-fx-tab-max-width: 150px;" + "-fx-alignment: CENTER;");
-
-        //
-        depotTabs = Set.of(depotWertpapierTab, depotStrukturTab, depotTransaktionenTab, depotAnlageStrategieTab, depotPlanungTab);
-        kontoTabs = Set.of(kontoÜbersichtTab, kontoTransaktionenTab);
-        showPortfolioManagementTabs();
-
-
+        // Init and show default tabs
+        portfolioManagementTabPane.setStyle(
+                "-fx-tab-min-height: 30px;"
+                        + "-fx-tab-max-height: 30px;"
+                        + "-fx-tab-min-width: 150px;"
+                        + "-fx-tab-max-width: 150px;"
+                        + "-fx-alignment: CENTER;"
+        );
         portfolioManagementTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
             if (newTab == null) return;
 
@@ -326,6 +327,8 @@ public class PortfolioManagementTabController {
                 ((Openable) newTab.getProperties().get(TAB_PROPERTY_CONTROLLER)).open();
             }
         });
+        portfolioManagementTabPane.getTabs().addAll(portfoliosTab, depotTab, kontoTab, inhaberTab);
+        showPortfolioManagementTabs();
     }
 
     private void hideTab(Tab tab) {
@@ -358,7 +361,7 @@ public class PortfolioManagementTabController {
         addTab(depotTab);
         addTab(kontoTab);
         addTab(inhaberTab);
-        portfolioManagementTabPane.getSelectionModel().select(portfoliosTab);
+        portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
     public void showPortfolioTabs(Portfolio portfolio) {
@@ -395,7 +398,7 @@ public class PortfolioManagementTabController {
         addTab(kontoÜbersichtTab);
         addTab(kontoTransaktionenTab);
 
-        portfolioManagementTabPane.getSelectionModel().select(kontoÜbersichtTab);
+        portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
     public void showInhaberTabs(Owner owner) {
