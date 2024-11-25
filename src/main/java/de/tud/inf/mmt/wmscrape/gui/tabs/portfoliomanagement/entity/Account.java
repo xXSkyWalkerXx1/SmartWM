@@ -6,8 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Konto
@@ -67,6 +66,9 @@ public class Account extends FinancialAsset {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
+
+    @ManyToMany(mappedBy = "billingAccounts")
+    private Set<Depot> mappedDepots = Collections.emptySet();
 
     @Override
     public BigDecimal getValue() {
@@ -198,5 +200,10 @@ public class Account extends FinancialAsset {
     public void setDeactivatedAt(Date deactivatedAt) {
         this.deactivatedAt = deactivatedAt;
     }
+
+    public List<Depot> getMappedDepots() {
+        return mappedDepots.stream().toList();
+    }
+
     // endregion
 }
