@@ -56,7 +56,7 @@ public class Depot extends FinancialAsset {
     @Column(name = "notice")
     private String notice;
 
-    @OneToMany
+    @ManyToMany
     @JoinColumn(name = "billing_account_id", nullable = false)
     private List<Account> billingAccounts = new ArrayList<>(); // Verrechnungskonten
 
