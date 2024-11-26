@@ -740,6 +740,10 @@ public class PortfolioManagementTabController {
         return inhaberKontosTab;
     }
 
+    public Tab getKontoOverviewTab() {
+        return kontoÜbersichtTab;
+    }
+
     public TabPane getPortfolioManagementTabPane() {
         return portfolioManagementTabPane;
     }
