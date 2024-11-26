@@ -4,6 +4,8 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InvestmentType
 import org.checkerframework.common.value.qual.IntRange;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -26,23 +28,23 @@ public class InvestmentGuideline {
         private InvestmentType type;
 
         @Column(name = "asset_allocation")
-        private float assetAllocation; // %
+        private BigDecimal assetAllocation; // %
 
         @IntRange(from = 1, to = 12)
         @Column(name = "max_riskclass")
         private int maxRiskclass;
 
         @Column(name = "max_volatility")
-        private float maxVolatility; // %, within 1 year
+        private BigDecimal maxVolatility; // %, within 1 year
 
         @Column(name = "performance")
-        private float performance; // %, within 1 year
+        private BigDecimal performance; // %, within 1 year
 
         @Column(name = "rendite")
-        private float rendite; // %, since buy
+        private BigDecimal rendite; // %, since buy
 
         @Column(name = "chance_risk_number")
-        private float chanceRiskNumber; // %
+        private BigDecimal chanceRiskNumber; // %
 
         @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
         @JoinColumn(name = "child_entry_id") // ToDo: rename to parent_entry_id
@@ -67,11 +69,11 @@ public class InvestmentGuideline {
         }
 
         public float getAssetAllocation() {
-            return assetAllocation;
+            return assetAllocation.floatValue();
         }
 
         public void setAssetAllocation(float assetAllocation) {
-            this.assetAllocation = assetAllocation;
+            this.assetAllocation = BigDecimal.valueOf(assetAllocation).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public int getMaxRiskclass() {
@@ -83,35 +85,35 @@ public class InvestmentGuideline {
         }
 
         public float getMaxVolatility() {
-            return maxVolatility;
+            return maxVolatility.floatValue();
         }
 
         public void setMaxVolatility(float maxVolatility) {
-            this.maxVolatility = maxVolatility;
+            this.maxVolatility = BigDecimal.valueOf(maxVolatility).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getPerformance() {
-            return performance;
+            return performance.floatValue();
         }
 
         public void setPerformance(float performance) {
-            this.performance = performance;
+            this.performance = BigDecimal.valueOf(performance).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getRendite() {
-            return rendite;
+            return rendite.floatValue();
         }
 
         public void setRendite(float rendite) {
-            this.rendite = rendite;
+            this.rendite = BigDecimal.valueOf(rendite).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getChanceRiskNumber() {
-            return chanceRiskNumber;
+            return chanceRiskNumber.floatValue();
         }
 
         public void setChanceRiskNumber(float chanceRiskNumber) {
-            this.chanceRiskNumber = chanceRiskNumber;
+            this.chanceRiskNumber = BigDecimal.valueOf(chanceRiskNumber).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public List<Entry> getChildEntries() {
@@ -131,72 +133,72 @@ public class InvestmentGuideline {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        private float germany;
-        private float europe_without_brd;
-        private float northamerica_with_usa;
-        private float asia_without_china;
-        private float china;
-        private float japan;
-        private float emergine_markets;
+        private BigDecimal germany;
+        private BigDecimal europe_without_brd;
+        private BigDecimal northamerica_with_usa;
+        private BigDecimal asia_without_china;
+        private BigDecimal china;
+        private BigDecimal japan;
+        private BigDecimal emergine_markets;
 
         public Long getId() {
             return id;
         }
 
         public float getGermany() {
-            return germany;
+            return germany.floatValue();
         }
 
         public void setGermany(float germany) {
-            this.germany = germany;
+            this.germany = BigDecimal.valueOf(germany).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getEurope_without_brd() {
-            return europe_without_brd;
+            return europe_without_brd.floatValue();
         }
 
         public void setEurope_without_brd(float europe_without_brd) {
-            this.europe_without_brd = europe_without_brd;
+            this.europe_without_brd = BigDecimal.valueOf(europe_without_brd).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getNorthamerica_with_usa() {
-            return northamerica_with_usa;
+            return northamerica_with_usa.floatValue();
         }
 
         public void setNorthamerica_with_usa(float northamerica_with_usa) {
-            this.northamerica_with_usa = northamerica_with_usa;
+            this.northamerica_with_usa = BigDecimal.valueOf(northamerica_with_usa).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getAsia_without_china() {
-            return asia_without_china;
+            return asia_without_china.floatValue();
         }
 
         public void setAsia_without_china(float asia_without_china) {
-            this.asia_without_china = asia_without_china;
+            this.asia_without_china = BigDecimal.valueOf(asia_without_china).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getChina() {
-            return china;
+            return china.floatValue();
         }
 
         public void setChina(float china) {
-            this.china = china;
+            this.china = BigDecimal.valueOf(china).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getJapan() {
-            return japan;
+            return japan.floatValue();
         }
 
         public void setJapan(float japan) {
-            this.japan = japan;
+            this.japan = BigDecimal.valueOf(japan).setScale(2,RoundingMode.HALF_DOWN);
         }
 
         public float getEmergine_markets() {
-            return emergine_markets;
+            return emergine_markets.floatValue();
         }
 
         public void setEmergine_markets(float emergine_markets) {
-            this.emergine_markets = emergine_markets;
+            this.emergine_markets = BigDecimal.valueOf(emergine_markets).setScale(2,RoundingMode.HALF_DOWN);
         }
     }
 
@@ -207,72 +209,72 @@ public class InvestmentGuideline {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        private float euro;
-        private float usd;
-        private float chf; // Schweizer Franken
-        private float gbp; // Britische Pfund
-        private float yen; // Japanischer Yen
-        private float asia_currencies;
-        private float others;
+        private BigDecimal euro;
+        private BigDecimal usd;
+        private BigDecimal chf; // Schweizer Franken
+        private BigDecimal gbp; // Britische Pfund
+        private BigDecimal yen; // Japanischer Yen
+        private BigDecimal asia_currencies;
+        private BigDecimal others;
 
         public Long getId() {
             return id;
         }
 
         public float getEuro() {
-            return euro;
+            return euro.floatValue();
         }
 
         public void setEuro(float euro) {
-            this.euro = euro;
+            this.euro = BigDecimal.valueOf(euro).setScale(2,RoundingMode.HALF_DOWN);;
         }
 
         public float getUsd() {
-            return usd;
+            return usd.floatValue();
         }
 
         public void setUsd(float usd) {
-            this.usd = usd;
+            this.usd = BigDecimal.valueOf(usd).setScale(2,RoundingMode.HALF_DOWN);;
         }
 
         public float getChf() {
-            return chf;
+            return chf.floatValue();
         }
 
         public void setChf(float chf) {
-            this.chf = chf;
+            this.chf = BigDecimal.valueOf(chf).setScale(2,RoundingMode.HALF_DOWN);;
         }
 
         public float getGbp() {
-            return gbp;
+            return gbp.floatValue();
         }
 
         public void setGbp(float gbp) {
-            this.gbp = gbp;
+            this.gbp = BigDecimal.valueOf(gbp).setScale(2,RoundingMode.HALF_DOWN);;
         }
 
         public float getYen() {
-            return yen;
+            return yen.floatValue();
         }
 
         public void setYen(float yen) {
-            this.yen = yen;
+            this.yen = BigDecimal.valueOf(yen).setScale(2,RoundingMode.HALF_DOWN);;
         }
 
         public float getAsiaCurrencies() {
-            return asia_currencies;
+            return asia_currencies.floatValue();
         }
 
         public void setAsia_currencies(float asia_currencies) {
-            this.asia_currencies = asia_currencies;
+            this.asia_currencies = BigDecimal.valueOf(asia_currencies).setScale(2,RoundingMode.HALF_DOWN);;
         }
 
         public float getOthers() {
-            return others;
+            return others.floatValue();
         }
 
         public void setOthers(float others) {
-            this.others = others;
+            this.others = BigDecimal.valueOf(others).setScale(2,RoundingMode.HALF_DOWN);;
         }
     }
     // endregion

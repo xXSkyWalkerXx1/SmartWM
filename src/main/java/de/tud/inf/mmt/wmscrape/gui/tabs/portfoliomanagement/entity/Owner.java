@@ -4,6 +4,8 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 @Entity
@@ -94,16 +96,16 @@ public class Owner {
         private MaritalState maritalState;
 
         @Column(name = "tax_rate", nullable = false)
-        private double taxRate;
+        private BigDecimal taxRate;
 
         @Column(name = "church_tax_rate", nullable = false)
-        private double churchTaxRate;
+        private BigDecimal churchTaxRate;
 
         @Column(name = "capital_gainstax_rate", nullable = false)
-        private double capitalGainsTaxRate;
+        private BigDecimal capitalGainsTaxRate;
 
         @Column(name = "solidarity_surcharge_tax_rate", nullable = false)
-        private double solidaritySurchargeTaxRate;
+        private BigDecimal solidaritySurchargeTaxRate;
 
         public Long getId() {
             return id;
@@ -126,35 +128,35 @@ public class Owner {
         }
 
         public double getTaxRate() {
-            return taxRate;
+            return taxRate.doubleValue();
         }
 
         public void setTaxRate(double taxRate) {
-            this.taxRate = taxRate;
+            this.taxRate = BigDecimal.valueOf(taxRate).setScale(2, RoundingMode.HALF_DOWN);;
         }
 
         public double getChurchTaxRate() {
-            return churchTaxRate;
+            return churchTaxRate.doubleValue();
         }
 
         public void setChurchTaxRate(double churchTaxRate) {
-            this.churchTaxRate = churchTaxRate;
+            this.churchTaxRate = BigDecimal.valueOf(churchTaxRate).setScale(2, RoundingMode.HALF_DOWN);;
         }
 
         public double getCapitalGainsTaxRate() {
-            return capitalGainsTaxRate;
+            return capitalGainsTaxRate.doubleValue();
         }
 
         public void setCapitalGainsTaxRate(double capitalGainsTaxRate) {
-            this.capitalGainsTaxRate = capitalGainsTaxRate;
+            this.capitalGainsTaxRate = BigDecimal.valueOf(capitalGainsTaxRate).setScale(2, RoundingMode.HALF_DOWN);;
         }
 
         public double getSolidaritySurchargeTaxRate() {
-            return solidaritySurchargeTaxRate;
+            return solidaritySurchargeTaxRate.doubleValue();
         }
 
         public void setSolidaritySurchargeTaxRate(double solidaritySurchargeTaxRate) {
-            this.solidaritySurchargeTaxRate = solidaritySurchargeTaxRate;
+            this.solidaritySurchargeTaxRate = BigDecimal.valueOf(solidaritySurchargeTaxRate).setScale(2, RoundingMode.HALF_DOWN);;
         }
     }
     // endregion

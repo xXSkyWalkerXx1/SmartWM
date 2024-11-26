@@ -6,6 +6,8 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -34,7 +36,7 @@ public class Account extends FinancialAsset {
     private String currencyCode;
 
     @Column(name = "balance", nullable = false)
-    private double balance;
+    private BigDecimal balance = BigDecimal.valueOf(0);
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
@@ -54,7 +56,7 @@ public class Account extends FinancialAsset {
     private String kontoNumber;
 
     @Column(name = "interest_rate", nullable = false)
-    private double interestRate; // Zinssatz
+    private BigDecimal interestRate = BigDecimal.valueOf(0); // Zinssatz
 
     @Column(name = "interest_days", nullable = false)
     private String interestDays; // Zinstage (an denen die Zinsen ausgezahlt werden)
@@ -76,7 +78,7 @@ public class Account extends FinancialAsset {
 
     @Override
     public BigDecimal getValue() {
-        return BigDecimal.valueOf(balance);
+        return balance;
     }
 
     @Override
@@ -118,11 +120,11 @@ public class Account extends FinancialAsset {
     }
 
     public double getBalance() {
-        return balance;
+        return balance.doubleValue();
     }
 
     public void setBalance(double balance) {
-        this.balance = balance;
+        this.balance = BigDecimal.valueOf(balance).setScale(2, RoundingMode.HALF_DOWN);
     }
 
     public Owner getOwner() {
@@ -174,11 +176,11 @@ public class Account extends FinancialAsset {
     }
 
     public double getInterestRate() {
-        return interestRate;
+        return interestRate.doubleValue();
     }
 
     public void setInterestRate(double interestRate) {
-        this.interestRate = interestRate;
+        this.interestRate = BigDecimal.valueOf(interestRate).setScale(2, RoundingMode.HALF_DOWN);
     }
 
     public String getInterestDays() {
