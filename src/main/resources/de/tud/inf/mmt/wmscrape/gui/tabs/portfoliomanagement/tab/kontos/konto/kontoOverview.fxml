@@ -62,7 +62,7 @@
                                                                 <Label text="Währung | Kontostand" GridPane.rowIndex="2" />
                                                                 <Label text="Inhaber" GridPane.rowIndex="3" />
                                                                 <Label text="Portfolio" GridPane.rowIndex="4" />
-                                                                <Label text="Bemerkungen" GridPane.rowIndex="5" />
+                                                                <Label text="Anmerkungen" GridPane.rowIndex="5" />
                                                                 <TextArea fx:id="inputNotice" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                                                 <ComboBox fx:id="inputPortfolio" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                                 <ComboBox fx:id="inputOwner" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
