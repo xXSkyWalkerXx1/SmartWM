@@ -760,7 +760,7 @@ public class TableFactory {
                         account.getMappedDepots(),
                         portfolioManagementTabManager
                 );
-                if (account.getMappedDepots().isEmpty()) table.setPlaceholder(null);
+                if (account.getMappedDepots().isEmpty()) table.setPlaceholder(new Label("Keine Depots zugeordnet"));
             } else {
                 table = TableFactory.createAccountDepotsTable(
                         parentDepotTable,
