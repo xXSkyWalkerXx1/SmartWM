@@ -751,7 +751,7 @@ public class TableFactory {
         );
 
         tableBuilder.setActionOnSingleClickRow(account -> {
-            TableView<Depot> table = null;
+            TableView<Depot> table;
 
             // Only clearing accounts are used in depots
             if (AccountType.CLEARING_ACCOUNT.equals(account.getType())) {
@@ -760,6 +760,14 @@ public class TableFactory {
                         account.getMappedDepots(),
                         portfolioManagementTabManager
                 );
+                if (account.getMappedDepots().isEmpty()) table.setPlaceholder(null);
+            } else {
+                table = TableFactory.createAccountDepotsTable(
+                        parentDepotTable,
+                        List.of(),
+                        portfolioManagementTabManager
+                );
+                table.setPlaceholder(new Label("Kein Verrechnungskonto ausgewählt"));
             }
 
             accountMenuController.setDepotTable(table);
@@ -791,7 +799,7 @@ public class TableFactory {
 
         tableBuilder.addColumn(
                 "Depot-Name",
-                0.3f,
+                0.5f,
                 (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
                         -> new SimpleStringProperty(depotCellDataFeatures.getValue().getName())
         );
