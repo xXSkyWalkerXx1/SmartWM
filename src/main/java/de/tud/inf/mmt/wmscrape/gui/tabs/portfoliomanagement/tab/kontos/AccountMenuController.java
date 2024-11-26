@@ -56,11 +56,14 @@ public class AccountMenuController implements Openable {
                 this,
                 portfolioManagementTabManager
         ));
-        accountDepotsTablePane.getChildren().setAll(TableFactory.createAccountDepotsTable(
+
+        var accountDepotsTable = TableFactory.createAccountDepotsTable(
                 accountDepotsTablePane,
                 List.of(),
                 portfolioManagementTabManager
-        ));
+        );
+        accountDepotsTable.setPlaceholder(new Label("Kein Verrechnungskonto ausgewählt"));
+        setDepotTable(accountDepotsTable);
 
         sumLabel.setText(String.valueOf(accounts.stream().mapToDouble(Account::getBalance).sum()));
     }
@@ -83,6 +86,9 @@ public class AccountMenuController implements Openable {
         createAccountDialog.initialize();
     }
 
+    /**
+     * Set the table of depots for the account. If the table is null, the table will be hidden.
+     */
     public void setDepotTable(TableView<Depot> table) {
         accountDepotsTablePane.getChildren().setAll(table);
     }
