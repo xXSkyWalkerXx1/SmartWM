@@ -14,6 +14,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
 import javafx.fxml.FXML;
@@ -79,6 +80,10 @@ public class KontoOverviewController implements Openable {
 
     @FXML
     private void initialize() {
+        // Format input fields
+        FieldFormatter.setInputOnlyDecimalNumbers(inputBalance);
+        FieldFormatter.setInputFloatRange(inputInterestRate, 0, 100);
+
         // Initialize elements with values
         inputType.getItems().setAll(AccountType.values());
         inputCurrencyCode.getItems().setAll(Currency.getAvailableCurrencies().stream()
@@ -140,7 +145,7 @@ public class KontoOverviewController implements Openable {
         inputPortfolio.getSelectionModel().select(account.getPortfolio());
         inputNotice.setText(account.getNotice());
         inputState.getSelectionModel().select(account.getState());
-        outputCreatedAt.setText(account.getCreatedAt().toString());
+        outputCreatedAt.setText(account.getCreatedAt().toLocaleString());
         outputDeactivatedAt.setText(account.getDeactivatedAt() != null ? account.getDeactivatedAt().toString() : "");
         inputBankName.setText(account.getBankName());
         inputIban.setText(account.getIban());
