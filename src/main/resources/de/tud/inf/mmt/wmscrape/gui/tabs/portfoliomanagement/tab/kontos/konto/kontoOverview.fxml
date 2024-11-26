@@ -35,7 +35,7 @@
                             <items>
                                 <AnchorPane prefHeight="650.0" prefWidth="600.0">
                                     <children>
-                                        <SplitPane dividerPositions="0.4031746031746032, 0.6317460317460317" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <SplitPane dividerPositions="0.42565597667638483, 0.6676384839650146" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <items>
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                                     <children>
@@ -51,6 +51,9 @@
                                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                             </rowConstraints>
                                                             <children>
                                                                 <Label text="Konto-Bezeichnung" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
@@ -77,6 +80,12 @@
                                                                         <TextField fx:id="inputBalance" GridPane.columnIndex="1" />
                                                                     </children>
                                                                 </GridPane>
+                                                <Label text="Status" GridPane.rowIndex="6" />
+                                                <Label text="Erstellt am" GridPane.rowIndex="7" />
+                                                <Label text="Deaktiviert am" GridPane.rowIndex="8" />
+                                                <ComboBox fx:id="inputState" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                <TextField fx:id="outputCreatedAt" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                <TextField fx:id="outputDeactivatedAt" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                                                             </children>
                                                         </GridPane>
                                                     </children>
