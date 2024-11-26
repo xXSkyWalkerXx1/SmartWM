@@ -96,16 +96,16 @@ public class Owner {
         private MaritalState maritalState;
 
         @Column(name = "tax_rate", nullable = false)
-        private BigDecimal taxRate;
+        private BigDecimal taxRate = BigDecimal.valueOf(0);
 
         @Column(name = "church_tax_rate", nullable = false)
-        private BigDecimal churchTaxRate;
+        private BigDecimal churchTaxRate = BigDecimal.valueOf(0);
 
         @Column(name = "capital_gainstax_rate", nullable = false)
-        private BigDecimal capitalGainsTaxRate;
+        private BigDecimal capitalGainsTaxRate = BigDecimal.valueOf(0);
 
         @Column(name = "solidarity_surcharge_tax_rate", nullable = false)
-        private BigDecimal solidaritySurchargeTaxRate;
+        private BigDecimal solidaritySurchargeTaxRate = BigDecimal.valueOf(0);
 
         public Long getId() {
             return id;

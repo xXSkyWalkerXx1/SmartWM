@@ -28,23 +28,23 @@ public class InvestmentGuideline {
         private InvestmentType type;
 
         @Column(name = "asset_allocation")
-        private BigDecimal assetAllocation; // %
+        private BigDecimal assetAllocation = BigDecimal.valueOf(0); // %
 
         @IntRange(from = 1, to = 12)
         @Column(name = "max_riskclass")
         private int maxRiskclass;
 
         @Column(name = "max_volatility")
-        private BigDecimal maxVolatility; // %, within 1 year
+        private BigDecimal maxVolatility = BigDecimal.valueOf(0); // %, within 1 year
 
         @Column(name = "performance")
-        private BigDecimal performance; // %, within 1 year
+        private BigDecimal performance = BigDecimal.valueOf(0); // %, within 1 year
 
         @Column(name = "rendite")
-        private BigDecimal rendite; // %, since buy
+        private BigDecimal rendite = BigDecimal.valueOf(0); // %, since buy
 
         @Column(name = "chance_risk_number")
-        private BigDecimal chanceRiskNumber; // %
+        private BigDecimal chanceRiskNumber = BigDecimal.valueOf(0); // %
 
         @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
         @JoinColumn(name = "child_entry_id") // ToDo: rename to parent_entry_id
@@ -133,13 +133,13 @@ public class InvestmentGuideline {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        private BigDecimal germany;
-        private BigDecimal europe_without_brd;
-        private BigDecimal northamerica_with_usa;
-        private BigDecimal asia_without_china;
-        private BigDecimal china;
-        private BigDecimal japan;
-        private BigDecimal emergine_markets;
+        private BigDecimal germany = BigDecimal.valueOf(0);
+        private BigDecimal europe_without_brd = BigDecimal.valueOf(0);
+        private BigDecimal northamerica_with_usa = BigDecimal.valueOf(0);
+        private BigDecimal asia_without_china = BigDecimal.valueOf(0);
+        private BigDecimal china = BigDecimal.valueOf(0);
+        private BigDecimal japan = BigDecimal.valueOf(0);
+        private BigDecimal emergine_markets = BigDecimal.valueOf(0);
 
         public Long getId() {
             return id;
@@ -209,13 +209,13 @@ public class InvestmentGuideline {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        private BigDecimal euro;
-        private BigDecimal usd;
-        private BigDecimal chf; // Schweizer Franken
-        private BigDecimal gbp; // Britische Pfund
-        private BigDecimal yen; // Japanischer Yen
-        private BigDecimal asia_currencies;
-        private BigDecimal others;
+        private BigDecimal euro = BigDecimal.valueOf(0);
+        private BigDecimal usd = BigDecimal.valueOf(0);
+        private BigDecimal chf = BigDecimal.valueOf(0); // Schweizer Franken
+        private BigDecimal gbp = BigDecimal.valueOf(0); // Britische Pfund
+        private BigDecimal yen = BigDecimal.valueOf(0); // Japanischer Yen
+        private BigDecimal asia_currencies = BigDecimal.valueOf(0);
+        private BigDecimal others = BigDecimal.valueOf(0);
 
         public Long getId() {
             return id;
