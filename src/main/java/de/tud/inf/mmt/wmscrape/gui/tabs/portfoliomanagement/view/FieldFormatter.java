@@ -15,7 +15,8 @@ public class FieldFormatter {
 
             if (textChange.isEmpty() // removed anything
                     || textChange.matches("^\\d$") // allow numerics
-                    || textChange.matches("^[.]$") && !textField.getText().contains(".")) { // allow '.' and only once
+                    || textChange.matches("^[.]$") && !textField.getText().contains(".") // allow '.' and only once
+                    || textChange.matches("^\\d*\\.?\\d+$")) { // allow full decimal numbers instead of single numbers
                 return change;
             }
             return null;
