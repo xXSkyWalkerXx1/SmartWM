@@ -371,6 +371,8 @@ public class PortfolioManagementTabController {
         portfolioTabs.forEach(tab -> {
             if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
                 tab.getProperties().put(TAB_PROPERTY_ENTITY, portfolio);
+            } else {
+                tab.getProperties().replace(TAB_PROPERTY_ENTITY, portfolio);
             }
             addTab(tab);
         });
@@ -392,6 +394,8 @@ public class PortfolioManagementTabController {
         kontoTabs.forEach(tab -> {
             if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
                 tab.getProperties().put(TAB_PROPERTY_ENTITY, account);
+            } else {
+                tab.getProperties().replace(TAB_PROPERTY_ENTITY, account);
             }
         });
 
@@ -408,6 +412,8 @@ public class PortfolioManagementTabController {
         ownerTabs.forEach(tab -> {
             if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
                 tab.getProperties().put(TAB_PROPERTY_ENTITY, owner);
+            } else {
+                tab.getProperties().replace(TAB_PROPERTY_ENTITY, owner);
             }
             addTab(tab);
         });
