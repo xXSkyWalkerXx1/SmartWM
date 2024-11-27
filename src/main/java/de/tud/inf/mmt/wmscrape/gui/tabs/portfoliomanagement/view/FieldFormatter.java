@@ -31,6 +31,9 @@ public class FieldFormatter {
             String textChange = change.getText();
 
             try {
+                if (change.isReplaced()) {
+                    if (Integer.parseInt(textChange) >= from && Integer.parseInt(textChange) <= to) return change;
+                }
                 if (Integer.parseInt(textField.getText() + textChange) >= from
                         && Integer.parseInt(textField.getText() + textChange) <= to) {
                     return change;
@@ -50,6 +53,9 @@ public class FieldFormatter {
             String textChange = change.getText();
 
             try {
+                if (change.isReplaced()) {
+                    if (Float.parseFloat(textChange) >= from && Float.parseFloat(textChange) <= to) return change;
+                }
                 if (Float.parseFloat(textField.getText() + textChange) >= from
                         && Float.parseFloat(textField.getText() + textChange) <= to) {
                     return change;
