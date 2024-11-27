@@ -24,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
@@ -122,6 +123,9 @@ public class KontoOverviewController implements Openable {
                 inputNotice, inputBankName, inputIban, inputKontoNumber, inputInterestRate, inputInterestDays, inputInterestInterval
         );
         account.setState(inputState.getValue());
+        if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) {
+            account.setDeactivatedAt(Calendar.getInstance().getTime());
+        }
         accountService.save(account);
 
         // Finally, show success-dialog
