@@ -67,6 +67,7 @@ public class PortfolioOverviewController implements Openable {
 
     @FXML
     private void onReset() {
+        portfolio = portfolioService.findById(portfolio.getName()).orElseThrow();
         loadPortfolioData();
     }
 
