@@ -36,7 +36,7 @@ public class OwnerController implements Openable {
     public void open() {
         ownerTablePane.getChildren().setAll(TableFactory.createOwnerTable(
                 ownerTablePane,
-                ownerService.getAllOwners(),
+                ownerService.getAll(),
                 this
         ));
 

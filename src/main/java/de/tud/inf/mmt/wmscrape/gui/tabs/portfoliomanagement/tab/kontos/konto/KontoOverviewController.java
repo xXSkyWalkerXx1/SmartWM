@@ -4,7 +4,6 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
@@ -134,7 +133,7 @@ public class KontoOverviewController implements Openable {
     }
 
     private void loadAccountData() {
-        inputOwner.getItems().setAll(ownerService.getAllOwners());
+        inputOwner.getItems().setAll(ownerService.getAll());
         inputPortfolio.getItems().setAll(portfolioService.getAll());
 
         inputDescription.setText(account.getDescription());

@@ -81,7 +81,7 @@ public class CreateAccountDialog {
         );
         inputCurrencyCode.getSelectionModel().selectFirst();
 
-        inputOwner.getItems().setAll(ownerService.getAllOwners());
+        inputOwner.getItems().setAll(ownerService.getAll());
         inputOwner.getSelectionModel().selectFirst();
 
         inputPortfolio.getItems().setAll(portfolioService.getAll());

@@ -47,7 +47,7 @@ public class AccountMenuController implements Openable {
     public void open() {
         List<Account> accounts = accountService.getAll();
 
-        createAccountButton.setDisable(ownerService.getAllOwners().isEmpty() || portfolioService.getAll().isEmpty());
+        createAccountButton.setDisable(ownerService.getAll().isEmpty() || portfolioService.getAll().isEmpty());
 
         accountTablePane.getChildren().setAll(TableFactory.createAccountsTable(
                 accountTablePane,

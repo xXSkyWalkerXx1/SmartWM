@@ -12,8 +12,6 @@ import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.Calendar;
-
 @Controller
 public class CreateOwnerDialog {
 
@@ -79,28 +77,15 @@ public class CreateOwnerDialog {
         )) return;
 
         // If everything is valid, we can create and save the new owner
-        Owner newOwner = new Owner();
-        newOwner.setForename(inputForename.getText());
-        newOwner.setAftername(inputAftername.getText());
-        newOwner.setNotice(inputNotice.getText());
-        newOwner.setCreatedAt(Calendar.getInstance().getTime());
-
-        Owner.Address ownerAddress = newOwner.getAddress();
-        ownerAddress.setCountry(inputCountry.getText());
-        ownerAddress.setPlz(inputPlz.getText());
-        ownerAddress.setLocation(inputLocation.getText());
-        ownerAddress.setStreet(inputStreet.getText());
-        ownerAddress.setStreetNumber(inputStreetNumber.getText());
-
-        Owner.TaxInformation ownerTaxInfo = newOwner.getTaxInformation();
-        ownerTaxInfo.setTaxNumber(inputTaxNumber.getText());
-        ownerTaxInfo.setMaritalState(inputMaritalState.getValue());
-        ownerTaxInfo.setTaxRate(Double.parseDouble(inputTaxRate.getText()));
-        ownerTaxInfo.setChurchTaxRate(Double.parseDouble(inputChurchTaxRate.getText() == "" ? "0" : inputChurchTaxRate.getText()));
-        ownerTaxInfo.setCapitalGainsTaxRate(Double.parseDouble(inputCapitalGainsTaxRate.getText()));
-        ownerTaxInfo.setSolidaritySurchargeTaxRate(Double.parseDouble(inputSolidaritySurchargeTaxRate.getText()));
-
-        ownerService.saveOwner(newOwner);
+        Owner owner = new Owner();
+        ownerService.writeInput(
+                owner, true,
+                inputForename, inputAftername, inputNotice,
+                inputCountry, inputPlz, inputLocation, inputStreet, inputStreetNumber, inputTaxNumber,
+                inputMaritalState, inputTaxRate,
+                inputChurchTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
+        );
+        ownerService.save(owner);
         onCancel();
 
         // Finally, show success-dialog

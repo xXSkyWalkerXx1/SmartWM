@@ -5,6 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementT
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
@@ -34,6 +35,8 @@ public class OwnerOverviewController implements Openable {
     TextField inputAftername;
     @FXML
     TextArea inputNotice;
+    @FXML
+    ComboBox<State> inputState;
     @FXML
     TextField outputCreatedAt;
     @FXML
@@ -65,6 +68,7 @@ public class OwnerOverviewController implements Openable {
 
     @FXML
     private void initialize() {
+        inputState.getItems().setAll(State.values());
         inputMaritalState.getItems().setAll(MaritalState.values());
 
         // Change TextFields so that they only accept integers
@@ -105,26 +109,18 @@ public class OwnerOverviewController implements Openable {
         )) return;
 
         // If everything is valid, we can update and save the owner
-        owner.setForename(inputForename.getText());
-        owner.setAftername(inputAftername.getText());
-        owner.setNotice(inputNotice.getText());
-
-        Owner.Address ownerAddress = owner.getAddress();
-        ownerAddress.setCountry(inputCountry.getText());
-        ownerAddress.setPlz(inputPlz.getText());
-        ownerAddress.setLocation(inputLocation.getText());
-        ownerAddress.setStreet(inputStreet.getText());
-        ownerAddress.setStreetNumber(inputStreetNumber.getText());
-
-        Owner.TaxInformation ownerTaxInfo = owner.getTaxInformation();
-        ownerTaxInfo.setTaxNumber(inputTaxNumber.getText());
-        ownerTaxInfo.setMaritalState(inputMaritalState.getValue());
-        ownerTaxInfo.setTaxRate(Double.parseDouble(inputTaxRate.getText()));
-        ownerTaxInfo.setChurchTaxRate(Double.parseDouble(inputChurchTaxRate.getText() == "" ? "0" : inputChurchTaxRate.getText()));
-        ownerTaxInfo.setCapitalGainsTaxRate(Double.parseDouble(inputCapitalGainsTaxRate.getText()));
-        ownerTaxInfo.setSolidaritySurchargeTaxRate(Double.parseDouble(inputSolidaritySurchargeTaxRate.getText()));
-
-        ownerService.saveOwner(owner);
+        ownerService.writeInput(
+                owner, false,
+                inputForename, inputAftername, inputNotice,
+                inputCountry, inputPlz, inputLocation, inputStreet, inputStreetNumber,
+                inputTaxNumber, inputMaritalState, inputTaxRate,
+                inputChurchTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
+        );
+        owner.setState(inputState.getValue());
+        if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) {
+            owner.setDeactivatedAt(Calendar.getInstance().getTime());
+        }
+        ownerService.save(owner);
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(

@@ -47,7 +47,7 @@ public class CreatePortfolioDialog {
         portfolio.getInvestmentGuideline().initializeEntries();
 
         // Initialize combo-box with all owners
-        inputOwner.getItems().setAll(ownerService.getAllOwners());
+        inputOwner.getItems().setAll(ownerService.getAll());
         inputOwner.getSelectionModel().selectFirst();
 
         // Create and show tables

@@ -90,7 +90,7 @@ public class PortfolioOverviewController implements Openable {
     private void loadPortfolioData() {
         inputPortfolioName.setText(portfolio.getName());
 
-        inputOwner.getItems().setAll(ownerService.getAllOwners());
+        inputOwner.getItems().setAll(ownerService.getAll());
         inputOwner.getSelectionModel().select(portfolio.getOwner());
 
         inputState.getItems().setAll(State.values());
