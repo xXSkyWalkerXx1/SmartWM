@@ -123,9 +123,6 @@ public class KontoOverviewController implements Openable {
                 inputNotice, inputBankName, inputIban, inputKontoNumber, inputInterestRate, inputInterestDays, inputInterestInterval
         );
         account.setState(inputState.getValue());
-        if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) {
-            account.setDeactivatedAt(Calendar.getInstance().getTime());
-        }
         accountService.save(account);
 
         // Finally, show success-dialog

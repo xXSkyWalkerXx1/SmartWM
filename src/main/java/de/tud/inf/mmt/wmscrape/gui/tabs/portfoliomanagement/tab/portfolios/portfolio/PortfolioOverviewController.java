@@ -78,9 +78,6 @@ public class PortfolioOverviewController implements Openable {
         // If everything is valid, we can create and save the new portfolio
         portfolioService.writeInput(portfolio, false, inputPortfolioName, inputOwner);
         portfolio.setState(inputState.getValue());
-        if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) {
-            portfolio.setDeactivatedAt(Calendar.getInstance().getTime());
-        }
         portfolioService.save(portfolio);
 
         // Finally, show success-dialog

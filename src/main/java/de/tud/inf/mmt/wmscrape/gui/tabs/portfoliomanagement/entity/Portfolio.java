@@ -85,6 +85,12 @@ public class Portfolio extends FinancialAsset {
 
     public void setState(State state) {
         this.state = state;
+
+        if (State.ACTIVATED.equals(state)) {
+            setDeactivatedAt(null);
+        } else {
+            setDeactivatedAt(Calendar.getInstance().getTime());
+        }
     }
 
     public InvestmentGuideline getInvestmentGuideline() {

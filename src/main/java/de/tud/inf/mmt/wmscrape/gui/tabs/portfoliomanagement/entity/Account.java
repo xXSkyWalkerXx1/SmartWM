@@ -105,6 +105,12 @@ public class Account extends FinancialAsset {
 
     public void setState(State state) {
         this.state = state;
+
+        if (State.ACTIVATED.equals(state)) {
+            setDeactivatedAt(null);
+        } else {
+            setDeactivatedAt(Calendar.getInstance().getTime());
+        }
     }
 
     public void setType(AccountType type) {

@@ -117,9 +117,6 @@ public class OwnerOverviewController implements Openable {
                 inputChurchTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         );
         owner.setState(inputState.getValue());
-        if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) {
-            owner.setDeactivatedAt(Calendar.getInstance().getTime());
-        }
         ownerService.save(owner);
 
         // Finally, show success-dialog
