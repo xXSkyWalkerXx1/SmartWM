@@ -133,4 +133,12 @@ public class Portfolio extends FinancialAsset {
         this.deactivatedAt = deactivatedAt;
     }
     // endregion
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Portfolio that = (Portfolio) obj;
+        return Objects.equals(name, that.name);
+    }
 }

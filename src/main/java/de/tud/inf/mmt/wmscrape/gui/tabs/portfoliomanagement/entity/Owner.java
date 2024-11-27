@@ -301,4 +301,13 @@ public class Owner {
         this.depots = depots;
     }
     // endregion
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Owner owner = (Owner) obj;
+        return Objects.equals(id, owner.id);
+    }
 }
