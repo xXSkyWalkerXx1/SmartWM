@@ -2,14 +2,8 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.dialog.CreateOwnerDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
