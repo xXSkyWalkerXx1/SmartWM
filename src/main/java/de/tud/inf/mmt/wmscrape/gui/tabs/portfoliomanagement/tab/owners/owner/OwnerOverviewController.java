@@ -136,7 +136,7 @@ public class OwnerOverviewController implements Openable {
         inputNotice.setText(owner.getNotice());
         inputState.getSelectionModel().select(owner.getState());
         outputCreatedAt.setText(owner.getCreatedAt().toLocaleString());
-        outputDeactivatedAt.setText(owner.getDeactivatedAt() == null ? "" : owner.getDeactivatedAt().toString());
+        outputDeactivatedAt.setText(owner.getDeactivatedAt() == null ? "" : owner.getDeactivatedAt().toLocaleString());
         inputCountry.setText(owner.getAddress().getCountry());
         inputPlz.setText(owner.getAddress().getPlz());
         inputLocation.setText(owner.getAddress().getLocation());

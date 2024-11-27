@@ -101,7 +101,7 @@ public class PortfolioOverviewController implements Openable {
         inputState.getSelectionModel().select(portfolio.getState());
 
         outputCreatedAt.setText(portfolio.getCreatedAt().toString());
-        outputDeactivatedAt.setText(portfolio.getDeactivatedAt() != null ? portfolio.getDeactivatedAt().toString() : "");
+        outputDeactivatedAt.setText(portfolio.getDeactivatedAt() != null ? portfolio.getDeactivatedAt().toLocaleString() : "");
 
         commissionSchemeTablePane.getChildren().setAll(new InvestmentGuidelineTable(
                 commissionSchemeTablePane,

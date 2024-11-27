@@ -149,7 +149,7 @@ public class KontoOverviewController implements Openable {
         inputNotice.setText(account.getNotice());
         inputState.getSelectionModel().select(account.getState());
         outputCreatedAt.setText(account.getCreatedAt().toLocaleString());
-        outputDeactivatedAt.setText(account.getDeactivatedAt() != null ? account.getDeactivatedAt().toString() : "");
+        outputDeactivatedAt.setText(account.getDeactivatedAt() != null ? account.getDeactivatedAt().toLocaleString() : "");
         inputBankName.setText(account.getBankName());
         inputIban.setText(account.getIban());
         inputKontoNumber.setText(account.getKontoNumber());
