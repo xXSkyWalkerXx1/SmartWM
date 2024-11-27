@@ -13,12 +13,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PortfolioService {
 
     @Autowired
     PortfolioRepository portfolioRepository;
+
+    public Optional<Portfolio> findById(String portfolioName) {
+        return portfolioRepository.findById(portfolioName);
+    }
 
     public List<Portfolio> getAll() {
         return portfolioRepository.findAll();
@@ -33,7 +38,6 @@ public class PortfolioService {
         portfolio.setName(inputPortfolioName.getText());
         portfolio.setOwner(inputOwner.getValue());
         if (isOnCreate) portfolio.setCreatedAt(Calendar.getInstance().getTime());
-
     }
 
     public boolean isInputInvalid(@NonNull TextField inputPortfolioName, @NonNull Portfolio portfolio, @NonNull Control control) {
