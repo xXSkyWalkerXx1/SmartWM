@@ -179,11 +179,11 @@ public class Owner {
     private String notice;
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "address_id", nullable = false)
     private Address address = new Address();
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "tax_information_id") // creates foreign-key
+    @JoinColumn(name = "tax_information_id", nullable = false) // creates foreign-key
     private TaxInformation taxInformation = new TaxInformation();
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
