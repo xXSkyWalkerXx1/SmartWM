@@ -163,10 +163,18 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                         super.updateItem(number, empty);
                         if (empty || number == null) {
                             setText(null);
+                            setTooltip(null);
                         } else {
                             setText(number.toString());
+                            if (getTableRow().getItem().getType().isChild()) {
+                                setTooltip(new Tooltip(String.format(
+                                        "Anteil der %s in Relation zum Anteil der %s",
+                                        getTableRow().getItem().getType(),
+                                        getTableRow().getTreeItem().getParent().getValue().getType()
+                                )));
+                            }
                         }
-                        setGraphic(null);
+                        //setGraphic(null);
                     }
                 };
             }
