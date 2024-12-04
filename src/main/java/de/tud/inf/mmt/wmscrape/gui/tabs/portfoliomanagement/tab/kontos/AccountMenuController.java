@@ -47,8 +47,6 @@ public class AccountMenuController implements Openable {
     public void open() {
         List<Account> accounts = accountService.getAll();
 
-        createAccountButton.setDisable(ownerService.getAll().isEmpty() || portfolioService.getAll().isEmpty());
-
         accountTablePane.getChildren().setAll(TableFactory.createAccountsTable(
                 accountTablePane,
                 accountDepotsTablePane,
@@ -75,6 +73,14 @@ public class AccountMenuController implements Openable {
 
     @FXML
     private void onClickCreateAccount() {
+        if (ownerService.getAll().isEmpty() || portfolioService.getAll().isEmpty()) {
+            PrimaryTabManager.showInfoDialog(
+                    "Keine Inhaber/Portfolios vorhanden",
+                    "Es muss mindestens ein Inhaber und ein Portfolio vorhanden sein, dem das Konto zugeordnet werden kann.",
+                    createAccountButton
+            );
+            return;
+        }
         PrimaryTabManager.loadFxml(
                 "gui/tabs/portfoliomanagement/tab/kontos/dialog/create_account_dialog.fxml",
                 "Neues Konto erstellen",

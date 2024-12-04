@@ -39,8 +39,6 @@ public class PortfolioListController implements Openable {
     AnchorPane depotsTablePane;
 
     public void open() {
-        createPortfolioButton.setDisable(ownerService.getAll().isEmpty());
-
         portfoliosTablePane.getChildren().setAll(TableFactory.createPortfolioTable(
                 portfoliosTablePane,
                 accountsTablePane,
@@ -62,6 +60,15 @@ public class PortfolioListController implements Openable {
 
     @FXML
     private void onClickCreatePortfolio() {
+        if (ownerService.getAll().isEmpty()) {
+            PrimaryTabManager.showInfoDialog(
+                    "Keine Inhaber vorhanden",
+                    "Es sind keine Inhaber vorhanden, die dem Portfolio zugeordnet werden können. " +
+                            "Bitte erstellen Sie zuerst einen Inhaber.",
+                    createPortfolioButton
+            );
+            return;
+        }
         PrimaryTabManager.loadFxml(
                 "gui/tabs/portfoliomanagement/tab/portfolios/dialog/create_portfolio_dialog.fxml",
                 "Neues Portfolio erstellen",
