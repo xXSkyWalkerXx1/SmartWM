@@ -39,19 +39,13 @@ public class PortfolioListController implements Openable {
     AnchorPane depotsTablePane;
 
     public void open() {
-        /*
-        var portf = new Portfolio();
-        portf.setName("Test-Portfolio");
-        portf.setOwner(new Owner());
-         */
-
         createPortfolioButton.setDisable(ownerService.getAll().isEmpty());
 
         portfoliosTablePane.getChildren().setAll(TableFactory.createPortfolioTable(
                 portfoliosTablePane,
                 accountsTablePane,
                 depotsTablePane,
-                portfolioService.getAll(), //List.of(portf),
+                portfolioService.getAll(),
                 this
         ));
         setAccountTable(TableFactory.createOwnerPortfolioAccountTable(
