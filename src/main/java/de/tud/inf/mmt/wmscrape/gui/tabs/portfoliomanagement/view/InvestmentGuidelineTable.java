@@ -38,6 +38,10 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                     if (parentRow != null && !rootItem.equals(parentRow)) {
                         if (parentRow.getValue().getAssetAllocation() == 0) return;
                     }
+                    // Set asset allocation of all children to 0 if the parent is set to 0
+                    if ((float) col.getNewValue() == 0) {
+                        col.getRowValue().getChildren().forEach(child -> child.getValue().setAssetAllocation(0));
+                    }
 
                     col.getRowValue().getValue().setAssetAllocation((float) col.getNewValue());
                 },
