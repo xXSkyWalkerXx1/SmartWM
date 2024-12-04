@@ -132,7 +132,7 @@ public class Owner {
         }
 
         public void setTaxRate(double taxRate) {
-            this.taxRate = BigDecimal.valueOf(taxRate).setScale(2, RoundingMode.HALF_DOWN);;
+            this.taxRate = BigDecimal.valueOf(taxRate).setScale(2, RoundingMode.HALF_DOWN);
         }
 
         public double getChurchTaxRate() {
@@ -140,7 +140,7 @@ public class Owner {
         }
 
         public void setChurchTaxRate(double churchTaxRate) {
-            this.churchTaxRate = BigDecimal.valueOf(churchTaxRate).setScale(2, RoundingMode.HALF_DOWN);;
+            this.churchTaxRate = BigDecimal.valueOf(churchTaxRate).setScale(2, RoundingMode.HALF_DOWN);
         }
 
         public double getCapitalGainsTaxRate() {
@@ -205,7 +205,7 @@ public class Owner {
 
     @Override
     public String toString() {
-        return String.format("%s %s (ID: %s)", forename, aftername, id);
+        return String.format("%s %s (Steuernummer: %s)", forename, aftername, taxInformation.taxNumber);
     }
 
     // region Getters & Setters
@@ -308,6 +308,6 @@ public class Owner {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Owner owner = (Owner) obj;
-        return Objects.equals(id, owner.id);
+        return Objects.equals(taxInformation, owner.taxInformation);
     }
 }
