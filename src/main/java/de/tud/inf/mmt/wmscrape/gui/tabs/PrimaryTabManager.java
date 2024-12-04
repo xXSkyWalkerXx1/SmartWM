@@ -1,16 +1,17 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs;
 
 import de.tud.inf.mmt.wmscrape.WMScrape;
+import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 @Service
 public class PrimaryTabManager {
@@ -150,7 +151,7 @@ public class PrimaryTabManager {
     }
 
     /**
-     * Shows an alert dialog of the given alert-type.
+     * Shows an alert dialog of the given alert-type with an "OK"-button.
      * @param control Some element inside the controller class used as a reference to get the stage/scene.
      */
     public static void showDialog(Alert.AlertType alertType, String title, String content, Control control) {
@@ -158,6 +159,21 @@ public class PrimaryTabManager {
         alert.setTitle(title);
         PrimaryTabManager.setAlertPosition(alert, control);
         alert.show();
+    }
+
+    /**
+     * Shows an dialog of the given alert-type with an "OK"-button.
+     * @param control Some element inside the controller class used as a reference to get the stage/scene.
+     * @param onButtonOkClickAction The action to be executed when the "OK"-button is clicked.
+     * @ImplNote The value of the consumer is always null.
+     */
+    public static void showDialogWithAction(Alert.AlertType alertType, String title, String content, Control control, Consumer<?> onButtonOkClickAction) {
+        Alert alert = new Alert(alertType, content, ButtonType.OK);
+        alert.setTitle(title);
+        PrimaryTabManager.setAlertPosition(alert, control);
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == ButtonType.OK) onButtonOkClickAction.accept(null);
+        });
     }
 
 }
