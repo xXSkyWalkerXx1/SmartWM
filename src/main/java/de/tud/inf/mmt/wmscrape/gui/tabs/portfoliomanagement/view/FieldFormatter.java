@@ -3,23 +3,32 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+
+import java.util.function.Predicate;
 
 public class FieldFormatter {
 
     /**
-     * Set text-format of a text field to only allow (all) decimal numbers.
+     * Set text-format of a text field to only allow (float) decimal numbers.
      */
     public static void setInputOnlyDecimalNumbers(@NonNull TextField textField) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
-            String textChange = change.getText();
+            change.setText(change.getText().replace(",", "."));
 
-            if (textChange.isEmpty() // removed anything
-                    || textChange.matches("^\\d$") // allow numerics
-                    || textChange.matches("^[.]$") && !textField.getText().contains(".") // allow '.' and only once
-                    || textChange.matches("^\\d*\\.?\\d+$")) { // allow full decimal numbers instead of single numbers
+
+            // allow empty input
+            if (change.getControlNewText().isEmpty()) {
+                change.setText("0");
                 return change;
             }
-            return null;
+            // otherwise try to parse and check input
+            try {
+                Float.parseFloat(change.getControlNewText());
+            } catch (NumberFormatException e) {
+                return null;
+            }
+            return change;
         }));
     }
 
@@ -28,14 +37,15 @@ public class FieldFormatter {
      */
     public static void setInputIntRange(@NonNull TextField textField, int from, int to) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
-            String textChange = change.getText();
-
             try {
-                if (change.isReplaced()) {
-                    if (Integer.parseInt(textChange) >= from && Integer.parseInt(textChange) <= to) return change;
+                // allow empty input
+                if (change.getControlNewText().isEmpty()) {
+                    change.setText(String.valueOf(from));
+                    return change;
                 }
-                if (Integer.parseInt(textField.getText() + textChange) >= from
-                        && Integer.parseInt(textField.getText() + textChange) <= to) {
+                // otherwise try to parse and check input
+                if (Integer.parseInt(change.getControlNewText()) >= from
+                        && Integer.parseInt(change.getControlNewText()) <= to) {
                     return change;
                 }
             } catch (NumberFormatException e) {
@@ -49,15 +59,28 @@ public class FieldFormatter {
      * Set text-format of a text field to only allow float numbers in a specific range.
      */
     public static void setInputFloatRange(@NonNull TextField textField, float from, float to) {
+        setInputFloatRange(textField, from, to, null);
+    }
+
+    /**
+     * Set text-format of a text field to only allow float numbers in a specific range.
+     * @param changePredicate Extra predicate to check the input.
+     */
+    public static void setInputFloatRange(@NonNull TextField textField, float from, float to, @Nullable Predicate<TextFormatter.Change> changePredicate) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
-            String textChange = change.getText();
+            change.setText(change.getText().replace(",", "."));
 
             try {
-                if (change.isReplaced()) {
-                    if (Float.parseFloat(textChange) >= from && Float.parseFloat(textChange) <= to) return change;
+                // allow empty input
+                if (change.getControlNewText().isEmpty()) {
+                    change.setText(String.valueOf(from));
+                    return change;
                 }
-                if (Float.parseFloat(textField.getText() + textChange) >= from
-                        && Float.parseFloat(textField.getText() + textChange) <= to) {
+
+                // otherwise try to parse and check input
+                if (Float.parseFloat(change.getControlNewText()) >= from
+                        && Float.parseFloat(change.getControlNewText()) <= to) {
+                    if (changePredicate != null && !changePredicate.test(change)) return null;
                     return change;
                 }
             } catch (NumberFormatException e) {
