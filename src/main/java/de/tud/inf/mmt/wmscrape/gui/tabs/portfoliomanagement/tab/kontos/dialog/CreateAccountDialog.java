@@ -111,7 +111,7 @@ public class CreateAccountDialog {
                 inputDescription, inputType, inputCurrencyCode, inputBalance, inputOwner, inputPortfolio,
                 inputNotice, inputBankName, inputIban, inputKontoNumber, inputInterestRate, inputInterestDays, inputInterestInterval
         );
-        accountService.save(account);
+        if (!accountService.save(account)) return;
         onCancel();
 
         // Finally, show success-dialog

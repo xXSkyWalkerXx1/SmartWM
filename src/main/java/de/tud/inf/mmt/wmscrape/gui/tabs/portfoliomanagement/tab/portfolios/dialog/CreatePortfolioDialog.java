@@ -81,7 +81,7 @@ public class CreatePortfolioDialog {
 
         // If everything is valid, we can create and save the new portfolio
         portfolioService.writeInput(portfolio, true, inputPortfolioName, inputOwner);
-        portfolioService.save(portfolio);
+        if (!portfolioService.save(portfolio)) return;
         onCancel();
 
         // Finally, show success-dialog
