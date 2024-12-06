@@ -56,10 +56,34 @@ public class CreateOwnerDialog {
         inputMaritalState.getSelectionModel().selectFirst();
 
         // Change TextFields so that they only accept integers
-        FieldFormatter.setInputFloatRange(inputTaxRate, 0, 100);
-        FieldFormatter.setInputFloatRange(inputChurchTaxRate, 0, 100);
-        FieldFormatter.setInputFloatRange(inputCapitalGainsTaxRate, 0, 100);
-        FieldFormatter.setInputFloatRange(inputSolidaritySurchargeTaxRate, 0, 100);
+        FieldFormatter.setInputFloatRange(inputTaxRate, 0, 100, change -> ownerService.testTaxRatesOrShowError(
+                Float.parseFloat(change.getControlNewText()),
+                Float.parseFloat(inputChurchTaxRate.getText())
+                        + Float.parseFloat(inputCapitalGainsTaxRate.getText())
+                        + Float.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
+                inputMaritalState
+        ));
+        FieldFormatter.setInputFloatRange(inputChurchTaxRate, 0, 100, change -> ownerService.testTaxRatesOrShowError(
+                Float.parseFloat(change.getControlNewText()),
+                Float.parseFloat(inputTaxRate.getText())
+                        + Float.parseFloat(inputCapitalGainsTaxRate.getText())
+                        + Float.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
+                inputMaritalState
+        ));
+        FieldFormatter.setInputFloatRange(inputCapitalGainsTaxRate, 0, 100, change -> ownerService.testTaxRatesOrShowError(
+                Float.parseFloat(change.getControlNewText()),
+                Float.parseFloat(inputTaxRate.getText())
+                        + Float.parseFloat(inputChurchTaxRate.getText())
+                        + Float.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
+                inputMaritalState
+        ));
+        FieldFormatter.setInputFloatRange(inputSolidaritySurchargeTaxRate, 0, 100, change -> ownerService.testTaxRatesOrShowError(
+                Float.parseFloat(change.getControlNewText()),
+                Float.parseFloat(inputTaxRate.getText())
+                        + Float.parseFloat(inputChurchTaxRate.getText())
+                        + Float.parseFloat(inputCapitalGainsTaxRate.getText()),
+                inputMaritalState
+        ));
     }
 
     @FXML
@@ -85,7 +109,7 @@ public class CreateOwnerDialog {
                 inputMaritalState, inputTaxRate,
                 inputChurchTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         );
-        ownerService.save(owner);
+        if (!ownerService.save(owner)) return;
         onCancel();
 
         // Finally, show success-dialog
