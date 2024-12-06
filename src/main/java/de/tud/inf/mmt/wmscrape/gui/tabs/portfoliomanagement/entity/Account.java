@@ -18,8 +18,8 @@ import java.util.*;
 public class Account extends FinancialAsset {
 
     @Id
-    @Column(name = "iban", nullable = false)
-    private String iban;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "description")
     private String description;
@@ -37,6 +37,9 @@ public class Account extends FinancialAsset {
 
     @Column(name = "balance", nullable = false)
     private BigDecimal balance = BigDecimal.valueOf(0);
+
+    @Column(name = "iban", nullable = false, unique = true)
+    private String iban;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
@@ -87,6 +90,10 @@ public class Account extends FinancialAsset {
     }
 
     // region Getters & Setters
+    public Long getId() {
+        return id;
+    }
+
     public String getDescription() {
         return description;
     }
