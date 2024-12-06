@@ -88,7 +88,7 @@ public class Owner {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @Column(name = "tax_number", nullable = false)
+        @Column(name = "tax_number", nullable = false, unique = true)
         private String taxNumber;
 
         @Enumerated(EnumType.STRING)
@@ -186,13 +186,13 @@ public class Owner {
     @JoinColumn(name = "tax_information_id", nullable = false) // creates foreign-key
     private TaxInformation taxInformation = new TaxInformation();
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Portfolio> portfolios = Collections.emptySet();
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Account> accounts = Collections.emptySet();
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Depot> depots = Collections.emptySet();
 
     @Temporal(TemporalType.TIMESTAMP)
