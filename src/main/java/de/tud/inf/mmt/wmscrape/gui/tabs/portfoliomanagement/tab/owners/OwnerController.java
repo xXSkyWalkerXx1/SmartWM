@@ -37,7 +37,8 @@ public class OwnerController implements Openable {
         ownerTablePane.getChildren().setAll(TableFactory.createOwnerTable(
                 ownerTablePane,
                 ownerService.getAll(),
-                this
+                this,
+                ownerService
         ));
 
         setOwnerTreeView(new PortfolioTreeView(ownerTreeViewPane, new ArrayList<>(), portfolioManagementTabManager, true));
