@@ -3,9 +3,12 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.OwnerRepository;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -22,22 +25,40 @@ public class OwnerService {
         return ownerRepository.findAll();
     }
 
-    public void save(Owner owner) {
-        ownerRepository.save(owner);
+    public Owner getOwnerById(long id){
+        return ownerRepository.findById(id).orElseThrow();
+    }
+
+    public boolean save(Owner owner) {
+        try {
+            ownerRepository.save(owner);
+            return true;
+        } catch (DataIntegrityViolationException integrityViolationException) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehler",
+                    "Der Inhaber konnte nicht gespeichert werden, da bereits ein Inhaber mit der selben Steuernummer bereits existiert.",
+                    null
+            );
+        }
+        return false;
     }
 
     /**
-     * @param control Some element inside the controller class used as a reference to get the stage/ scene.
+     * @param region Some element inside the controller class used as a reference to get the stage/ scene.
      */
-    public void delete(Owner owner, @NonNull Control control) {
+    public void delete(Owner owner, @NonNull Region region, @NonNull Openable controller) {
         PrimaryTabManager.showDialogWithAction(
                 Alert.AlertType.WARNING,
                 "Inhaber löschen",
                 "Sind Sie sicher, dass Sie den Inhaber löschen möchten?\n" +
-                        "Etwaige Beziehungen zu Konten oder Depots werden dabei nicht berücksichtig und kann zu einem " +
-                        "fehlerhaften Verhalten der Anwendung führen!;",
-                control,
-                o -> ownerRepository.delete(owner)
+                        "Etwaige Beziehungen zu Konten oder Depots werden dabei nicht berücksichtigt und kann zu einem" +
+                        " fehlerhaften Verhalten der Anwendung führen!;",
+                region,
+                o -> {
+                    ownerRepository.delete(owner);
+                    controller.open();
+                }
         );
     }
 
@@ -67,5 +88,28 @@ public class OwnerService {
         ownerTaxInfo.setChurchTaxRate(Double.parseDouble(inputChurchTaxRate.getText().isBlank() ? "0" : inputChurchTaxRate.getText()));
         ownerTaxInfo.setCapitalGainsTaxRate(Double.parseDouble(inputCapitalGainsTaxRate.getText()));
         ownerTaxInfo.setSolidaritySurchargeTaxRate(Double.parseDouble(inputSolidaritySurchargeTaxRate.getText()));
+    }
+
+    /**
+     * @param input Input only for one of these fields.
+     * @param sum Sum of the other fields.
+     * @param region some element inside the controller class used as a reference to get the stage/ scene.
+     * @return true if the sum of the input and the sum is less than 100, false otherwise.
+     */
+    public boolean testTaxRatesOrShowError(float input, float sum, @NonNull Region region) {
+        if (input + sum > 100) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehler",
+                    String.format(
+                            "Die Summe der Steuer-Sätze kann in Summe nur maximal 100 ergeben.\n" +
+                                    "Maximal verbleibende Eingabe: %s | Eingegeben: %s",
+                            100 - sum, input
+                    ),
+                    region
+            );
+            return false;
+        }
+        return true;
     }
 }
