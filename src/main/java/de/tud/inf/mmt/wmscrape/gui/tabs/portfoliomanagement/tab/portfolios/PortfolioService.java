@@ -6,8 +6,10 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.PortfolioRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.InvestmentGuidelineTable;
 import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +23,27 @@ public class PortfolioService {
     @Autowired
     PortfolioRepository portfolioRepository;
 
-    public Optional<Portfolio> findById(String portfolioName) {
-        return portfolioRepository.findById(portfolioName);
+    public Portfolio findById(long id) {
+        return portfolioRepository.findById(id).orElseThrow();
     }
 
     public List<Portfolio> getAll() {
         return portfolioRepository.findAll();
     }
 
-    public void save(Portfolio portfolio) {
-        portfolioRepository.save(portfolio);
+    public boolean save(Portfolio portfolio) {
+        try {
+            portfolioRepository.save(portfolio);
+            return true;
+        } catch (DataIntegrityViolationException integrityViolationException) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehler",
+                    "Das Portfolio konnte nicht gespeichert werden, da bereits ein Portfolio mit dem selben Namen existiert.",
+                    null
+            );
+        }
+        return false;
     }
 
     public void writeInput(@NonNull Portfolio portfolio, boolean isOnCreate, @NonNull TextField inputPortfolioName,
