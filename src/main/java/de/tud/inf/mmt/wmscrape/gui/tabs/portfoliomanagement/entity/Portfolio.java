@@ -12,7 +12,10 @@ import java.util.*;
 public class Portfolio extends FinancialAsset {
 
     @Id
-    @Column(name = "name", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @ManyToOne
@@ -27,11 +30,14 @@ public class Portfolio extends FinancialAsset {
     @JoinColumn(name = "investment_guideline_id", nullable = false)
     private InvestmentGuideline investmentGuideline = new InvestmentGuideline();
 
+    /**
+     * ToDo: Refactor!
+     */
     @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "depot_id", nullable = false)
     private Set<Depot> depots = Collections.emptySet();
 
-    @OneToMany(mappedBy = "portfolio", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<Account> accounts = Collections.emptySet();
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -61,6 +67,10 @@ public class Portfolio extends FinancialAsset {
         }
 
         return sum;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
