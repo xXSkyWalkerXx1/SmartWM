@@ -6,8 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -115,10 +117,11 @@ public class PrimaryTabManager {
      * tries to center javafx alerts inside the stage from which the alert was created
      *
      * @param alert the alert object
-     * @param control some element inside the controller class used as a reference to get the stage/scene
+     * @param region some element inside the controller class used as a reference to get the stage/scene
      */
-    public static void setAlertPosition(Alert alert, Control control) {
-        var window = control.getScene().getWindow();
+    public static void setAlertPosition(Alert alert, Region region) {
+        var window = region.getScene().getWindow();
+
         alert.setY(window.getY() + (window.getHeight() / 2) - 200);
         alert.setX(window.getX() + (window.getWidth() / 2) - 200);
     }
@@ -144,33 +147,33 @@ public class PrimaryTabManager {
 
     /**
      * Shows an alert dialog with a warning message.
-     * @param control Some element inside the controller class used as a reference to get the stage/scene.
+     * @param region Some element inside the controller class used as a reference to get the stage/scene.
      */
-    public static void showInfoDialog(String title, String content, Control control) {
-        showDialog(Alert.AlertType.INFORMATION, title, content, control);
+    public static void showInfoDialog(String title, String content, Region region) {
+        showDialog(Alert.AlertType.INFORMATION, title, content, region);
     }
 
     /**
      * Shows an alert dialog of the given alert-type with an "OK"-button.
-     * @param control Some element inside the controller class used as a reference to get the stage/scene.
+     * @param region Some element inside the controller class used as a reference to get the stage/scene.
      */
-    public static void showDialog(Alert.AlertType alertType, String title, String content, Control control) {
+    public static void showDialog(Alert.AlertType alertType, String title, String content, @Nullable Region region) {
         Alert alert = new Alert(alertType, content, ButtonType.OK);
         alert.setTitle(title);
-        PrimaryTabManager.setAlertPosition(alert, control);
+        if (region != null) PrimaryTabManager.setAlertPosition(alert, region);
         alert.show();
     }
 
     /**
      * Shows an dialog of the given alert-type with an "OK"-button.
-     * @param control Some element inside the controller class used as a reference to get the stage/scene.
+     * @param region Some element inside the controller class used as a reference to get the stage/scene.
      * @param onButtonOkClickAction The action to be executed when the "OK"-button is clicked.
      * @ImplNote The value of the consumer is always null.
      */
-    public static void showDialogWithAction(Alert.AlertType alertType, String title, String content, Control control, Consumer<?> onButtonOkClickAction) {
+    public static void showDialogWithAction(Alert.AlertType alertType, String title, String content, Region region, Consumer<?> onButtonOkClickAction) {
         Alert alert = new Alert(alertType, content, ButtonType.OK);
         alert.setTitle(title);
-        PrimaryTabManager.setAlertPosition(alert, control);
+        PrimaryTabManager.setAlertPosition(alert, region);
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.OK) onButtonOkClickAction.accept(null);
         });
