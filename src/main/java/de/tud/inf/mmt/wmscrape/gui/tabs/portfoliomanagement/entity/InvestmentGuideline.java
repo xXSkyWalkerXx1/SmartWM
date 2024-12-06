@@ -30,6 +30,9 @@ public class InvestmentGuideline {
         @Column(name = "asset_allocation")
         private BigDecimal assetAllocation = BigDecimal.valueOf(0); // %
 
+        /**
+         * Is 0 (means an invalid risk-class), if {@code type} is a child.
+         */
         @IntRange(from = 1, to = 12)
         @Column(name = "max_riskclass")
         private int maxRiskclass;
@@ -200,6 +203,17 @@ public class InvestmentGuideline {
         public void setEmergine_markets(float emergine_markets) {
             this.emergine_markets = BigDecimal.valueOf(emergine_markets).setScale(2,RoundingMode.HALF_DOWN);
         }
+
+        public float getSum() {
+            return germany
+                    .add(europe_without_brd)
+                    .add(northamerica_with_usa)
+                    .add(asia_without_china)
+                    .add(china)
+                    .add(japan)
+                    .add(emergine_markets)
+                    .floatValue();
+        }
     }
 
     @Entity
@@ -226,7 +240,8 @@ public class InvestmentGuideline {
         }
 
         public void setEuro(float euro) {
-            this.euro = BigDecimal.valueOf(euro).setScale(2,RoundingMode.HALF_DOWN);;
+            this.euro = BigDecimal.valueOf(euro).setScale(2, RoundingMode.HALF_DOWN);
+            ;
         }
 
         public float getUsd() {
@@ -234,7 +249,8 @@ public class InvestmentGuideline {
         }
 
         public void setUsd(float usd) {
-            this.usd = BigDecimal.valueOf(usd).setScale(2,RoundingMode.HALF_DOWN);;
+            this.usd = BigDecimal.valueOf(usd).setScale(2, RoundingMode.HALF_DOWN);
+            ;
         }
 
         public float getChf() {
@@ -242,7 +258,8 @@ public class InvestmentGuideline {
         }
 
         public void setChf(float chf) {
-            this.chf = BigDecimal.valueOf(chf).setScale(2,RoundingMode.HALF_DOWN);;
+            this.chf = BigDecimal.valueOf(chf).setScale(2, RoundingMode.HALF_DOWN);
+            ;
         }
 
         public float getGbp() {
@@ -250,7 +267,8 @@ public class InvestmentGuideline {
         }
 
         public void setGbp(float gbp) {
-            this.gbp = BigDecimal.valueOf(gbp).setScale(2,RoundingMode.HALF_DOWN);;
+            this.gbp = BigDecimal.valueOf(gbp).setScale(2, RoundingMode.HALF_DOWN);
+            ;
         }
 
         public float getYen() {
@@ -258,7 +276,8 @@ public class InvestmentGuideline {
         }
 
         public void setYen(float yen) {
-            this.yen = BigDecimal.valueOf(yen).setScale(2,RoundingMode.HALF_DOWN);;
+            this.yen = BigDecimal.valueOf(yen).setScale(2, RoundingMode.HALF_DOWN);
+            ;
         }
 
         public float getAsiaCurrencies() {
@@ -266,7 +285,8 @@ public class InvestmentGuideline {
         }
 
         public void setAsia_currencies(float asia_currencies) {
-            this.asia_currencies = BigDecimal.valueOf(asia_currencies).setScale(2,RoundingMode.HALF_DOWN);;
+            this.asia_currencies = BigDecimal.valueOf(asia_currencies).setScale(2, RoundingMode.HALF_DOWN);
+            ;
         }
 
         public float getOthers() {
@@ -274,7 +294,19 @@ public class InvestmentGuideline {
         }
 
         public void setOthers(float others) {
-            this.others = BigDecimal.valueOf(others).setScale(2,RoundingMode.HALF_DOWN);;
+            this.others = BigDecimal.valueOf(others).setScale(2, RoundingMode.HALF_DOWN);
+            ;
+        }
+
+        public float getSum() {
+            return euro
+                    .add(usd)
+                    .add(chf)
+                    .add(gbp)
+                    .add(yen)
+                    .add(asia_currencies)
+                    .add(others)
+                    .floatValue();
         }
     }
     // endregion
@@ -307,6 +339,7 @@ public class InvestmentGuideline {
             if (!type.isChild()) { // is parent
                 parentEntry = new Entry();
                 parentEntry.setType(type);
+                parentEntry.setMaxRiskclass(1);
 
                 for (InvestmentType childType : type.getChilds()) {
                     var childEntry = new Entry();
