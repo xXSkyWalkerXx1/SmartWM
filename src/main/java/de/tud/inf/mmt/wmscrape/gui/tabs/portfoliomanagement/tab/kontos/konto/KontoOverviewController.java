@@ -106,6 +106,7 @@ public class KontoOverviewController implements Openable {
     }
 
     public void onReset() {
+        account = accountService.getAccountById(account.getId());
         loadAccountData();
     }
 
@@ -123,7 +124,7 @@ public class KontoOverviewController implements Openable {
                 inputNotice, inputBankName, inputIban, inputKontoNumber, inputInterestRate, inputInterestDays, inputInterestInterval
         );
         account.setState(inputState.getValue());
-        accountService.save(account);
+        if (!accountService.save(account)) return;
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(
