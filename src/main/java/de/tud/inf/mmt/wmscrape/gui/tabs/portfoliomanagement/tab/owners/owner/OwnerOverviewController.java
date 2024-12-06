@@ -97,6 +97,7 @@ public class OwnerOverviewController implements Openable {
 
     @FXML
     private void onReset() {
+        owner = ownerService.getOwnerById(owner.getId());
         loadOwnerData();
     }
 
@@ -117,7 +118,7 @@ public class OwnerOverviewController implements Openable {
                 inputChurchTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         );
         owner.setState(inputState.getValue());
-        ownerService.save(owner);
+        if (!ownerService.save(owner)) return;
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(
