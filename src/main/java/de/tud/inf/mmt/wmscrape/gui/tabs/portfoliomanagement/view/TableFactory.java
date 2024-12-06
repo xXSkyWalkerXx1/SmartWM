@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
@@ -8,6 +9,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerDepotsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerPortfoliosController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
@@ -22,6 +24,7 @@ import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -54,7 +57,8 @@ public class TableFactory {
     public static TableView<Owner> createOwnerTable(
             @NonNull Region parent,
             @NonNull List<Owner> tableItems,
-            @NonNull OwnerController ownerController){
+            @NonNull OwnerController ownerController,
+            @NonNull OwnerService ownerService){
 
         TableBuilder<Owner> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Owner> openOwnerOverviewAction = owner -> {
@@ -119,7 +123,7 @@ public class TableFactory {
                     @Override
                     public void accept(Owner owner) {
                         // ToDo: implement in future work
-                        System.out.println("Lösche Inhaber " + owner);
+                        ownerService.delete(owner, parent, ownerController);
                     }
                 }
         );
@@ -568,6 +572,16 @@ public class TableFactory {
     public static TableView<InvestmentGuideline.DivisionByLocation> createPortfolioDivisionByLocationTable(@NonNull Region tableParent,
                                                                                                            @NonNull InvestmentGuideline.DivisionByLocation divisionByLocation) {
         TableBuilder<InvestmentGuideline.DivisionByLocation> tableBuilder = new TableBuilder<>(tableParent, List.of(divisionByLocation));
+        BiConsumer<Float, Float> showErrorDialog = (input, currSum) -> PrimaryTabManager.showDialog(
+                Alert.AlertType.ERROR,
+                "Fehler",
+                String.format(
+                        "Die Aufteilung des Gesamtvermögens nach Ländern bzw. Regionen muss in Summe 100 ergeben.\n" +
+                                "Maximal verbleibende Eingabe: %s | Eingegeben: %s",
+                        100 - currSum, input
+                ),
+                tableBuilder.getResult()
+        );
 
         tableBuilder.addColumn(
                 "",
@@ -579,43 +593,88 @@ public class TableFactory {
                 "Deutschland",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getGermany()),
-                col -> col.getRowValue().setGermany((float) col.getNewValue())
-        );
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getGermany() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setGermany((float) col.getNewValue());
+                });
         tableBuilder.addEditableColumn(
                 "Europa ohne BRD",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getEurope_without_brd()),
-                col -> col.getRowValue().setEurope_without_brd((float) col.getNewValue())
-        );
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getEurope_without_brd() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setEurope_without_brd((float) col.getNewValue());
+                });
         tableBuilder.addEditableColumn(
                 "Nordamerika, USA",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getNorthamerica_with_usa()),
-                col -> col.getRowValue().setNorthamerica_with_usa((float) col.getNewValue())
-        );
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getNorthamerica_with_usa() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setNorthamerica_with_usa((float) col.getNewValue());
+                });
         tableBuilder.addEditableColumn(
                 "Asien (ohne China)",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getAsia_without_china()),
-                col -> col.getRowValue().setAsia_without_china((float) col.getNewValue())
-        );
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getAsia_without_china() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setAsia_without_china((float) col.getNewValue());
+                });
         tableBuilder.addEditableColumn(
                 "China",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getChina()),
-                col -> col.getRowValue().setChina((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getChina() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setChina((float) col.getNewValue());
+                }
         );
         tableBuilder.addEditableColumn(
                 "Japan",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getJapan()),
-                col -> col.getRowValue().setJapan((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getJapan() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setJapan((float) col.getNewValue());
+                }
         );
         tableBuilder.addEditableColumn(
                 "Emergine Markets",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getEmergine_markets()),
-                col -> col.getRowValue().setEmergine_markets((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getEmergine_markets() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setEmergine_markets((float) col.getNewValue());
+                }
         );
 
         return tableBuilder.getResult();
@@ -628,6 +687,16 @@ public class TableFactory {
     public static TableView<InvestmentGuideline.DivisionByCurrency> createPortfolioDivisionByCurrencyTable(@NonNull Region tableParent,
                                                                                                            @NonNull InvestmentGuideline.DivisionByCurrency divisionByLocation) {
         TableBuilder<InvestmentGuideline.DivisionByCurrency> tableBuilder = new TableBuilder<>(tableParent, List.of(divisionByLocation));
+        BiConsumer<Float, Float> showErrorDialog = (input, currSum) -> PrimaryTabManager.showDialog(
+                Alert.AlertType.ERROR,
+                "Fehler",
+                String.format(
+                        "Die Aufteilung des Gesamtvermögens nach Währung muss in Summe 100 ergeben.\n" +
+                                "Maximal verbleibende Eingabe: %s | Eingegeben: %s",
+                        100 - currSum, input
+                ),
+                tableBuilder.getResult()
+        );
 
         tableBuilder.addColumn(
                 "",
@@ -639,43 +708,92 @@ public class TableFactory {
                 "Euro",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getEuro()),
-                col -> col.getRowValue().setEuro((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getEuro() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setEuro((float) col.getNewValue());
+                }
         );
         tableBuilder.addEditableColumn(
                 "US-Dollar",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getUsd()),
-                col -> col.getRowValue().setUsd((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getUsd() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setUsd((float) col.getNewValue());
+                }
         );
         tableBuilder.addEditableColumn(
                 "Schweizer Franken",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getChf()),
-                col -> col.getRowValue().setChf((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getChf() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setChf((float) col.getNewValue());
+                }
         );
         tableBuilder.addEditableColumn(
                 "Britische Pfunds",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getGbp()),
-                col -> col.getRowValue().setGbp((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getGbp() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setGbp((float) col.getNewValue());
+                }
         );
         tableBuilder.addEditableColumn(
                 "Japanischer Yen",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getYen()),
-                col -> col.getRowValue().setYen((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getYen() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setYen((float) col.getNewValue());
+                }
         );
         tableBuilder.addEditableColumn(
                 "Asiatische Währungen",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getAsiaCurrencies()),
-                col -> col.getRowValue().setAsia_currencies((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getAsiaCurrencies() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setAsia_currencies((float) col.getNewValue());
+                }
         );
         tableBuilder.addEditableColumn(
                 "Alle andere",
                 0.12f,
                 cellDataFeatures -> new SimpleFloatProperty(cellDataFeatures.getValue().getOthers()),
-                col -> col.getRowValue().setOthers((float) col.getNewValue())
+                col -> {
+                    var division = col.getRowValue();
+                    if (division.getSum() - division.getOthers() + col.getNewValue().floatValue() > 100) {
+                        showErrorDialog.accept(col.getNewValue().floatValue(), division.getSum());
+                        return;
+                    }
+                    col.getRowValue().setOthers((float) col.getNewValue());
+                }
         );
 
         return tableBuilder.getResult();
