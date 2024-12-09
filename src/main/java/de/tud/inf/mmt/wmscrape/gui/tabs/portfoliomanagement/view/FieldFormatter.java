@@ -15,12 +15,10 @@ public class FieldFormatter {
      */
     public static void setInputOnlyDecimalNumbers(@NonNull TextField textField) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
-            //change.setText(change.getText().replace(",", "."));
-
 
             // allow empty input
             if (change.getControlNewText().isEmpty()) {
-                change.setText("0");
+                change.setText(FormatUtils.formatFloat(0));
                 return change;
             }
             // otherwise try to parse and check input
@@ -69,7 +67,6 @@ public class FieldFormatter {
      */
     public static void setInputFloatRange(@NonNull TextField textField, float from, float to, @Nullable Predicate<TextFormatter.Change> changePredicate) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
-            //change.setText(change.getText().replace(",", "."));
 
             try {
                 // allow empty input
