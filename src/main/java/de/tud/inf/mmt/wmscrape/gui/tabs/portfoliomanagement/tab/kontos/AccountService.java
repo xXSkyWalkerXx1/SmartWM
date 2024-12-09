@@ -7,6 +7,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.AccountRepository;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
@@ -17,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.List;
@@ -60,7 +62,6 @@ public class AccountService {
         account.setDescription(inputDescription.getText());
         account.setType(inputType.getValue());
         account.setCurrencyCode(inputCurrencyCode.getValue());
-        account.setBalance(Float.parseFloat(inputBalance.getText()));
         account.setOwner(inputOwner.getValue());
         account.setPortfolio(inputPortfolio.getValue());
         account.setNotice(inputNotice.getText());
@@ -68,8 +69,14 @@ public class AccountService {
         account.setBankName(inputBankName.getText());
         account.setIban(inputIban.getText());
         account.setKontoNumber(inputKontoNumber.getText());
-        account.setInterestRate(Float.parseFloat(inputInterestRate.getText()));
         account.setInterestDays(inputInterestDays.getText());
         account.setInterestInterval(inputInterestInterval.getValue());
+
+        try {
+            account.setBalance(FormatUtils.parseFloat(inputBalance.getText()));
+            account.setInterestRate(FormatUtils.parseFloat(inputInterestRate.getText()));
+        } catch (ParseException e) {
+            throw new RuntimeException("Error while parsing balance and interest-rate. This should not happen here!");
+        }
     }
 }
