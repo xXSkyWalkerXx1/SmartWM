@@ -5,6 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.OwnerRepository;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,10 +85,17 @@ public class OwnerService {
         Owner.TaxInformation ownerTaxInfo = owner.getTaxInformation();
         ownerTaxInfo.setTaxNumber(inputTaxNumber.getText());
         ownerTaxInfo.setMaritalState(inputMaritalState.getValue());
-        ownerTaxInfo.setTaxRate(Double.parseDouble(inputTaxRate.getText()));
-        ownerTaxInfo.setChurchTaxRate(Double.parseDouble(inputChurchTaxRate.getText().isBlank() ? "0" : inputChurchTaxRate.getText()));
-        ownerTaxInfo.setCapitalGainsTaxRate(Double.parseDouble(inputCapitalGainsTaxRate.getText()));
-        ownerTaxInfo.setSolidaritySurchargeTaxRate(Double.parseDouble(inputSolidaritySurchargeTaxRate.getText()));
+
+        try {
+            ownerTaxInfo.setTaxRate(FormatUtils.parseFloat(inputTaxRate.getText()));
+            ownerTaxInfo.setChurchTaxRate(FormatUtils.parseFloat(inputChurchTaxRate.getText()));
+            //ownerTaxInfo.setChurchTaxRate(Double.parseDouble(inputChurchTaxRate.getText().isBlank() ? "0" : inputChurchTaxRate.getText()));
+            ownerTaxInfo.setCapitalGainsTaxRate(FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText()));
+            ownerTaxInfo.setSolidaritySurchargeTaxRate(FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()));
+        } catch (Exception e) {
+            throw new RuntimeException("Error while parsing tax rates. This should not happen here!");
+        }
+
     }
 
     /**
