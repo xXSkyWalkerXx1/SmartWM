@@ -89,7 +89,6 @@ public class OwnerService {
         try {
             ownerTaxInfo.setTaxRate(FormatUtils.parseFloat(inputTaxRate.getText()));
             ownerTaxInfo.setChurchTaxRate(FormatUtils.parseFloat(inputChurchTaxRate.getText()));
-            //ownerTaxInfo.setChurchTaxRate(Double.parseDouble(inputChurchTaxRate.getText().isBlank() ? "0" : inputChurchTaxRate.getText()));
             ownerTaxInfo.setCapitalGainsTaxRate(FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText()));
             ownerTaxInfo.setSolidaritySurchargeTaxRate(FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()));
         } catch (Exception e) {
