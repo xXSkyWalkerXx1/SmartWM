@@ -3,8 +3,6 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.InvestmentGuideline;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InvestmentType;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -15,7 +13,7 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import javax.xml.stream.events.EntityReference;
+import java.text.ParseException;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -30,7 +28,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
             String.format(
                     "Die Aufteilung des Gesamtvermögens muss in Summe 100 ergeben.\n" +
                             "Maximal verbleibende Eingabe: %s | Eingegeben: %s",
-                    100 - currSum, input
+                    FormatUtils.formatFloat(100 - currSum), FormatUtils.formatFloat(input)
             ),
             this
     );
@@ -40,7 +38,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
             String.format(
                     "Die Aufteilung des Gesamtvermögens nach '%s' muss in Summe 100 ergeben.\n" +
                             "Maximal verbleibende Eingabe: %s | Eingegeben: %s",
-                    type, 100 - currSum, input
+                    type, FormatUtils.formatFloat(100 - currSum), FormatUtils.formatFloat(input)
             ),
             this
     );
@@ -56,22 +54,25 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         ));
         getColumns().add(createDynamicColumn(
                 "Aufteilung Gesamtvermögen (%)",
-                entry -> new SimpleFloatProperty(entry.getAssetAllocation()),
+                entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getAssetAllocation())),
                 col -> {
                     var parentRow = col.getRowValue().getParent();
-                    float input = (float) col.getNewValue();
-                    float currAlloc = col.getRowValue().getValue().getAssetAllocation();
+                    float curr = col.getRowValue().getValue().getAssetAllocation();
+
+                    // Try to parse input
+                    float input;
+                    try {
+                        input = FormatUtils.parseFloat(col.getNewValue());
+                    } catch (ParseException e) {
+                        return;
+                    }
 
                     if (col.getRowValue().getValue().getType().isChild()) { // it's a child
                         // Only allow editing of child-entries if the parent is not the root-item and the asset allocation is set
                         if (parentRow.getValue().getAssetAllocation() == 0) return;
                         // if the sum of the parents children is not greater than 100
-                        if (getChildAllocSum(parentRow) - currAlloc + input > 100) {
-                            showErrorChildDialog.accept(
-                                    parentRow.getValue().getType(),
-                                    input,
-                                    getChildAllocSum(parentRow) - currAlloc
-                            );
+                        if (getChildAllocSum(parentRow) - curr + input > 100) {
+                            showErrorChildDialog.accept(parentRow.getValue().getType(), input, getChildAllocSum(parentRow) - curr);
                             return;
                         }
                     } else {
@@ -86,32 +87,39 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                             });
                         }
                         // Return if sum is greater than 100
-                        if (getParentAllocSum() - currAlloc + input > 100) {
-                            showErrorParentDialog.accept(input, getParentAllocSum() - currAlloc);
+                        if (getParentAllocSum() - curr + input > 100) {
+                            showErrorParentDialog.accept(input, getParentAllocSum() - curr);
                             return;
                         }
                     }
                     col.getRowValue().getValue().setAssetAllocation(input);
                 },
                 textField -> FieldFormatter.setInputFloatRange(textField, 0, 100),
-                Float::parseFloat,
                 false
         ));
         getColumns().add(createDynamicColumn(
                 "Maximale Risikoklasse (1-12)",
-                entry -> new SimpleIntegerProperty(entry.getMaxRiskclass()),
-                col -> col.getRowValue().getValue().setMaxRiskclass((int) col.getNewValue()),
+                entry -> new SimpleStringProperty(String.valueOf(entry.getMaxRiskclass())),
+                col -> col.getRowValue().getValue().setMaxRiskclass(Integer.parseInt(col.getNewValue())),
                 textField -> FieldFormatter.setInputIntRange(textField, 1, 12),
-                Integer::parseInt,
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
         getColumns().add(createDynamicColumn(
                 "Max. Volatilität innerhalb 1 Jahr (%)",
-                entry -> new SimpleFloatProperty(entry.getMaxVolatility()),
-                col -> col.getRowValue().getValue().setMaxVolatility((float) col.getNewValue()),
+                entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getMaxVolatility())),
+                col -> {
+                    // Try to parse input
+                    float input;
+                    try {
+                        input = FormatUtils.parseFloat(col.getNewValue());
+                    } catch (ParseException e) {
+                        return;
+                    }
+
+                    col.getRowValue().getValue().setMaxVolatility(input);
+                },
                 textField -> FieldFormatter.setInputFloatRange(textField, 0, 100),
-                Float::parseFloat,
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
@@ -120,29 +128,56 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         getColumns().add(minSuccess);
         minSuccess.getColumns().add(createDynamicColumn(
                 "Performance innerhalb 12 Monate (%)",
-                entry -> new SimpleFloatProperty(entry.getPerformance()),
-                col -> col.getRowValue().getValue().setPerformance((float) col.getNewValue()),
+                entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getPerformance())),
+                col -> {
+                    // Try to parse input
+                    float input;
+                    try {
+                        input = FormatUtils.parseFloat(col.getNewValue());
+                    } catch (ParseException e) {
+                        return;
+                    }
+
+                    col.getRowValue().getValue().setPerformance(input);
+                },
                 FieldFormatter::setInputOnlyDecimalNumbers,
-                Float::parseFloat,
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
         minSuccess.getColumns().add(createDynamicColumn(
                 "Rendite seit Kauf (%)",
-                entry -> new SimpleFloatProperty(entry.getRendite()),
-                col -> col.getRowValue().getValue().setRendite((float) col.getNewValue()),
+                entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getRendite())),
+                col -> {
+                    // Try to parse input
+                    float input;
+                    try {
+                        input = FormatUtils.parseFloat(col.getNewValue());
+                    } catch (ParseException e) {
+                        return;
+                    }
+
+                    col.getRowValue().getValue().setRendite(input);
+                },
                 FieldFormatter::setInputOnlyDecimalNumbers,
-                Float::parseFloat,
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
 
         getColumns().add(createDynamicColumn(
                 "Chancen-Risiko-Zahl (%)",
-                entry -> new SimpleFloatProperty(entry.getChanceRiskNumber()),
-                col -> col.getRowValue().getValue().setChanceRiskNumber((float) col.getNewValue()),
+                entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getChanceRiskNumber())),
+                col -> {
+                    // Try to parse input
+                    float input;
+                    try {
+                        input = FormatUtils.parseFloat(col.getNewValue());
+                    } catch (ParseException e) {
+                        return;
+                    }
+
+                    col.getRowValue().getValue().setChanceRiskNumber(input);
+                },
                 textField -> FieldFormatter.setInputFloatRange(textField, 0, 100),
-                Float::parseFloat,
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
@@ -173,45 +208,43 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
      * @param cellValueFactory Defines what is shown in a cell.
      * @param onCommit Defines what will be updated on commit.
      * @param inputFormatter Defines how the input should be formatted, f.e. numbers between 0 and 100.
-     * @param onInputAction Defines how the input is parsed, f.e. as float ({@link Float#parseFloat(String)}.
+     // @param onInputAction Defines how the input is parsed, f.e. as float ({@link Float#parseFloat(String)}.
      * @param isOnlyParentEditable Defines if only the parent-entries should be editable and show his values.
-     * @return Static (not-editable) column with the given name and cell value factory.
      */
-    private TreeTableColumn<InvestmentGuideline.Entry, Number> createDynamicColumn(@NonNull String columnName,
-                                                                                   @Nullable Callback<InvestmentGuideline.Entry, ObservableValue<Number>> cellValueFactory,
-                                                                                   @Nullable EventHandler<TreeTableColumn.CellEditEvent<InvestmentGuideline.Entry, Number>> onCommit,
+    private TreeTableColumn<InvestmentGuideline.Entry, String> createDynamicColumn(@NonNull String columnName,
+                                                                                   @Nullable Callback<InvestmentGuideline.Entry, ObservableValue<String>> cellValueFactory,
+                                                                                   @Nullable EventHandler<TreeTableColumn.CellEditEvent<InvestmentGuideline.Entry, String>> onCommit,
                                                                                    @NonNull Consumer<TextField> inputFormatter,
-                                                                                   @NonNull Callback<String, Number> onInputAction,
+                                                                                   //@NonNull Callback<String, String> onInputAction,
                                                                                    boolean isOnlyParentEditable) {
-        return createDynamicColumn(columnName, cellValueFactory, onCommit, inputFormatter, onInputAction, isOnlyParentEditable, null);
+        return createDynamicColumn(columnName, cellValueFactory, onCommit, inputFormatter, isOnlyParentEditable, null);
     }
 
     /**
      * @param cellValueFactory Defines what is shown in a cell.
      * @param onCommit Defines what will be updated on commit.
      * @param inputFormatter Defines how the input should be formatted, f.e. numbers between 0 and 100.
-     * @param onInputAction Defines how the input is parsed, f.e. as float ({@link Float#parseFloat(String)}.
+     // @param onInputAction Defines how the input is parsed, f.e. as float ({@link Float#parseFloat(String)}.
      * @param isOnlyParentEditable Defines if only the parent-entries should be editable and show his values.
      * @param isEditable Defines if the cell is editable. Use to constrain specific cells in a row for a specific column.
-     * @return Static (not-editable) column with the given name and cell value factory.
      */
-    private TreeTableColumn<InvestmentGuideline.Entry, Number> createDynamicColumn(@NonNull String columnName,
-                                                                                   @Nullable Callback<InvestmentGuideline.Entry, ObservableValue<Number>> cellValueFactory,
-                                                                                   @Nullable EventHandler<TreeTableColumn.CellEditEvent<InvestmentGuideline.Entry, Number>> onCommit,
+    private TreeTableColumn<InvestmentGuideline.Entry, String> createDynamicColumn(@NonNull String columnName,
+                                                                                   @Nullable Callback<InvestmentGuideline.Entry, ObservableValue<String>> cellValueFactory,
+                                                                                   @Nullable EventHandler<TreeTableColumn.CellEditEvent<InvestmentGuideline.Entry, String>> onCommit,
                                                                                    @NonNull Consumer<TextField> inputFormatter,
-                                                                                   @NonNull Callback<String, Number> onInputAction,
+                                                                                   //@NonNull Callback<String, String> onInputAction,
                                                                                    boolean isOnlyParentEditable,
                                                                                    @Nullable Predicate<InvestmentType> isEditable) {
-        Callback<TreeTableColumn<InvestmentGuideline.Entry, Number>, TreeTableCell<InvestmentGuideline.Entry, Number>> cellFactory = new Callback<>() {
+        Callback<TreeTableColumn<InvestmentGuideline.Entry, String>, TreeTableCell<InvestmentGuideline.Entry, String>> cellFactory = new Callback<>() {
             @Override
-            public TreeTableCell<InvestmentGuideline.Entry, Number> call(TreeTableColumn<InvestmentGuideline.Entry, Number> column) {
+            public TreeTableCell<InvestmentGuideline.Entry, String> call(TreeTableColumn<InvestmentGuideline.Entry, String> column) {
                 return new TreeTableCell<>() {
 
                     final TextField inputField = new TextField();
 
                     {
                         inputFormatter.accept(inputField);
-                        inputField.setOnAction(commit -> commitEdit(onInputAction.call(inputField.getText())));
+                        inputField.setOnAction(commit -> commitEdit(inputField.getText()));
                     }
 
                     @Override
@@ -222,25 +255,25 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
                         graphicProperty().setValue(inputField);
                         setText(null);
-                        inputField.setText(getItem() != null ? getItem().toString() : "");
+                        inputField.setText(getItem() != null ? getItem() : "");
                         inputField.requestFocus();
                     }
 
                     @Override
                     public void cancelEdit() {
                         super.cancelEdit();
-                        setText(getItem() != null ? getItem().toString() : "");
+                        setText(getItem() != null ? getItem() : "");
                         graphicProperty().setValue(null);
                     }
 
                     @Override
-                    protected void updateItem(Number number, boolean empty) {
+                    protected void updateItem(String number, boolean empty) {
                         super.updateItem(number, empty);
                         if (empty || number == null) {
                             setText(null);
                             setTooltip(null);
                         } else {
-                            setText(number.toString());
+                            setText(number);
                             if (getTableRow().getItem().getType().isChild()) {
                                 setTooltip(new Tooltip(String.format(
                                         "Anteil der %s in Relation zum Anteil der %s",
@@ -255,7 +288,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
             }
         };
 
-        TreeTableColumn<InvestmentGuideline.Entry, Number> newColumn = new TreeTableColumn<>(columnName);
+        TreeTableColumn<InvestmentGuideline.Entry, String> newColumn = new TreeTableColumn<>(columnName);
         newColumn.setEditable(true);
         newColumn.setCellFactory(cellFactory);
 
