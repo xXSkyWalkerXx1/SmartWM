@@ -5,6 +5,7 @@ import javafx.scene.control.TextFormatter;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.text.ParseException;
 import java.util.function.Predicate;
 
 public class FieldFormatter {
@@ -14,7 +15,7 @@ public class FieldFormatter {
      */
     public static void setInputOnlyDecimalNumbers(@NonNull TextField textField) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
-            change.setText(change.getText().replace(",", "."));
+            //change.setText(change.getText().replace(",", "."));
 
 
             // allow empty input
@@ -24,8 +25,8 @@ public class FieldFormatter {
             }
             // otherwise try to parse and check input
             try {
-                Float.parseFloat(change.getControlNewText());
-            } catch (NumberFormatException e) {
+                FormatUtils.parseFloat(change.getControlNewText());
+            } catch (Exception e) {
                 return null;
             }
             return change;
@@ -68,22 +69,22 @@ public class FieldFormatter {
      */
     public static void setInputFloatRange(@NonNull TextField textField, float from, float to, @Nullable Predicate<TextFormatter.Change> changePredicate) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
-            change.setText(change.getText().replace(",", "."));
+            //change.setText(change.getText().replace(",", "."));
 
             try {
                 // allow empty input
                 if (change.getControlNewText().isEmpty()) {
-                    change.setText(String.valueOf(from));
+                    change.setText(FormatUtils.formatFloat(from));
                     return change;
                 }
 
                 // otherwise try to parse and check input
-                if (Float.parseFloat(change.getControlNewText()) >= from
-                        && Float.parseFloat(change.getControlNewText()) <= to) {
+                if (FormatUtils.parseFloat(change.getControlNewText()) >= from
+                        && FormatUtils.parseFloat(change.getControlNewText()) <= to) {
                     if (changePredicate != null && !changePredicate.test(change)) return null;
                     return change;
                 }
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 return null;
             }
             return null;
