@@ -44,7 +44,8 @@ public class PortfolioListController implements Openable {
                 accountsTablePane,
                 depotsTablePane,
                 portfolioService.getAll(),
-                this
+                this,
+                portfolioService
         ));
         setAccountTable(TableFactory.createOwnerPortfolioAccountTable(
                 accountsTablePane,

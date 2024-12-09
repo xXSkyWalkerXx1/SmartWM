@@ -53,7 +53,8 @@ public class AccountMenuController implements Openable {
                 accountDepotsTablePane,
                 accounts,
                 this,
-                portfolioManagementTabManager
+                portfolioManagementTabManager,
+                accountService
         ));
 
         var accountDepotsTable = TableFactory.createAccountDepotsTable(
