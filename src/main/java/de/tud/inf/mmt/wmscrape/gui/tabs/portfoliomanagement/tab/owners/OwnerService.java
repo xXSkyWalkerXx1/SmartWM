@@ -46,16 +46,16 @@ public class OwnerService {
     }
 
     /**
-     * @param region Some element inside the controller class used as a reference to get the stage/ scene.
+     * @param controller to refresh the view after deletion.
      */
-    public void delete(Owner owner, @NonNull Region region, @NonNull Openable controller) {
+    public void delete(Owner owner, @NonNull Openable controller) {
         PrimaryTabManager.showDialogWithAction(
                 Alert.AlertType.WARNING,
                 "Inhaber löschen",
                 "Sind Sie sicher, dass Sie den Inhaber löschen möchten?\n" +
                         "Etwaige Beziehungen zu Konten oder Depots werden dabei nicht berücksichtigt und kann zu einem" +
                         " fehlerhaften Verhalten der Anwendung führen!;",
-                region,
+                null,
                 o -> {
                     ownerRepository.delete(owner);
                     controller.open();
