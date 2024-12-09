@@ -123,7 +123,7 @@ public class TableFactory {
                     @Override
                     public void accept(Owner owner) {
                         // ToDo: implement in future work
-                        ownerService.delete(owner, parent, ownerController);
+                        ownerService.delete(owner, ownerController);
                     }
                 }
         );
