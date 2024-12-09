@@ -7,10 +7,13 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+
+import java.text.ParseException;
 
 @Controller
 public class CreateOwnerDialog {
@@ -56,34 +59,58 @@ public class CreateOwnerDialog {
         inputMaritalState.getSelectionModel().selectFirst();
 
         // Change TextFields so that they only accept integers
-        FieldFormatter.setInputFloatRange(inputTaxRate, 0, 100, change -> ownerService.testTaxRatesOrShowError(
-                Float.parseFloat(change.getControlNewText()),
-                Float.parseFloat(inputChurchTaxRate.getText())
-                        + Float.parseFloat(inputCapitalGainsTaxRate.getText())
-                        + Float.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                inputMaritalState
-        ));
-        FieldFormatter.setInputFloatRange(inputChurchTaxRate, 0, 100, change -> ownerService.testTaxRatesOrShowError(
-                Float.parseFloat(change.getControlNewText()),
-                Float.parseFloat(inputTaxRate.getText())
-                        + Float.parseFloat(inputCapitalGainsTaxRate.getText())
-                        + Float.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                inputMaritalState
-        ));
-        FieldFormatter.setInputFloatRange(inputCapitalGainsTaxRate, 0, 100, change -> ownerService.testTaxRatesOrShowError(
-                Float.parseFloat(change.getControlNewText()),
-                Float.parseFloat(inputTaxRate.getText())
-                        + Float.parseFloat(inputChurchTaxRate.getText())
-                        + Float.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                inputMaritalState
-        ));
-        FieldFormatter.setInputFloatRange(inputSolidaritySurchargeTaxRate, 0, 100, change -> ownerService.testTaxRatesOrShowError(
-                Float.parseFloat(change.getControlNewText()),
-                Float.parseFloat(inputTaxRate.getText())
-                        + Float.parseFloat(inputChurchTaxRate.getText())
-                        + Float.parseFloat(inputCapitalGainsTaxRate.getText()),
-                inputMaritalState
-        ));
+        FieldFormatter.setInputFloatRange(inputTaxRate, 0, 100, change -> {
+            try {
+                return ownerService.testTaxRatesOrShowError(
+                        FormatUtils.parseFloat(change.getControlNewText()),
+                        FormatUtils.parseFloat(inputChurchTaxRate.getText())
+                                + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText())
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
+                        inputMaritalState
+                );
+            } catch (ParseException e) {
+                return false;
+            }
+        });
+        FieldFormatter.setInputFloatRange(inputChurchTaxRate, 0, 100, change -> {
+            try {
+                return ownerService.testTaxRatesOrShowError(
+                        FormatUtils.parseFloat(change.getControlNewText()),
+                        FormatUtils.parseFloat(inputTaxRate.getText())
+                                + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText())
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
+                        inputMaritalState
+                );
+            } catch (ParseException e) {
+                return false;
+            }
+        });
+        FieldFormatter.setInputFloatRange(inputCapitalGainsTaxRate, 0, 100, change -> {
+            try {
+                return ownerService.testTaxRatesOrShowError(
+                        FormatUtils.parseFloat(change.getControlNewText()),
+                        FormatUtils.parseFloat(inputTaxRate.getText())
+                                + FormatUtils.parseFloat(inputChurchTaxRate.getText())
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
+                        inputMaritalState
+                );
+            } catch (ParseException e) {
+                return false;
+            }
+        });
+        FieldFormatter.setInputFloatRange(inputSolidaritySurchargeTaxRate, 0, 100, change -> {
+            try {
+                return ownerService.testTaxRatesOrShowError(
+                        FormatUtils.parseFloat(change.getControlNewText()),
+                        FormatUtils.parseFloat(inputTaxRate.getText())
+                                + FormatUtils.parseFloat(inputChurchTaxRate.getText())
+                                + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText()),
+                        inputMaritalState
+                );
+            } catch (ParseException e) {
+                return false;
+            }
+        });
     }
 
     @FXML
