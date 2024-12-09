@@ -170,10 +170,10 @@ public class PrimaryTabManager {
      * @param onButtonOkClickAction The action to be executed when the "OK"-button is clicked.
      * @ImplNote The value of the consumer is always null.
      */
-    public static void showDialogWithAction(Alert.AlertType alertType, String title, String content, Region region, Consumer<?> onButtonOkClickAction) {
+    public static void showDialogWithAction(Alert.AlertType alertType, String title, String content, @Nullable Region region, Consumer<?> onButtonOkClickAction) {
         Alert alert = new Alert(alertType, content, ButtonType.OK);
         alert.setTitle(title);
-        PrimaryTabManager.setAlertPosition(alert, region);
+        if (region != null) PrimaryTabManager.setAlertPosition(alert, region);
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.OK) onButtonOkClickAction.accept(null);
         });
