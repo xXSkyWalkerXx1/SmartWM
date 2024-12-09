@@ -8,11 +8,13 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerDepotsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerPortfoliosController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
@@ -513,7 +515,8 @@ public class TableFactory {
                                                             @NonNull Region parentAccountsTable,
                                                             @NonNull Region parentDepotsTable,
                                                             @NonNull List<Portfolio> tableItems,
-                                                            @NonNull PortfolioListController portfolioListController) {
+                                                            @NonNull PortfolioListController portfolioListController,
+                                                            @NonNull PortfolioService portfolioService) {
 
         TableBuilder<Portfolio> tableBuilder = new TableBuilder<>(parentPortfolioTable, tableItems);
         Consumer<Portfolio> openPortfolioOverviewAction = portfolio -> {
@@ -573,6 +576,13 @@ public class TableFactory {
                     }
                 }
         );
+        tableBuilder.addRowContextMenuItem("Löschen", new Consumer<Portfolio>() {
+            @Override
+            public void accept(Portfolio portfolio) {
+                // ToDo: implement in future work
+                portfolioService.delete(portfolio, portfolioListController);
+            }
+        });
 
         return tableBuilder.getResult();
     }
@@ -944,7 +954,8 @@ public class TableFactory {
                                                          @NonNull Region parentDepotTable,
                                                          @NonNull List<Account> tableItems,
                                                          @NonNull AccountMenuController accountMenuController,
-                                                         @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
+                                                         @NonNull PortfolioManagementTabManager portfolioManagementTabManager,
+                                                         @NonNull AccountService accountService) {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parentAccountTable, tableItems);
         Consumer<Account> openAccountOverviewAction = account -> {
@@ -1035,11 +1046,19 @@ public class TableFactory {
         tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
 
         tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
-        tableBuilder.addRowContextMenuItem("Transaktionen anzeigen", account -> {
-            throw new NotImplementedException("Not implemented yet");
+        tableBuilder.addRowContextMenuItem("Transaktionen anzeigen", new Consumer<Account>() {
+            @Override
+            public void accept(Account account) {
+                // ToDo: implement in future work
+                throw new NotImplementedException("Not implemented yet");
+            }
         });
-        tableBuilder.addRowContextMenuItem("Löschen", account -> {
-            throw new NotImplementedException("Not implemented yet");
+        tableBuilder.addRowContextMenuItem("Löschen", new Consumer<Account>() {
+            @Override
+            public void accept(Account account) {
+                // ToDo: implement in future work
+                accountService.delete(account, accountMenuController);
+            }
         });
 
         return tableBuilder.getResult();
