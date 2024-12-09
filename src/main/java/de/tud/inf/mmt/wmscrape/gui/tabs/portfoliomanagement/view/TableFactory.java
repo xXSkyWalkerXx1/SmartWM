@@ -242,7 +242,11 @@ public class TableFactory {
                 "Betrag",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()))
+                        -> new SimpleStringProperty(String.format(
+                        "%s %s",
+                        FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()),
+                        accountCellDataFeatures.getValue().getCurrency().getSymbol()
+                ))
         );
 
         tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
@@ -414,7 +418,11 @@ public class TableFactory {
                 "Betrag",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()))
+                        -> new SimpleStringProperty(String.format(
+                        "%s %s",
+                        FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()),
+                        accountCellDataFeatures.getValue().getCurrency().getSymbol()
+                ))
         );
 
         tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
@@ -483,7 +491,11 @@ public class TableFactory {
                 "Betrag",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()))
+                        -> new SimpleStringProperty(String.format(
+                        "%s %s",
+                        FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()),
+                        accountCellDataFeatures.getValue().getCurrency().getSymbol()
+                ))
         );
 
         tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
@@ -991,7 +1003,11 @@ public class TableFactory {
                 "Betrag",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(accountCellDataFeatures.getValue().getValue().toString())
+                        -> new SimpleStringProperty(String.format(
+                                "%s %s",
+                        FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()),
+                        accountCellDataFeatures.getValue().getCurrency().getSymbol()
+                ))
         );
 
         tableBuilder.setActionOnSingleClickRow(account -> {
