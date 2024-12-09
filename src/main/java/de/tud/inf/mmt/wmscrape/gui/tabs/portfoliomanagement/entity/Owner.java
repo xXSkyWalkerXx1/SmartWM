@@ -205,7 +205,7 @@ public class Owner {
 
     @Override
     public String toString() {
-        return String.format("%s %s (Steuernummer: %s)", forename, aftername, taxInformation.taxNumber);
+        return String.format("%s %s (Steuer-Nr.: %s)", forename, aftername, taxInformation.taxNumber);
     }
 
     // region Getters & Setters
