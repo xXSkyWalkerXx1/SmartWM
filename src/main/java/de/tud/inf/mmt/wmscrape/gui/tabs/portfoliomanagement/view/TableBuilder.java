@@ -73,18 +73,18 @@ public class TableBuilder<S> {
      */
     public <T> void addEditableColumn(@NonNull String columnName,
                                       float columnWidth,
-                                      @NonNull Callback<TableColumn.CellDataFeatures<S, Number>, ObservableValue<Number>> cellValueFactory,
-                                      @NonNull EventHandler<TableColumn.CellEditEvent<S, Number>> onCommit) {
-        Callback<TableColumn<S, Number>, TableCell<S, Number>> cellFactory = new Callback<>() {
+                                      @NonNull Callback<TableColumn.CellDataFeatures<S, String>, ObservableValue<String>> cellValueFactory,
+                                      @NonNull EventHandler<TableColumn.CellEditEvent<S, String>> onCommit) {
+        Callback<TableColumn<S, String>, TableCell<S, String>> cellFactory = new Callback<>() {
             @Override
-            public TableCell<S, Number> call(TableColumn<S, Number> column) {
+            public TableCell<S, String> call(TableColumn<S, String> column) {
                 return new TableCell<>() {
 
                     final TextField inputField = new TextField();
 
                     {
                         FieldFormatter.setInputOnlyDecimalNumbers(inputField);
-                        inputField.setOnAction(commit -> commitEdit(Float.parseFloat(inputField.getText())));
+                        inputField.setOnAction(commit -> commitEdit(inputField.getText()));
                     }
 
                     @Override
@@ -92,24 +92,24 @@ public class TableBuilder<S> {
                         super.startEdit();
                         graphicProperty().setValue(inputField);
                         setText(null);
-                        inputField.setText(getItem() != null ? getItem().toString() : "");
+                        inputField.setText(getItem() != null ? getItem() : "");
                         inputField.requestFocus();
                     }
 
                     @Override
                     public void cancelEdit() {
                         super.cancelEdit();
-                        setText(getItem() != null ? getItem().toString() : "");
+                        setText(getItem() != null ? getItem() : "");
                         graphicProperty().setValue(null);
                     }
 
                     @Override
-                    protected void updateItem(Number number, boolean empty) {
+                    protected void updateItem(String number, boolean empty) {
                         super.updateItem(number, empty);
                         if (empty || number == null) {
                             setText(null);
                         } else {
-                            setText(number.toString());
+                            setText(number);
                         }
                         setGraphic(null);
                     }
@@ -117,10 +117,10 @@ public class TableBuilder<S> {
             }
         };
 
-        TableColumn<S, Number> newColumn = createDefaultColumn(columnName, cellValueFactory, cellFactory);
-        newColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(columnWidth));
+        TableColumn<S, String> newColumn = createDefaultColumn(columnName, cellValueFactory, cellFactory);
         newColumn.setEditable(true);
         newColumn.setOnEditCommit(onCommit);
+        newColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(columnWidth));
         tableView.getColumns().add(newColumn);
     }
 
