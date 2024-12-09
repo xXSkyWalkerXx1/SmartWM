@@ -15,6 +15,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerServ
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -141,7 +142,7 @@ public class KontoOverviewController implements Openable {
         inputDescription.setText(account.getDescription());
         inputType.getSelectionModel().select(account.getType());
         inputCurrencyCode.getSelectionModel().select(account.getCurrency());
-        inputBalance.setText(String.valueOf(account.getBalance()));
+        inputBalance.setText(FormatUtils.formatFloat((float) account.getBalance()));
         inputOwner.getSelectionModel().select(account.getOwner());
         inputPortfolio.getSelectionModel().select(account.getPortfolio());
         inputNotice.setText(account.getNotice());
@@ -151,7 +152,7 @@ public class KontoOverviewController implements Openable {
         inputBankName.setText(account.getBankName());
         inputIban.setText(account.getIban());
         inputKontoNumber.setText(account.getKontoNumber());
-        inputInterestRate.setText(String.valueOf(account.getInterestRate()));
+        inputInterestRate.setText(FormatUtils.formatFloat((float) account.getInterestRate()));
         inputInterestDays.setText(String.valueOf(account.getInterestDays()));
         inputInterestInterval.getSelectionModel().select(account.getInterestInterval());
 
