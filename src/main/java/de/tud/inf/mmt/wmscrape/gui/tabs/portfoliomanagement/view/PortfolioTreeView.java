@@ -32,14 +32,14 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
             this.isRoot = isRoot;
         }
 
+        // ToDo: implement converting any currency to €
         @Override
         public String toString() {
             if (isRoot) return asset.toString();
-            return String.format("%s\t(%s €)", asset, asset.getValue().toString());
+            return String.format("%s\t(%s €)", asset, FormatUtils.formatFloat(asset.getValue().floatValue()));
         }
     }
 
-    // ToDo: implement converting any currency to €
     private boolean isOneMainMenu = true;
     private final TreeItem<Item> rootTreeItem;
     private final PortfolioManagementTabManager portfolioManagementManager;
