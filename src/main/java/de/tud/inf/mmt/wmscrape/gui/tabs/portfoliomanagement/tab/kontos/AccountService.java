@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.AccountRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.fxml.FXML;
@@ -50,6 +51,24 @@ public class AccountService {
             );
         }
         return false;
+    }
+
+    /**
+     * @param controller to refresh the view after deletion.
+     */
+    public void delete(Account account, @NonNull Openable controller) {
+        PrimaryTabManager.showDialogWithAction(
+                Alert.AlertType.WARNING,
+                "Konto löschen",
+                "Sind Sie sicher, dass Sie das Konto löschen möchten?\n" +
+                        "Etwaige Beziehungen zu Transaktionen werden dabei nicht berücksichtigt und kann zu einem" +
+                        " fehlerhaften Verhalten der Anwendung führen!;",
+                null,
+                o -> {
+                    accountRepository.delete(account);
+                    controller.open();
+                }
+        );
     }
 
     public void writeInput(@NonNull Account account, boolean isOnCreate,

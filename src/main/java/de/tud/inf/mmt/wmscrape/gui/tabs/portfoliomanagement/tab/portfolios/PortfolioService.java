@@ -1,9 +1,11 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.InvestmentGuideline;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.PortfolioRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.InvestmentGuidelineTable;
@@ -13,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import javax.sound.sampled.Port;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +47,24 @@ public class PortfolioService {
             );
         }
         return false;
+    }
+
+    /**
+     * @param controller to refresh the view after deletion.
+     */
+    public void delete(Portfolio portfolio, @NonNull Openable controller) {
+        PrimaryTabManager.showDialogWithAction(
+                Alert.AlertType.WARNING,
+                "Portfolio löschen",
+                "Sind Sie sicher, dass Sie das Portfolio löschen möchten?\n" +
+                        "Etwaige Beziehungen zu Konten und Depots werden dabei nicht berücksichtigt und kann zu einem" +
+                        " fehlerhaften Verhalten der Anwendung führen!;",
+                null,
+                o -> {
+                    portfolioRepository.delete(portfolio);
+                    controller.open();
+                }
+        );
     }
 
     public void writeInput(@NonNull Portfolio portfolio, boolean isOnCreate, @NonNull TextField inputPortfolioName,
