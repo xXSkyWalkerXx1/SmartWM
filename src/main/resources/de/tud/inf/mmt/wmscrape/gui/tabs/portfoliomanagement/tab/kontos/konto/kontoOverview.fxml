@@ -110,7 +110,7 @@
                                                                 <Label text="IBAN" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                                                                 <TextField fx:id="inputBankName" GridPane.columnIndex="1" />
                                                                 <Label text="Konto-Nummer" GridPane.rowIndex="2" />
-                                                                <TextField fx:id="inputIban" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                                <TextField fx:id="inputIban" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                                 <TextField fx:id="inputKontoNumber" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                             </children>
                                                             <opaqueInsets>
