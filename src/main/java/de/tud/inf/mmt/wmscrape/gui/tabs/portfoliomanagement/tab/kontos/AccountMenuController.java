@@ -8,6 +8,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog.CreateAccountDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -63,7 +64,7 @@ public class AccountMenuController implements Openable {
         accountDepotsTable.setPlaceholder(new Label("Kein Verrechnungskonto ausgewählt"));
         setDepotTable(accountDepotsTable);
 
-        sumLabel.setText(String.valueOf(accounts.stream().mapToDouble(Account::getBalance).sum()));
+        sumLabel.setText(FormatUtils.formatFloat((float) accounts.stream().mapToDouble(Account::getBalance).sum()));
     }
 
     @FXML
