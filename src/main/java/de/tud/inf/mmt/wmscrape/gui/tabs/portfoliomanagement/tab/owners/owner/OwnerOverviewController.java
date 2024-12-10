@@ -91,7 +91,7 @@ public class OwnerOverviewController implements Openable {
         ));
 
         // Change TextFields so that they only accept integers
-        FieldFormatter.setInputFloatRange(inputTaxRate, 0, 100, change -> {
+        FieldFormatter.setInputFloatRange(inputTaxRate, 0f, 100f, change -> {
             try {
                 return ownerService.testTaxRatesOrShowError(
                         FormatUtils.parseFloat(change.getControlNewText()),
@@ -104,7 +104,7 @@ public class OwnerOverviewController implements Openable {
                 return false;
             }
         });
-        FieldFormatter.setInputFloatRange(inputChurchTaxRate, 0, 100, change -> {
+        FieldFormatter.setInputFloatRange(inputChurchTaxRate, 0f, 100f, change -> {
             try {
                 return ownerService.testTaxRatesOrShowError(
                         FormatUtils.parseFloat(change.getControlNewText()),
@@ -117,7 +117,7 @@ public class OwnerOverviewController implements Openable {
                 return false;
             }
         });
-        FieldFormatter.setInputFloatRange(inputCapitalGainsTaxRate, 0, 100, change -> {
+        FieldFormatter.setInputFloatRange(inputCapitalGainsTaxRate, 0f, 100f, change -> {
             try {
                 return ownerService.testTaxRatesOrShowError(
                         FormatUtils.parseFloat(change.getControlNewText()),
@@ -130,7 +130,7 @@ public class OwnerOverviewController implements Openable {
                 return false;
             }
         });
-        FieldFormatter.setInputFloatRange(inputSolidaritySurchargeTaxRate, 0, 100, change -> {
+        FieldFormatter.setInputFloatRange(inputSolidaritySurchargeTaxRate, 0f, 100f, change -> {
             try {
                 return ownerService.testTaxRatesOrShowError(
                         FormatUtils.parseFloat(change.getControlNewText()),

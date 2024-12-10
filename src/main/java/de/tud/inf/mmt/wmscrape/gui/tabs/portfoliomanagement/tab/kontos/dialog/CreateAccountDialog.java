@@ -69,7 +69,7 @@ public class CreateAccountDialog {
 
         // Format input fields
         FieldFormatter.setInputOnlyDecimalNumbers(inputBalance);
-        FieldFormatter.setInputFloatRange(inputInterestRate, 0, 100);
+        FieldFormatter.setInputFloatRange(inputInterestRate, 0f, 100f);
 
         // Initialize elements with values
         inputType.getItems().setAll(AccountType.values());
