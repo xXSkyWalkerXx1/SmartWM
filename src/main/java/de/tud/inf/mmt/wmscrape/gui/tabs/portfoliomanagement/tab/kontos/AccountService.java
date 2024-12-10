@@ -9,16 +9,16 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterv
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.AccountRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Currency;
@@ -29,6 +29,8 @@ public class AccountService {
 
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public List<Account> getAll() {
         return accountRepository.findAll();
@@ -36,6 +38,51 @@ public class AccountService {
 
     public Account getAccountById(long id) {
         return accountRepository.findById(id).orElseThrow();
+    }
+
+    /**
+     * @param fromCurrency f.e. USD to get exchange-course from USD to EUR.
+     * @return the latest exchange course from EUR to the given currency.
+     * @throws DataAccessException if the exchange course could not be retrieved.
+     */
+    public Double getLatestExchangeCourse(Currency fromCurrency) throws DataAccessException {
+        String currency = fromCurrency.toString().toLowerCase();
+        return jdbcTemplate.queryForObject(
+                String.format(
+                        "SELECT wk.eur_%s FROM wechselkurse wk WHERE wk.eur_%s IS NOT NULL ORDER BY wk.datum DESC LIMIT 1",
+                        currency,
+                        currency
+                ),
+                Double.class
+        );
+    }
+
+    /**
+     * @param missingExchangeCourses if the exchange course could not be retrieved, the currency will be added to this list.
+     * @return the sum of all accounts in EUR.
+     */
+    public BigDecimal getSumOfAllAccountsInEur(@Nullable List<String> missingExchangeCourses) {
+        BigDecimal sum = BigDecimal.ZERO;
+
+        for (Account account : getAll()) {
+            try {
+                if (Currency.getInstance("EUR").equals(account.getCurrency())) {
+                    sum = sum.add(BigDecimal.valueOf(account.getBalance()));
+                } else {
+                    Double latestExchangeCourse = getLatestExchangeCourse(account.getCurrency());
+                    BigDecimal accountBalanceToEur = BigDecimal.valueOf(account.getBalance())
+                            .divide(BigDecimal.valueOf(latestExchangeCourse), BigDecimal.ROUND_HALF_DOWN);
+                    sum = sum.add(accountBalanceToEur);
+                }
+            } catch (Exception e) {
+                //e.printStackTrace();
+
+                if (missingExchangeCourses != null) {
+                    missingExchangeCourses.add(String.format("eur_%s", account.getCurrency().toString().toLowerCase()));
+                }
+            }
+        }
+        return sum;
     }
 
     public boolean save(Account account) {
