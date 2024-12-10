@@ -606,7 +606,7 @@ public class TableFactory {
         );
 
         tableBuilder.addColumn(
-                "",
+                "Aufteilung",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<InvestmentGuideline.DivisionByLocation, String>, ObservableValue<String>>) cellDataFeatures
                         -> new SimpleStringProperty("%")
@@ -676,7 +676,7 @@ public class TableFactory {
                 });
         tableBuilder.addEditableColumn(
                 "Asien (ohne China)",
-                0.12f,
+                0.15f,
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getAsia_without_china())),
                 col -> {
@@ -741,7 +741,7 @@ public class TableFactory {
         );
         tableBuilder.addEditableColumn(
                 "Emergine Markets",
-                0.12f,
+                0.15f,
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getEmergine_markets())),
                 col -> {
@@ -784,7 +784,7 @@ public class TableFactory {
         );
 
         tableBuilder.addColumn(
-                "",
+                "Aufteilung",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<InvestmentGuideline.DivisionByCurrency, String>, ObservableValue<String>>) cellDataFeatures
                         -> new SimpleStringProperty("%")
@@ -835,7 +835,7 @@ public class TableFactory {
         );
         tableBuilder.addEditableColumn(
                 "Schweizer Franken",
-                0.12f,
+                0.15f,
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getChf())),
                 col -> {
@@ -901,7 +901,7 @@ public class TableFactory {
         );
         tableBuilder.addEditableColumn(
                 "Asiatische Währungen",
-                0.12f,
+                0.15f,
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getAsiaCurrencies())),
                 col -> {
