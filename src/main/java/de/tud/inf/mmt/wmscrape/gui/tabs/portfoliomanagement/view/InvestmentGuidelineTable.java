@@ -54,6 +54,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         ));
         getColumns().add(createDynamicColumn(
                 "Aufteilung Gesamtvermögen (%)",
+                null,
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getAssetAllocation())),
                 col -> {
                     var parentRow = col.getRowValue().getParent();
@@ -94,11 +95,13 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                     }
                     col.getRowValue().getValue().setAssetAllocation(input);
                 },
-                textField -> FieldFormatter.setInputFloatRange(textField, 0, 100),
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 false
         ));
         getColumns().add(createDynamicColumn(
                 "Maximale Risikoklasse (1-12)",
+                "Die Risikoklasse gibt an, wie risikoreich die Anlage ist.\n" +
+                        "Die Skala reicht von 1 (niedriges Risiko) bis 12 (hohes Risiko).",
                 entry -> new SimpleStringProperty(String.valueOf(entry.getMaxRiskclass())),
                 col -> col.getRowValue().getValue().setMaxRiskclass(Integer.parseInt(col.getNewValue())),
                 textField -> FieldFormatter.setInputIntRange(textField, 1, 12),
@@ -107,6 +110,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         ));
         getColumns().add(createDynamicColumn(
                 "Max. Volatilität innerhalb 1 Jahr (%)",
+                "Die maximale Volatilität gibt an, wie stark der Wert der Anlage innerhalb eines Jahres " +
+                        "schwanken kann.\nEin höherer Wert bedeutet eine höhere Schwankungsbreite.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getMaxVolatility())),
                 col -> {
                     // Try to parse input
@@ -119,7 +124,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
                     col.getRowValue().getValue().setMaxVolatility(input);
                 },
-                textField -> FieldFormatter.setInputFloatRange(textField, 0, 100),
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, null),
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
@@ -128,6 +133,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         getColumns().add(minSuccess);
         minSuccess.getColumns().add(createDynamicColumn(
                 "Performance innerhalb 12 Monate (%)",
+                "Die minimale Performance gibt an, wie sich der Wert der Anlage innerhalb eines Jahres mindestens verändern soll.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getPerformance())),
                 col -> {
                     // Try to parse input
@@ -140,12 +146,13 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
                     col.getRowValue().getValue().setPerformance(input);
                 },
-                FieldFormatter::setInputOnlyDecimalNumbers,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, null),
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
         minSuccess.getColumns().add(createDynamicColumn(
                 "Rendite seit Kauf (%)",
+                "Die minimale Rendite gibt an, wie sich der Wert der Anlage seit dem Kauf mindestens verändern soll.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getRendite())),
                 col -> {
                     // Try to parse input
@@ -158,13 +165,15 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
                     col.getRowValue().getValue().setRendite(input);
                 },
-                FieldFormatter::setInputOnlyDecimalNumbers,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, null),
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
 
         getColumns().add(createDynamicColumn(
                 "Chancen-Risiko-Zahl (%)",
+                "Gibt das Verhältnis von Chancen (erwartete Rendite) und Risiken (Volatilität) an.\n" +
+                        "Je höher die Zahl, desto besser ist das Verhältnis von Chancen und Risiken.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getChanceRiskNumber())),
                 col -> {
                     // Try to parse input
@@ -177,7 +186,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
                     col.getRowValue().getValue().setChanceRiskNumber(input);
                 },
-                textField -> FieldFormatter.setInputFloatRange(textField, 0, 100),
+                FieldFormatter::setInputOnlyDecimalNumbers,
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
@@ -212,12 +221,13 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
      * @param isOnlyParentEditable Defines if only the parent-entries should be editable and show his values.
      */
     private TreeTableColumn<InvestmentGuideline.Entry, String> createDynamicColumn(@NonNull String columnName,
+                                                                                   @Nullable String columnDescr,
                                                                                    @Nullable Callback<InvestmentGuideline.Entry, ObservableValue<String>> cellValueFactory,
                                                                                    @Nullable EventHandler<TreeTableColumn.CellEditEvent<InvestmentGuideline.Entry, String>> onCommit,
                                                                                    @NonNull Consumer<TextField> inputFormatter,
                                                                                    //@NonNull Callback<String, String> onInputAction,
                                                                                    boolean isOnlyParentEditable) {
-        return createDynamicColumn(columnName, cellValueFactory, onCommit, inputFormatter, isOnlyParentEditable, null);
+        return createDynamicColumn(columnName, columnDescr, cellValueFactory, onCommit, inputFormatter, isOnlyParentEditable, null);
     }
 
     /**
@@ -229,6 +239,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
      * @param isEditable Defines if the cell is editable. Use to constrain specific cells in a row for a specific column.
      */
     private TreeTableColumn<InvestmentGuideline.Entry, String> createDynamicColumn(@NonNull String columnName,
+                                                                                   @Nullable String columnDescr,
                                                                                    @Nullable Callback<InvestmentGuideline.Entry, ObservableValue<String>> cellValueFactory,
                                                                                    @Nullable EventHandler<TreeTableColumn.CellEditEvent<InvestmentGuideline.Entry, String>> onCommit,
                                                                                    @NonNull Consumer<TextField> inputFormatter,
@@ -291,6 +302,11 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         TreeTableColumn<InvestmentGuideline.Entry, String> newColumn = new TreeTableColumn<>(columnName);
         newColumn.setEditable(true);
         newColumn.setCellFactory(cellFactory);
+
+        if (columnDescr != null) {
+            newColumn.setGraphic(new Label(newColumn.getText())); // Der Text des Spaltenkopfs wird als Grafik gesetzt
+            Tooltip.install(newColumn.getGraphic(), new Tooltip(columnDescr));
+        }
 
         if (cellValueFactory != null) newColumn.setCellValueFactory(cell -> {
             InvestmentGuideline.Entry entry = cell.getValue().getValue();
