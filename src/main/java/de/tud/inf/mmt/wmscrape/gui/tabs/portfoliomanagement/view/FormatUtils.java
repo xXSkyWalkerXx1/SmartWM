@@ -3,6 +3,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.Locale;
 
 public class FormatUtils {
@@ -19,7 +20,11 @@ public class FormatUtils {
     }
 
     public static float parseFloat(String text) throws ParseException {
-        return DECIMAL_FORMAT.parse(text).floatValue();
+        ParsePosition parsePosition = new ParsePosition(0);
+        float parsedValue = DECIMAL_FORMAT.parse(text, parsePosition).floatValue();
+
+        if (parsePosition.getIndex() != text.length()) throw new ParseException("Invalid input", parsePosition.getIndex());
+        return parsedValue;
     }
 }
 
