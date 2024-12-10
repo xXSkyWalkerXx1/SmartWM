@@ -14,11 +14,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -48,6 +51,7 @@ public class AccountMenuController implements Openable {
     public void open() {
         List<Account> accounts = accountService.getAll();
 
+        // Load tables
         accountTablePane.getChildren().setAll(TableFactory.createAccountsTable(
                 accountTablePane,
                 accountDepotsTablePane,
@@ -65,7 +69,19 @@ public class AccountMenuController implements Openable {
         accountDepotsTable.setPlaceholder(new Label("Kein Verrechnungskonto ausgewählt"));
         setDepotTable(accountDepotsTable);
 
-        sumLabel.setText(FormatUtils.formatFloat((float) accounts.stream().mapToDouble(Account::getBalance).sum()));
+        // Calculate sum of all account-balances in EUR
+        List<String> missingExchangeCourses = new ArrayList<>();
+        BigDecimal sum = accountService.getSumOfAllAccountsInEur(missingExchangeCourses);
+
+        if (missingExchangeCourses.isEmpty()) {
+            sumLabel.setText(String.format("%s €", FormatUtils.formatFloat((float) sum.doubleValue())));
+        } else {
+            sumLabel.setText("Für die Darstellung in € müssen entsprechende Wechselkurse vorhanden sein!");
+            sumLabel.setTooltip(new Tooltip(String.format(
+                    "Folgende Wechselkurse müssen dafür in SmartWM eingearbeitet werden:\n%s",
+                    missingExchangeCourses
+            )));
+        }
     }
 
     @FXML
