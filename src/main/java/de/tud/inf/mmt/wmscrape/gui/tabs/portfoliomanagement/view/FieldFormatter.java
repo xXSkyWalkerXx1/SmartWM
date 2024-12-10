@@ -21,6 +21,12 @@ public class FieldFormatter {
                 change.setText(FormatUtils.formatFloat(0));
                 return change;
             }
+            // allow only one comma
+            if (change.getText().equals(",") && change.getControlText().contains(",")) return null;
+
+            // don't allow dots
+            if (change.getText().equals(".")) return null;
+
             // otherwise try to parse and check input
             try {
                 FormatUtils.parseFloat(change.getControlNewText());
@@ -57,7 +63,7 @@ public class FieldFormatter {
     /**
      * Set text-format of a text field to only allow float numbers in a specific range.
      */
-    public static void setInputFloatRange(@NonNull TextField textField, float from, float to) {
+    public static void setInputFloatRange(@NonNull TextField textField, @NonNull Float from, @Nullable Float to) {
         setInputFloatRange(textField, from, to, null);
     }
 
@@ -65,19 +71,31 @@ public class FieldFormatter {
      * Set text-format of a text field to only allow float numbers in a specific range.
      * @param changePredicate Extra predicate to check the input.
      */
-    public static void setInputFloatRange(@NonNull TextField textField, float from, float to, @Nullable Predicate<TextFormatter.Change> changePredicate) {
+    public static void setInputFloatRange(@NonNull TextField textField, @NonNull Float from, @Nullable Float to,
+                                          @Nullable Predicate<TextFormatter.Change> changePredicate) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
 
-            try {
-                // allow empty input
-                if (change.getControlNewText().isEmpty()) {
+            // allow empty input and set to 0 or 'from' as default value
+            if (change.getControlNewText().isEmpty()) {
+                if (from <= 0 && (to == null || to >= 0)) {
+                    // if 0 is in range, set to 0 as default/neutral value
+                    change.setText(FormatUtils.formatFloat(0));
+                } else {
                     change.setText(FormatUtils.formatFloat(from));
-                    return change;
                 }
+                return change;
+            }
 
+            // allow only one comma
+            if (change.getText().equals(",") && change.getControlText().contains(",")) return null;
+
+            // don't allow dots
+            if (change.getText().equals(".")) return null;
+
+            try {
                 // otherwise try to parse and check input
                 if (FormatUtils.parseFloat(change.getControlNewText()) >= from
-                        && FormatUtils.parseFloat(change.getControlNewText()) <= to) {
+                        && (to == null || FormatUtils.parseFloat(change.getControlNewText()) <= to)) {
                     if (changePredicate != null && !changePredicate.test(change)) return null;
                     return change;
                 }
