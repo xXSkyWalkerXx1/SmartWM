@@ -76,7 +76,7 @@ public class AccountMenuController implements Openable {
         if (missingExchangeCourses.isEmpty()) {
             sumLabel.setText(String.format("%s €", FormatUtils.formatFloat((float) sum.doubleValue())));
         } else {
-            sumLabel.setText("Für die Darstellung in € müssen entsprechende Wechselkurse vorhanden sein!");
+            sumLabel.setText("Keine notwendigen Wechselkurse für die Darstellung in EUR vorhanden!");
             sumLabel.setTooltip(new Tooltip(String.format(
                     "Folgende Wechselkurse müssen dafür in SmartWM eingearbeitet werden:\n%s",
                     missingExchangeCourses
