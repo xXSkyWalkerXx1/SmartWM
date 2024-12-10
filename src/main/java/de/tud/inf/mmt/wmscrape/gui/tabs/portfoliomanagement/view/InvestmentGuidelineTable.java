@@ -172,8 +172,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
         getColumns().add(createDynamicColumn(
                 "Chancen-Risiko-Zahl (%)",
-                "Gibt das Verhältnis von Chancen (erwartete Rendite) und Risiken (Volatilität) an.\n" +
-                        "Je höher die Zahl, desto besser ist das Verhältnis von Chancen und Risiken.",
+                "Gibt an, um wie viel besser oder schlechter eine Anlage zum Benchmark ist.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getChanceRiskNumber())),
                 col -> {
                     // Try to parse input
