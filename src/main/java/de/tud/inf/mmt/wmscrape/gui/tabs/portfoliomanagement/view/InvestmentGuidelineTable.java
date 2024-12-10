@@ -133,7 +133,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         getColumns().add(minSuccess);
         minSuccess.getColumns().add(createDynamicColumn(
                 "Performance innerhalb 12 Monate (%)",
-                "Gibt an, wie sich der Wert der Anlage innerhalb eines Jahres mindestens verändern soll.",
+                "Gibt den minimal erwarteten Wertzuwachs der Anlage innerhalb eines Jahres an.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getPerformance())),
                 col -> {
                     // Try to parse input
