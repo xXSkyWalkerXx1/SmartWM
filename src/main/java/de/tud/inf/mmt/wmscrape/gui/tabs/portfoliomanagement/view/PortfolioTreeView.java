@@ -7,6 +7,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.FinancialAsset;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -22,21 +23,26 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
 
         private boolean isRoot = false;
         private final FinancialAsset asset;
+        private final PortfolioManagementTabManager portfolioManagementManager;
 
-        public Item (@NonNull FinancialAsset asset) {
+        public Item (@NonNull FinancialAsset asset, @NonNull PortfolioManagementTabManager portfolioManagementManager) {
             this.asset = asset;
+            this.portfolioManagementManager = portfolioManagementManager;
         }
 
-        public Item (@NonNull FinancialAsset asset, boolean isRoot) {
-            this(asset);
+        public Item (@NonNull FinancialAsset asset, boolean isRoot, @NonNull PortfolioManagementTabManager portfolioManagementManager) {
+            this(asset, portfolioManagementManager);
             this.isRoot = isRoot;
         }
 
-        // ToDo: implement converting any currency to €
         @Override
         public String toString() {
             if (isRoot) return asset.toString();
-            return String.format("%s\t(%s €)", asset, FormatUtils.formatFloat(asset.getValue().floatValue()));
+            return String.format(
+                    "%s\t(%s €)",
+                    asset,
+                    FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
+            );
         }
     }
 
@@ -58,7 +64,7 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
 
         Portfolio root = new Portfolio();
         root.setName("Portfolio/s");
-        rootTreeItem = new TreeItem<>(new Item(root, true));
+        rootTreeItem = new TreeItem<>(new Item(root, true, portfolioManagementManager));
         rootTreeItem.setExpanded(true);
 
         setRoot(rootTreeItem);
@@ -77,18 +83,18 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
         rootTreeItem.getChildren().clear();
 
         for (Portfolio portfolio : portfolios){
-            TreeItem<Item> portfolioTreeItem = new TreeItem<>(new Item(portfolio));
+            TreeItem<Item> portfolioTreeItem = new TreeItem<>(new Item(portfolio, portfolioManagementManager));
             portfolioTreeItem.setExpanded(true);
 
             // add accounts first
             for (Account account : portfolio.getAccounts()){
-                TreeItem<Item> accountTreeItem = new TreeItem<>(new Item(account));
+                TreeItem<Item> accountTreeItem = new TreeItem<>(new Item(account, portfolioManagementManager));
                 portfolioTreeItem.getChildren().add(accountTreeItem);
             }
 
             // then add depots
             for (Depot depot : portfolio.getDepots()){
-                TreeItem<Item> depotTreeItem = new TreeItem<>(new Item(depot));
+                TreeItem<Item> depotTreeItem = new TreeItem<>(new Item(depot, portfolioManagementManager));
                 portfolioTreeItem.getChildren().add(depotTreeItem);
             }
 

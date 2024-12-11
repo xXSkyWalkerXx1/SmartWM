@@ -107,27 +107,17 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem("Details anzeigen", openOwnerOverviewAction);
         tableBuilder.addRowContextMenuItem(
                 "Status umschalten",
-                new Consumer<Owner>() {
-                    @Override
-                    public void accept(Owner owner) {
-                        // ToDo: implement in future work
-                        if (State.ACTIVATED.equals(owner.getState())) {
-                            System.out.println("Deaktiviere Inhaber " + owner);
-                        } else {
-                            System.out.println("Aktiviere Inhaber " + owner);
-                        }
+                owner -> {
+                    if (State.ACTIVATED.equals(owner.getState())) {
+                        owner.setState(State.DEACTIVATED);
+                    } else {
+                        owner.setState(State.ACTIVATED);
                     }
                 }
         );
         tableBuilder.addRowContextMenuItem(
                 "Löschen",
-                new Consumer<Owner>() {
-                    @Override
-                    public void accept(Owner owner) {
-                        // ToDo: implement in future work
-                        ownerService.delete(owner, ownerController);
-                    }
-                }
+                owner -> ownerService.delete(owner, ownerController)
         );
 
         return tableBuilder.getResult();
@@ -163,10 +153,12 @@ public class TableFactory {
                         -> new SimpleStringProperty(portfolioCellDataFeatures.getValue().getState().getDisplayText())
         );
         tableBuilder.addColumn(
-                "Wert",
+                "Wert (€)",
                 0.25f,
                 (Callback<TableColumn.CellDataFeatures<Portfolio, String>, ObservableValue<String>>) portfolioCellDataFeatures
-                        -> new SimpleStringProperty(FormatUtils.formatFloat(portfolioCellDataFeatures.getValue().getValue().floatValue()))
+                        -> new SimpleStringProperty(FormatUtils.formatFloat(
+                                portfolioCellDataFeatures.getValue().getValue(portfolioManagementTabManager.getAccountService()).floatValue())
+                )
         );
 
         tableBuilder.setActionOnSingleClickRow(portfolio -> {
@@ -241,14 +233,12 @@ public class TableFactory {
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getNotice())
         );
         tableBuilder.addColumn(
-                "Betrag",
+                "Betrag (€)",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(String.format(
-                        "%s %s",
-                        FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()),
-                        accountCellDataFeatures.getValue().getCurrency().getSymbol()
-                ))
+                        -> new SimpleStringProperty(FormatUtils.formatFloat(
+                                accountCellDataFeatures.getValue().getValue(portfolioManagementTabManager.getAccountService()).floatValue())
+                )
         );
 
         tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
@@ -297,10 +287,12 @@ public class TableFactory {
                         -> new SimpleStringProperty(depotCellDataFeatures.getValue().getNotice())
         );
         tableBuilder.addColumn(
-                "Wert",
+                "Wert (€)",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
-                        -> new SimpleStringProperty(FormatUtils.formatFloat(depotCellDataFeatures.getValue().getValue().floatValue()))
+                        -> new SimpleStringProperty(FormatUtils.formatFloat(
+                                depotCellDataFeatures.getValue().getValue(portfolioManagementTabManager.getAccountService()).floatValue())
+                )
         );
 
         tableBuilder.setActionOnDoubleClickRow(openDepotOverviewAction);
@@ -353,10 +345,12 @@ public class TableFactory {
                         -> new SimpleStringProperty(depotCellDataFeatures.getValue().getNotice())
         );
         tableBuilder.addColumn(
-                "Wert",
+                "Wert (€)",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Depot, String>, ObservableValue<String>>) depotCellDataFeatures
-                        -> new SimpleStringProperty(FormatUtils.formatFloat(depotCellDataFeatures.getValue().getValue().floatValue()))
+                        -> new SimpleStringProperty(FormatUtils.formatFloat(
+                                depotCellDataFeatures.getValue().getValue(ownerDepotsController.getPortfolioManagementManager().getAccountService()).floatValue())
+                )
         );
 
         tableBuilder.setActionOnSingleClickRow(depot -> ownerDepotsController.setDepotAccountsTable(TableFactory.createOwnerDepotAccountsTable(
@@ -417,13 +411,11 @@ public class TableFactory {
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getNotice())
         );
         tableBuilder.addColumn(
-                "Betrag",
+                "Betrag (€)",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(String.format(
-                        "%s %s",
-                        FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()),
-                        accountCellDataFeatures.getValue().getCurrency().getSymbol()
+                        -> new SimpleStringProperty(FormatUtils.formatFloat(
+                        accountCellDataFeatures.getValue().getValue(portfolioManagementTabManager.getAccountService()).floatValue()
                 ))
         );
 
@@ -490,13 +482,11 @@ public class TableFactory {
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getNotice())
         );
         tableBuilder.addColumn(
-                "Betrag",
+                "Betrag (€)",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(String.format(
-                        "%s %s",
-                        FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()),
-                        accountCellDataFeatures.getValue().getCurrency().getSymbol()
+                        -> new SimpleStringProperty(FormatUtils.formatFloat(
+                        accountCellDataFeatures.getValue().getValue(portfolioManagementTabManager.getAccountService()).floatValue()
                 ))
         );
 
@@ -546,10 +536,12 @@ public class TableFactory {
                         -> new SimpleStringProperty(portfolioCellDataFeatures.getValue().getOwner().toString())
         );
         tableBuilder.addColumn(
-                "Wert",
+                "Wert (€)",
                 0.20f,
                 (Callback<TableColumn.CellDataFeatures<Portfolio, String>, ObservableValue<String>>) portfolioCellDataFeatures
-                        -> new SimpleStringProperty(FormatUtils.formatFloat(portfolioCellDataFeatures.getValue().getValue().floatValue()))
+                        -> new SimpleStringProperty(FormatUtils.formatFloat(
+                                portfolioCellDataFeatures.getValue().getValue(portfolioListController.getPortfolioManagementManager().getAccountService()).floatValue())
+                )
         );
 
         tableBuilder.setActionOnSingleClickRow(portfolio -> {
@@ -569,20 +561,14 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem("Details anzeigen", openPortfolioOverviewAction);
         tableBuilder.addRowContextMenuItem(
                 "Vermögen anzeigen",
-                new Consumer<Portfolio>() {
-                    @Override
-                    public void accept(Portfolio portfolio) {
-                        // ToDo: implement
-                    }
+                portfolio -> {
+                    Navigator.navigateToOwnerAssets(portfolioListController.getPortfolioManagementManager(), portfolio.getOwner());
+                    portfolioListController.getPortfolioManagementManager().addCurrentlyDisplayedElement(
+                            new BreadcrumbElement(portfolio.getOwner().toString(), "owner")
+                    );
                 }
         );
-        tableBuilder.addRowContextMenuItem("Löschen", new Consumer<Portfolio>() {
-            @Override
-            public void accept(Portfolio portfolio) {
-                // ToDo: implement in future work
-                portfolioService.delete(portfolio, portfolioListController);
-            }
-        });
+        tableBuilder.addRowContextMenuItem("Löschen", portfolio -> portfolioService.delete(portfolio, portfolioListController));
 
         return tableBuilder.getResult();
     }
@@ -1011,14 +997,12 @@ public class TableFactory {
                         -> new SimpleStringProperty(accountCellDataFeatures.getValue().getNotice())
         );
         tableBuilder.addColumn(
-                "Betrag",
+                "Betrag (€)",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                        -> new SimpleStringProperty(String.format(
-                                "%s %s",
-                        FormatUtils.formatFloat(accountCellDataFeatures.getValue().getValue().floatValue()),
-                        accountCellDataFeatures.getValue().getCurrency().getSymbol()
-                ))
+                        -> new SimpleStringProperty(FormatUtils.formatFloat(
+                                accountCellDataFeatures.getValue().getValue(portfolioManagementTabManager.getAccountService()).floatValue())
+                )
         );
 
         tableBuilder.setActionOnSingleClickRow(account -> {
