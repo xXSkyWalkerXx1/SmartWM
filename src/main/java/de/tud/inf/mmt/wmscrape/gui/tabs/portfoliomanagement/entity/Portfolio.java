@@ -1,7 +1,9 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
+import org.springframework.dao.DataAccessException;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -55,18 +57,23 @@ public class Portfolio extends FinancialAsset {
 
     // region Getters & Setters
     @Override
-    public BigDecimal getValue() {
-        BigDecimal sum = new BigDecimal(0);
+    public BigDecimal getValue(@NonNull AccountService accountService) throws DataAccessException {
+        BigDecimal sum = BigDecimal.ZERO;
 
         for (Depot depot : depots){
-            sum = sum.add(depot.getValue());
+            sum = sum.add(depot.getValue(accountService));
         }
 
         for (Account account : accounts){
-            sum = sum.add(account.getValue());
+            sum = sum.add(account.getValue(accountService));
         }
 
         return sum;
+    }
+
+    @Override
+    public Currency getValueCurrency() {
+        return Currency.getInstance("EUR");
     }
 
     public Long getId() {
