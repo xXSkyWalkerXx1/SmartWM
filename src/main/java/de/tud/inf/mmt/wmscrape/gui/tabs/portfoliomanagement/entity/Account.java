@@ -3,6 +3,9 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
+import org.springframework.dao.DataAccessException;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -55,7 +58,7 @@ public class Account extends FinancialAsset {
     @Column(name = "bank_name", nullable = false)
     private String bankName;
 
-    @Column(name = "konto_number", nullable = false)
+    @Column(name = "konto_number", nullable = false, unique = true)
     private String kontoNumber;
 
     @Column(name = "interest_rate", nullable = false)
@@ -80,8 +83,17 @@ public class Account extends FinancialAsset {
     private Set<Depot> mappedDepots = Collections.emptySet();
 
     @Override
-    public BigDecimal getValue() {
-        return balance;
+    public BigDecimal getValue(@NonNull AccountService accountService) throws DataAccessException {
+        if (Currency.getInstance("EUR").equals(getValueCurrency())) {
+            return balance;
+        }
+        Double latestExchangeCourse = accountService.getLatestExchangeCourse(getValueCurrency());
+        return balance.divide(BigDecimal.valueOf(latestExchangeCourse), BigDecimal.ROUND_HALF_DOWN);
+    }
+
+    @Override
+    public Currency getValueCurrency() {
+        return getCurrency();
     }
 
     @Override
