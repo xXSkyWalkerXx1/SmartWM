@@ -3,6 +3,8 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,9 @@ import java.util.List;
 
 @Service
 public class PortfolioManagementTabManager {
+
+    @Autowired
+    AccountService accountService;
 
     private PortfolioManagementTabController portfolioController;
 
@@ -96,5 +101,9 @@ public class PortfolioManagementTabManager {
         if (portfolioController != null) {
             portfolioController.changeBreadcrumbs(currentlyDisplayedElements);
         }
+    }
+
+    public AccountService getAccountService() {
+        return accountService;
     }
 }
