@@ -2,13 +2,13 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Valuable;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import org.apache.poi.ss.formula.eval.NotImplementedFunctionException;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity(name = "pDepot")
 @Table(name = "pdepot")
@@ -73,9 +73,14 @@ public class Depot extends FinancialAsset {
     private Date deactivatedAt;
 
     @Override
-    public BigDecimal getValue() {
+    public BigDecimal getValue(@NonNull AccountService accountService) {
         return BigDecimal.ZERO;
         //throw new NotImplementedFunctionException("Muss noch implementiert werden");
+    }
+
+    @Override
+    public Currency getValueCurrency() {
+        return Currency.getInstance("EUR");
     }
 
     @Override
