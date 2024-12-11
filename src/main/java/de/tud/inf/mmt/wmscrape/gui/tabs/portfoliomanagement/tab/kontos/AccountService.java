@@ -2,6 +2,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.FinancialAsset;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
@@ -47,9 +48,8 @@ public class AccountService {
      */
     public Double getLatestExchangeCourse(Currency fromCurrency) throws DataAccessException {
         String currency = fromCurrency.toString().toLowerCase();
-        return jdbcTemplate.queryForObject(
-                String.format(
-                        "SELECT wk.eur_%s FROM wechselkurse wk WHERE wk.eur_%s IS NOT NULL ORDER BY wk.datum DESC LIMIT 1",
+        return jdbcTemplate.queryForObject(String.format(
+                "SELECT wk.eur_%s FROM wechselkurse wk WHERE wk.eur_%s IS NOT NULL ORDER BY wk.datum DESC LIMIT 1",
                         currency,
                         currency
                 ),
@@ -57,43 +57,22 @@ public class AccountService {
         );
     }
 
-    /**
-     * @param missingExchangeCourses if the exchange course could not be retrieved, the currency will be added to this list.
-     * @return the sum of all accounts in EUR.
-     */
-    public BigDecimal getSumOfAllAccountsInEur(@Nullable List<String> missingExchangeCourses) {
-        BigDecimal sum = BigDecimal.ZERO;
-
-        for (Account account : getAll()) {
-            try {
-                if (Currency.getInstance("EUR").equals(account.getCurrency())) {
-                    sum = sum.add(BigDecimal.valueOf(account.getBalance()));
-                } else {
-                    Double latestExchangeCourse = getLatestExchangeCourse(account.getCurrency());
-                    BigDecimal accountBalanceToEur = BigDecimal.valueOf(account.getBalance())
-                            .divide(BigDecimal.valueOf(latestExchangeCourse), BigDecimal.ROUND_HALF_DOWN);
-                    sum = sum.add(accountBalanceToEur);
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
-
-                if (missingExchangeCourses != null) {
-                    missingExchangeCourses.add(String.format("eur_%s", account.getCurrency().toString().toLowerCase()));
-                }
-            }
-        }
-        return sum;
-    }
-
     public boolean save(Account account) {
         try {
+            getLatestExchangeCourse(account.getCurrency());
             accountRepository.save(account);
             return true;
-        } catch (DataIntegrityViolationException dataIntegrityViolationException) {
+        } catch (DataAccessException e) {
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Fehler",
-                    "Das Konto konnte nicht gespeichert werden, da bereits ein Konto mit der selben IBAN bereits existiert.",
+                    String.format(
+                            """
+                                    Das Konto konnte aus folgenden möglichen Gründen nicht gespeichert werden:
+                                        - Es existiert bereits ein Konto mit der selben IBAN oder Kontonummer.
+                                        - Es existiert kein Wechselkurs 'eur_%s' für die Umrechnung der Währung.""",
+                            account.getCurrency().toString().toLowerCase()
+                    ),
                     null
             );
         }
