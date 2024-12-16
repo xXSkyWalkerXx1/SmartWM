@@ -13,17 +13,12 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AccountService {
@@ -34,6 +29,19 @@ public class AccountService {
     private JdbcTemplate jdbcTemplate;
 
     public List<Account> getAll() {
+        // Remove any portfolios with null or invalid owner, to avoid database-inconsistencies.
+        List<Long> inconsistentAccountIds = accountRepository.findAllByOwnerAndPortfolioIsInvalid();
+        inconsistentAccountIds = new ArrayList<>(new HashSet<>(inconsistentAccountIds)); // to remove duplicates
+
+        inconsistentAccountIds.forEach(accountId -> PrimaryTabManager.showDialogWithAction(
+                Alert.AlertType.WARNING,
+                String.format("Konto '%s' inkonsistent", accountRepository.findIbanBy(accountId).get()),
+                "Auf Grund von Inkonsistenzen im gegebenen Konto, muss dieses nun gelöscht werden.",
+                null,
+                o -> accountRepository.deleteById(accountId)
+        ));
+
+        // Return all accounts.
         return accountRepository.findAll();
     }
 
