@@ -79,7 +79,7 @@ public class CreateAccountDialog {
                 .sorted(Comparator.comparing(Currency::getCurrencyCode))
                 .toList()
         );
-        inputCurrencyCode.getSelectionModel().selectFirst();
+        inputCurrencyCode.getSelectionModel().select(Currency.getInstance("EUR"));
 
         inputOwner.getItems().setAll(ownerService.getAll());
         inputOwner.getSelectionModel().selectFirst();
