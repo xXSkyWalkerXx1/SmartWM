@@ -15,9 +15,6 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @Query(value = "SELECT p.id FROM portfolio p LEFT JOIN inhaber o ON p.owner_id = o.id WHERE o.id IS NULL OR p.owner_id IS NULL", nativeQuery = true)
     List<Long> findAllByOwnerIsInvalid();
 
-    @Query("SELECT p.id FROM Portfolio p WHERE p.state IS NULL OR p.state != 'ACTIVATED' AND p.state != 'DEACTIVATED'")
-    List<Long> findAllByInvalidState();
-
     @Query("SELECT p.name FROM Portfolio p WHERE p.id = :id")
     Optional<String> findNameBy(Long id);
 

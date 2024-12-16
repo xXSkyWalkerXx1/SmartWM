@@ -32,7 +32,6 @@ public class PortfolioService {
     public List<Portfolio> getAll() {
         // Remove any portfolios with null or invalid owner, to avoid database-inconsistencies.
         List<Long> inconsistentPortfolioIds = portfolioRepository.findAllByOwnerIsInvalid();
-        inconsistentPortfolioIds.addAll(portfolioRepository.findAllByInvalidState());
         inconsistentPortfolioIds = new ArrayList<>(new HashSet<>(inconsistentPortfolioIds)); // to remove duplicates
 
         inconsistentPortfolioIds.forEach(portfolioId -> PrimaryTabManager.showDialogWithAction(
