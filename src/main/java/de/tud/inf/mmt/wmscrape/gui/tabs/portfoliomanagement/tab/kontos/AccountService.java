@@ -83,6 +83,13 @@ public class AccountService {
                     ),
                     null
             );
+        } catch (Exception e) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Unerwarteter Fehler",
+                    "Das Konto konnte nicht gespeichert werden.",
+                    null
+            );
         }
         return false;
     }

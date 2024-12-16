@@ -57,6 +57,13 @@ public class PortfolioService {
                     "Das Portfolio konnte nicht gespeichert werden, da bereits ein Portfolio mit dem selben Namen existiert.",
                     null
             );
+        } catch (Exception e) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Unerwarteter Fehler",
+                    "Das Portfolio konnte nicht gespeichert werden.",
+                    null
+            );
         }
         return false;
     }

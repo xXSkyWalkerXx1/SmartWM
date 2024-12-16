@@ -41,6 +41,13 @@ public class OwnerService {
                     "Der Inhaber konnte nicht gespeichert werden, da bereits ein Inhaber mit der selben Steuernummer bereits existiert.",
                     null
             );
+        } catch (Exception e) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Unerwarteter Fehler",
+                    "Der Inhaber konnte nicht gespeichert werden.",
+                    null
+            );
         }
         return false;
     }
