@@ -308,6 +308,6 @@ public class Owner {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Owner owner = (Owner) obj;
-        return Objects.equals(taxInformation, owner.taxInformation);
+        return Objects.equals(id, owner.id);
     }
 }

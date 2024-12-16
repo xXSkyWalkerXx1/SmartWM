@@ -156,6 +156,6 @@ public class Portfolio extends FinancialAsset {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Portfolio that = (Portfolio) obj;
-        return Objects.equals(name, that.name);
+        return Objects.equals(id, that.id);
     }
 }

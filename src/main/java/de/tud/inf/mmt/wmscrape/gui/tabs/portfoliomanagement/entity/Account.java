@@ -243,6 +243,13 @@ public class Account extends FinancialAsset {
     public List<Depot> getMappedDepots() {
         return mappedDepots.stream().toList();
     }
-
     // endregion
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Account account = (Account) obj;
+        return Objects.equals(id, account.id);
+    }
 }
