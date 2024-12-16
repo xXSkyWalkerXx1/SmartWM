@@ -55,12 +55,12 @@
                               <Insets />
                            </VBox.margin>
                         </AnchorPane>
-                        <AnchorPane fx:id="commissionSchemeLocationTablePane" prefHeight="75.0">
+                        <AnchorPane fx:id="commissionSchemeLocationTablePane" prefHeight="90.0">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                         </AnchorPane>
-                        <AnchorPane fx:id="commissionSchemeCurrencyTablePane" prefHeight="75.0">
+                        <AnchorPane fx:id="commissionSchemeCurrencyTablePane" prefHeight="90.0">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
