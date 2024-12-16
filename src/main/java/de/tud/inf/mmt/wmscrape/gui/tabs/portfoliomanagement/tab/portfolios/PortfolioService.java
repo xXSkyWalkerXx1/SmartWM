@@ -133,10 +133,7 @@ public class PortfolioService {
         }
 
         var divByLoc = portfolio.getInvestmentGuideline().getDivisionByLocation();
-        float sumDivByLoc = sum(
-                divByLoc.getGermany(), divByLoc.getEurope_without_brd(), divByLoc.getNorthamerica_with_usa(),
-                divByLoc.getAsia_without_china(), divByLoc.getChina(), divByLoc.getJapan(), divByLoc.getEmergine_markets()
-        );
+        float sumDivByLoc = divByLoc.getSum();
         if (sumDivByLoc != 100) {
             //commissionSchemeLocationTablePane.getChildren().get(0).setStyle("-fx-border-color: red; -fx-border-width: 2px;");
             PrimaryTabManager.showDialog(
@@ -149,10 +146,7 @@ public class PortfolioService {
         }
 
         var divByCurr = portfolio.getInvestmentGuideline().getDivisionByCurrency();
-        float sumDivByCurr = sum(
-                divByCurr.getEuro(), divByCurr.getUsd(), divByCurr.getGbp(), divByCurr.getYen(),
-                divByCurr.getAsiaCurrencies(), divByCurr.getOthers()
-        );
+        float sumDivByCurr = divByCurr.getSum();
         if (sumDivByCurr != 100) {
             //commissionSchemeCurrencyTablePane.getChildren().get(0).setStyle("-fx-border-color: red; -fx-border-width: 2px;");
             PrimaryTabManager.showDialog(
@@ -164,16 +158,5 @@ public class PortfolioService {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Helper method; sums up the given values.
-     */
-    private float sum(Float... floats) {
-        float sum = 0;
-        for (Float value : floats) {
-            sum += value;
-        }
-        return sum;
     }
 }
