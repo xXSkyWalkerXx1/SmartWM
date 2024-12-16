@@ -17,7 +17,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query(value = "SELECT a.id " +
             "FROM pkonto a " +
             "LEFT JOIN inhaber o ON a.owner_id = o.id " +
-            "LEFT JOIN portfolio p ON a.portfolio_id = p.id" +
+            "LEFT JOIN portfolio p ON a.portfolio_id = p.id " +
             "WHERE o.id IS NULL OR p.id IS NULL OR a.owner_id IS NULL OR a.portfolio_id IS NULL", nativeQuery = true)
     List<Long> findAllByOwnerAndPortfolioIsInvalid();
 
