@@ -67,10 +67,13 @@ public class AccountService {
 
     public boolean save(Account account) {
         try {
-            getLatestExchangeCourse(account.getCurrency());
+            if (!Currency.getInstance("EUR").equals(account.getCurrency())) {
+                getLatestExchangeCourse(account.getCurrency());
+            }
             accountRepository.save(account);
             return true;
         } catch (DataAccessException e) {
+            e.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Fehler",
