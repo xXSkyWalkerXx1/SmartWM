@@ -12,11 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -30,19 +27,6 @@ public class PortfolioService {
     }
 
     public List<Portfolio> getAll() {
-        // Remove any portfolios with null or invalid owner, to avoid database-inconsistencies.
-        List<Long> inconsistentPortfolioIds = portfolioRepository.findAllByOwnerIsInvalid();
-        inconsistentPortfolioIds = new ArrayList<>(new HashSet<>(inconsistentPortfolioIds)); // to remove duplicates
-
-        inconsistentPortfolioIds.forEach(portfolioId -> PrimaryTabManager.showDialogWithAction(
-                Alert.AlertType.WARNING,
-                String.format("Portfolio '%s' inkonsistent", portfolioRepository.findNameBy(portfolioId).get()),
-                "Auf Grund von Inkonsistenzen im gegebenen Portfolio, muss dieses nun gelöscht werden.",
-                null,
-                o -> deleteById(portfolioId)
-        ));
-
-        // Return all portfolios.
         return portfolioRepository.findAll();
     }
 
@@ -84,12 +68,6 @@ public class PortfolioService {
                     controller.open();
                 }
         );
-    }
-
-    @Transactional
-    public void deleteById(Long portfolioId) {
-        portfolioRepository.deleteAccountsById(portfolioId);
-        portfolioRepository.deleteById(portfolioId);
     }
 
     public void writeInput(@NonNull Portfolio portfolio, boolean isOnCreate, @NonNull TextField inputPortfolioName,

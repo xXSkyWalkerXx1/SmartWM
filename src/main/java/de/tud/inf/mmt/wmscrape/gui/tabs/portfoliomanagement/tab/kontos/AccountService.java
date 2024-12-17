@@ -29,19 +29,6 @@ public class AccountService {
     private JdbcTemplate jdbcTemplate;
 
     public List<Account> getAll() {
-        // Remove any portfolios with null or invalid owner, to avoid database-inconsistencies.
-        List<Long> inconsistentAccountIds = accountRepository.findAllByOwnerAndPortfolioIsInvalid();
-        inconsistentAccountIds = new ArrayList<>(new HashSet<>(inconsistentAccountIds)); // to remove duplicates
-
-        inconsistentAccountIds.forEach(accountId -> PrimaryTabManager.showDialogWithAction(
-                Alert.AlertType.WARNING,
-                String.format("Konto '%s' inkonsistent", accountRepository.findIbanBy(accountId).get()),
-                "Auf Grund von Inkonsistenzen im gegebenen Konto, muss dieses nun gelöscht werden.",
-                null,
-                o -> accountRepository.deleteById(accountId)
-        ));
-
-        // Return all accounts.
         return accountRepository.findAll();
     }
 

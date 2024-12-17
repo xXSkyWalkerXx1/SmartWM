@@ -5,6 +5,9 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.AccountRepository;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.OwnerRepository;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.PortfolioRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.DepotListController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungOrderController;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,6 +45,13 @@ public class PortfolioManagementTabController {
     private TabPane portfolioManagementTabPane;
     @FXML
     private Label currentUserLabel;
+
+    @Autowired
+    OwnerRepository ownerRepository;
+    @Autowired
+    PortfolioRepository portfolioRepository;
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     private PortfolioManagementTabManager portfolioManagementTabManager;
@@ -160,6 +171,7 @@ public class PortfolioManagementTabController {
 
     public static final String TAB_PROPERTY_CONTROLLER = "controller";
     public static final String TAB_PROPERTY_ENTITY = "entity";
+    boolean isInitClick = true;
 
     /**
      * called when loading the fxml file
@@ -317,15 +329,48 @@ public class PortfolioManagementTabController {
         portfolioManagementTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
             if (newTab == null) return;
 
+            // idk why?
             if (newTab == depotPlanungTab) {
                 showDepotPlanungTabs();
                 changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
                 addDepotPlanungBreadcrumbs();
             }
 
+            // avoid database-inconsistencies
+            if (!isInitClick) {
+                // owners
+
+                // accounts
+                List<Long> inconsistentAccountIds = accountRepository.findAllByOwnerAndPortfolioIsInvalid();
+                inconsistentAccountIds = new ArrayList<>(new HashSet<>(inconsistentAccountIds)); // to remove duplicates
+
+                inconsistentAccountIds.forEach(accountId -> PrimaryTabManager.showDialogWithAction(
+                        Alert.AlertType.WARNING,
+                        String.format("Konto '%s' inkonsistent", accountRepository.findIbanBy(accountId).get()),
+                        "Auf Grund von Inkonsistenzen im gegebenen Konto, muss dieses nun gelöscht werden.",
+                        null,
+                        o -> accountRepository.deleteById(accountId)
+                ));
+
+                // portfolios
+                List<Long> inconsistentPortfolioIds = portfolioRepository.findAllByOwnerIsInvalid();
+                inconsistentPortfolioIds = new ArrayList<>(new HashSet<>(inconsistentPortfolioIds)); // to remove duplicates
+
+                inconsistentPortfolioIds.forEach(portfolioId -> PrimaryTabManager.showDialogWithAction(
+                        Alert.AlertType.WARNING,
+                        String.format("Portfolio '%s' inkonsistent", portfolioRepository.findNameBy(portfolioId).get()),
+                        "Auf Grund von Inkonsistenzen im gegebenen Portfolio, muss dieses nun gelöscht werden.",
+                        null,
+                        o -> portfolioRepository.deleteWithDependenciesById(portfolioId)
+                ));
+            }
+
+            // call open method of controller to refresh data
             if (newTab.getProperties().containsKey(TAB_PROPERTY_CONTROLLER)) {
                 ((Openable) newTab.getProperties().get(TAB_PROPERTY_CONTROLLER)).open();
             }
+
+            isInitClick = false;
         });
         portfolioManagementTabPane.getTabs().addAll(portfoliosTab, depotTab, kontoTab, inhaberTab);
         showPortfolioManagementTabs();
