@@ -18,7 +18,7 @@ public class FieldValidator {
 
         for (TextInputControl input : inputs) {
             String inputText = input.getText();
-            if (inputText.isEmpty() || inputText.isBlank()) {
+            if (inputText.isBlank()) {
                 PrimaryTabManager.decorateField(
                         input,
                         "Dieses Feld darf nicht leer sein!",
