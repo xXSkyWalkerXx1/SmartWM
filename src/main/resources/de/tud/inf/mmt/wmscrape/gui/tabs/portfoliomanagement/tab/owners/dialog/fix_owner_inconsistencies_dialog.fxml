@@ -46,8 +46,8 @@
                                 <Label text="Deaktiviert am" GridPane.rowIndex="5" />
                                 <Label text="Status" GridPane.rowIndex="3" />
                                 <ComboBox fx:id="inputState" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                        <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                <DatePicker fx:id="inputCreatedAt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                <DatePicker fx:id="inputDeactivatedAt" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                             </children>
                         </GridPane>
                     </children>
