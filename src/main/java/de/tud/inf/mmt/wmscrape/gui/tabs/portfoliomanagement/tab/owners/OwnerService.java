@@ -11,6 +11,7 @@ import javafx.scene.layout.Region;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -42,6 +43,7 @@ public class OwnerService {
                     null
             );
         } catch (Exception e) {
+            e.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Unerwarteter Fehler",
@@ -53,9 +55,9 @@ public class OwnerService {
     }
 
     /**
-     * @param controller to refresh the view after deletion.
+     * @param controller to refresh the view after deletion. If null, the view will not be refreshed.
      */
-    public void delete(Owner owner, @NonNull Openable controller) {
+    public void delete(Owner owner, @Nullable Openable controller) {
         PrimaryTabManager.showDialogWithAction(
                 Alert.AlertType.WARNING,
                 "Inhaber löschen",
@@ -65,9 +67,17 @@ public class OwnerService {
                 null,
                 o -> {
                     ownerRepository.delete(owner);
-                    controller.open();
+                    if (controller != null) controller.open();
                 }
         );
+    }
+
+    /**
+     * Deletes the owner by id.
+     * @param id id of the owner to delete.
+     */
+    public void deleteById(long id) {
+        ownerRepository.deleteById(id);
     }
 
     public void writeInput(@NonNull Owner owner, boolean isOnCreate,
