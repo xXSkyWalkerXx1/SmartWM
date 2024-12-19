@@ -26,6 +26,7 @@ public class InconsistenciesDialog {
         if (fxmlFilePath == null || fxmlFilePath.isEmpty() || stageTitle == null || controller == null) {
            throw new IllegalStateException("fxmlFilePath, stageTitle or controller is not set.");
         }
+
         PrimaryTabManager.loadFxml(
                 fxmlFilePath,
                 stageTitle,
@@ -34,6 +35,8 @@ public class InconsistenciesDialog {
                 controller,
                 true
         );
+        showInconsistenciesButton.getScene().getWindow().hide();
+
         fxmlFilePath = null;
         stageTitle = null;
         controller = null;
