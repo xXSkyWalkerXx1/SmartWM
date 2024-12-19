@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="650.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.dialog.FixOwnerInconsistenciesDialog">
+    <children>
+        <SplitPane dividerPositions="0.30317460317460315, 0.5333333333333333" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <children>
+                        <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="244.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="397.0" minWidth="10.0" prefWidth="336.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Vorname" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                                <Label text="Nachname" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                                <TextField fx:id="inputForename" maxWidth="200.0" GridPane.columnIndex="1" />
+                                <TextField fx:id="inputAftername" maxWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                <Label text="Anmerkungen" GridPane.rowIndex="2" />
+                                <TextArea fx:id="inputNotice" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <Label text="Erstellt am" GridPane.rowIndex="4" />
+                                <Label text="Deaktiviert am" GridPane.rowIndex="5" />
+                                <Label text="Status" GridPane.rowIndex="3" />
+                                <ComboBox fx:id="inputState" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                            </children>
+                        </GridPane>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                    </padding>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <children>
+                        <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="244.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="397.0" minWidth="10.0" prefWidth="336.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Adresse:">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Land" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                                <Label text="PLZ | Stadt" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                                <TextField fx:id="inputCountry" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                <GridPane hgap="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="156.0" minWidth="10.0" prefWidth="126.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="195.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                        <TextField fx:id="inputPlz" />
+                                        <TextField fx:id="inputLocation" GridPane.columnIndex="1" />
+                                    </children>
+                                </GridPane>
+                                <Label text="Straße | Nr." GridPane.rowIndex="3" />
+                                <GridPane hgap="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="249.0" minWidth="10.0" prefWidth="233.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="78.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                        <TextField fx:id="inputStreet" />
+                                        <TextField fx:id="inputStreetNumber" GridPane.columnIndex="1" />
+                                    </children>
+                                </GridPane>
+                            </children>
+                            <opaqueInsets>
+                                <Insets />
+                            </opaqueInsets>
+                        </GridPane>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                    </padding>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <padding>
+                        <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                    </padding>
+                    <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <children>
+                                <GridPane VBox.vgrow="ALWAYS">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="244.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="397.0" minWidth="10.0" prefWidth="336.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                        <Label text="Steuerinformationen:">
+                                            <font>
+                                                <Font name="System Bold" size="12.0" />
+                                            </font>
+                                        </Label>
+                                        <Label text="Steuernummer" GridPane.rowIndex="1" />
+                                        <Label text="Familienstand" GridPane.rowIndex="2" />
+                                        <Label text="Steuersatz (%)" GridPane.rowIndex="3" />
+                                        <Label text="Kirchensteuersatz (%)" GridPane.rowIndex="4" />
+                                        <Label text="Kapitalertragssteuer (%)" GridPane.rowIndex="5" />
+                                        <Label text="Solidaritätszuschlag (%)" GridPane.rowIndex="6" />
+                                        <TextField fx:id="inputTaxNumber" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <TextField fx:id="inputTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                        <TextField fx:id="inputChurchTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                        <TextField fx:id="inputCapitalGainsTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                        <TextField fx:id="inputSolidaritySurchargeTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                        <ComboBox fx:id="inputMaritalState" prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    </children>
+                                </GridPane>
+                                <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" spacing="15.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
+                                        <Button mnemonicParsing="false" onAction="#onCancel" text="Abbrechen" />
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets top="35.0" />
+                                    </VBox.margin>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </items>
+            <padding>
+                <Insets bottom="10.0" top="10.0" />
+            </padding>
+        </SplitPane>
+    </children>
+</AnchorPane>
