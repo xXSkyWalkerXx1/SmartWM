@@ -82,7 +82,6 @@ public class PrimaryTabController {
             }
             if (nv.equals(managementTab)) {
                 portfolioManagementTabController.showPortfolioManagementTabs();
-                System.out.println("onManagementTab");
             }
         });
 
