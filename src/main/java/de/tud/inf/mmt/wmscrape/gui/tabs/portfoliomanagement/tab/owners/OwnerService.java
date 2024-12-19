@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.List;
@@ -55,7 +56,17 @@ public class OwnerService {
     }
 
     /**
-     * @param controller to refresh the view after deletion. If null, the view will not be refreshed.
+     * Deletes the owner and saves it again.
+     * @return true if the owner was successfully saved, false otherwise.
+     */
+    @Transactional
+    public boolean reSave(Owner owner) {
+        deleteById(owner.getId());
+        return save(owner);
+    }
+
+    /**
+     * @param controller to refresh the view after deletion. If null, no view will be refreshed.
      */
     public void delete(Owner owner, @Nullable Openable controller) {
         PrimaryTabManager.showDialogWithAction(
