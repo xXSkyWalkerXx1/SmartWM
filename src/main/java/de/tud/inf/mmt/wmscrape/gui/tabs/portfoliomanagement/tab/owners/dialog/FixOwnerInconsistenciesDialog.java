@@ -117,10 +117,18 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
                 inputChurchTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         );
         owner.setState(inputState.getSelectionModel().getSelectedItem());
-        owner.setCreatedAt(java.sql.Date.valueOf(inputCreatedAt.getValue()));
-        if (State.DEACTIVATED.equals(owner.getState())) owner.setDeactivatedAt(java.sql.Date.valueOf(inputDeactivatedAt.getValue()));
+        owner.setCreatedAt(java.sql.Date.valueOf(LocalDate.parse(
+                inputCreatedAt.getEditor().getText(),
+                DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        )));
+        if (State.DEACTIVATED.equals(owner.getState())) {
+            owner.setDeactivatedAt(java.sql.Date.valueOf(LocalDate.parse(
+                    inputDeactivatedAt.getEditor().getText(),
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy")
+            )));
+        }
 
-        if (!ownerService.save(owner)) return;
+        if (!ownerService.reSave(owner)) return;
         onCancel();
 
         // Finally, show success-dialog
@@ -136,13 +144,18 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
     }
 
     private boolean areTextFieldsValid() {
+        inputCreatedAt.getEditor().tooltipProperty().unbind();
+        inputDeactivatedAt.getEditor().tooltipProperty().unbind();
+
         List<TextInputControl> inputs = new ArrayList<>(List.of(
                 inputForename, inputAftername, inputCreatedAt.getEditor(), inputCountry,
                 inputPlz, inputLocation, inputStreet, inputStreetNumber, inputTaxNumber, inputTaxRate, inputCapitalGainsTaxRate,
                 inputSolidaritySurchargeTaxRate
         ));
-        if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) inputs.add(inputDeactivatedAt.getEditor());
-        return FieldValidator.isInputEmpty(inputs.toArray(new TextInputControl[0]));
+        if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) {
+            inputs.add(inputDeactivatedAt.getEditor());
+        }
+        return !FieldValidator.isInputEmpty(inputs.toArray(new TextInputControl[0]));
     }
 
     private boolean areComboboxInputsValid() {
