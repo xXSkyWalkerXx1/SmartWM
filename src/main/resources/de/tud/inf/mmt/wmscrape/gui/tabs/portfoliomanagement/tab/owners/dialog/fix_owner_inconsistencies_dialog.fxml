@@ -158,7 +158,7 @@
                                 <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" spacing="15.0">
                                     <children>
                                         <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
-                                        <Button mnemonicParsing="false" onAction="#onCancel" text="Abbrechen" />
+                                        <Button mnemonicParsing="false" onAction="#onDelete" text="Inhaber löschen" />
                                     </children>
                                     <VBox.margin>
                                         <Insets top="35.0" />
