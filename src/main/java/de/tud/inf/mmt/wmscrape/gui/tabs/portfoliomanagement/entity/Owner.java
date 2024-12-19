@@ -40,6 +40,10 @@ public class Owner {
             return id;
         }
 
+        public void setId(Long id) {
+            this.id = id;
+        }
+
         public String getCountry() {
             return country;
         }
@@ -111,6 +115,10 @@ public class Owner {
             return id;
         }
 
+        public void setId(Long id) {
+            this.id = id;
+        }
+
         public String getTaxNumber() {
             return taxNumber;
         }
@@ -157,6 +165,22 @@ public class Owner {
 
         public void setSolidaritySurchargeTaxRate(double solidaritySurchargeTaxRate) {
             this.solidaritySurchargeTaxRate = BigDecimal.valueOf(solidaritySurchargeTaxRate).setScale(2, RoundingMode.HALF_DOWN);;
+        }
+
+        public BigDecimal getTaxRateBigDecimal() {
+            return taxRate;
+        }
+
+        public BigDecimal getChurchTaxRateBigDecimal() {
+            return churchTaxRate;
+        }
+
+        public BigDecimal getCapitalGainsTaxRateBigDecimal() {
+            return capitalGainsTaxRate;
+        }
+
+        public BigDecimal getSolidaritySurchargeTaxRateBigDecimal() {
+            return solidaritySurchargeTaxRate;
         }
     }
     // endregion
@@ -213,6 +237,10 @@ public class Owner {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public State getState() {
         return state;
     }
@@ -221,7 +249,7 @@ public class Owner {
         this.state = state;
         if (State.ACTIVATED.equals(state)) {
             setDeactivatedAt(null);
-        } else {
+        } else if (State.DEACTIVATED.equals(state)) {
             setDeactivatedAt(Calendar.getInstance().getTime());
         }
     }
