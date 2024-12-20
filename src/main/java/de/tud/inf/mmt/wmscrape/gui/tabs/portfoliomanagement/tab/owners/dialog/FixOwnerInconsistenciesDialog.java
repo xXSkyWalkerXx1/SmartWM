@@ -29,12 +29,12 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
     DatePicker inputDeactivatedAt;
 
     @FXML
-    private void initialize() {
+    protected void initialize() {
         if (owner == null) throw new IllegalStateException("Owner must be set before initializing dialog.");
+        super.initialize();
 
         // Set content of combo-boxes
         inputState.getItems().setAll(State.values());
-        inputMaritalState.getItems().setAll(MaritalState.values());
 
         // Set the owner's information
         inputForename.setText(owner.getForename());
