@@ -1,5 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
+import org.springframework.lang.Nullable;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -19,8 +21,12 @@ public class FormatUtils {
         return DECIMAL_FORMAT.format(value);
     }
 
-    public static float parseFloat(String text) throws ParseException {
+    /**
+     * @param text any integer or decimal number like "123", "1.445" (means 1445) or "1.023,45" (means 1023,45). If null or empty, "0" is assumed.
+     */
+    public static float parseFloat(@Nullable String text) throws ParseException {
         ParsePosition parsePosition = new ParsePosition(0);
+        if (text == null || text.isEmpty()) text = "0";
         float parsedValue = DECIMAL_FORMAT.parse(text, parsePosition).floatValue();
 
         if (parsePosition.getIndex() != text.length()) throw new ParseException("Invalid input", parsePosition.getIndex());
