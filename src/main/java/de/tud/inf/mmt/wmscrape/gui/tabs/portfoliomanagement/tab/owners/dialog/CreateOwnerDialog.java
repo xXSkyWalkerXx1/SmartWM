@@ -53,7 +53,7 @@ public class CreateOwnerDialog {
     TextField inputSolidaritySurchargeTaxRate;
 
     @FXML
-    private void initialize() {
+    protected void initialize() {
         // Set values for MaritalState and select the first one as default one
         inputMaritalState.getItems().setAll(MaritalState.values());
         inputMaritalState.getSelectionModel().selectFirst();
@@ -114,13 +114,13 @@ public class CreateOwnerDialog {
     }
 
     @FXML
-    private void onCancel() {
+    protected void onCancel() {
         portfolioManagementTabManager.getPortfolioController().getOwnerController().open();
         inputForename.getParent().getScene().getWindow().hide();
     }
 
     @FXML
-    private void onSave() {
+    protected void onSave() {
         // Validate first
         if (FieldValidator.isInputEmpty(
                 inputForename, inputAftername, inputCountry, inputPlz, inputLocation, inputStreet, inputStreetNumber,
