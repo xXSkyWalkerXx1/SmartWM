@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -27,7 +28,11 @@ public class PortfolioService {
     }
 
     public List<Portfolio> getAll() {
-        return portfolioRepository.findAll();
+        try {
+            return portfolioRepository.findAll();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     public boolean save(Portfolio portfolio) {

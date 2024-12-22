@@ -15,6 +15,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -25,7 +26,11 @@ public class OwnerService {
     private OwnerRepository ownerRepository;
 
     public List<Owner> getAll(){
-        return ownerRepository.findAll();
+        try {
+            return ownerRepository.findAll();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     public Owner getOwnerById(long id){

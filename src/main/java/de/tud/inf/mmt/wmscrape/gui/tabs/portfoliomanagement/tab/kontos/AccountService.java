@@ -29,7 +29,11 @@ public class AccountService {
     private JdbcTemplate jdbcTemplate;
 
     public List<Account> getAll() {
-        return accountRepository.findAll();
+        try {
+            return accountRepository.findAll();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     public Account getAccountById(long id) {
