@@ -143,7 +143,7 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
                 try {
                     taxInformation.setMaritalState(MaritalState.valueOf(maritalState));
                 } catch (IllegalArgumentException e) {
-                    MaritalState.valueOf(null);
+                    taxInformation.setMaritalState(null);
                 }}
             );
             findSolidaritySurchargeTaxRateByTaxInformationId(taxInformationId.get()).ifPresent(solidaritySurchargeTaxRate
