@@ -113,6 +113,7 @@ public class TableFactory {
                     } else {
                         owner.setState(State.ACTIVATED);
                     }
+                    ownerController.open();
                 }
         );
         tableBuilder.addRowContextMenuItem(
