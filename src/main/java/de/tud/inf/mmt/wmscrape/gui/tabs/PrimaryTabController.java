@@ -74,15 +74,10 @@ public class PrimaryTabController {
         primaryTabPane.getTabs().add(managementTab);
 
         primaryTabPane.getSelectionModel().selectedItemProperty().addListener((o, ov, nv) -> {
-            // can't know when the scraping service finished so refresh on select
             if (nv.equals(dataTab)) dataTabController.handleResetButton();
             if (nv.equals(importTab)) importTabController.refreshCorrelationTables();
-            if (nv.equals(visualizeTab)) {
-                visualizationTabController.fillSelectionTables();
-            }
-            if (nv.equals(managementTab)) {
-                portfolioManagementTabController.showPortfolioManagementTabs();
-            }
+            if (nv.equals(visualizeTab)) visualizationTabController.fillSelectionTables();
+            if (nv.equals(managementTab)) portfolioManagementTabController.showPortfolioManagementTabs();
         });
 
         primaryTabPane.setStyle("-fx-tab-min-height: 30px;" + "-fx-tab-max-height: 30px;" + "-fx-tab-min-width: 150px;" + "-fx-tab-max-width: 150px;" + "-fx-alignment: CENTER;");
