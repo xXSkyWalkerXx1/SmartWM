@@ -113,6 +113,7 @@ public class TableFactory {
                     } else {
                         owner.setState(State.ACTIVATED);
                     }
+                    ownerService.save(owner);
                     ownerController.open();
                 }
         );
