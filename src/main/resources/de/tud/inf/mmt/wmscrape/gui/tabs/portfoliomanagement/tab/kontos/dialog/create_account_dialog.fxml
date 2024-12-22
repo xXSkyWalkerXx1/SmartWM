@@ -122,9 +122,9 @@
                                         <Label text="Zinssatz" GridPane.rowIndex="1" />
                                         <Label text="Zinstage" GridPane.rowIndex="2" />
                                         <Label text="Zinsinterval" GridPane.rowIndex="3" />
-                                        <TextField fx:id="inputInterestRate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <ComboBox fx:id="inputInterestInterval" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <TextField fx:id="inputInterestDays" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <TextField fx:id="inputInterestRate" maxWidth="60" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <ComboBox fx:id="inputInterestInterval" maxWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <TextField fx:id="inputInterestDays" maxWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     </children>
                                 </GridPane>
                                 <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" spacing="15.0">
