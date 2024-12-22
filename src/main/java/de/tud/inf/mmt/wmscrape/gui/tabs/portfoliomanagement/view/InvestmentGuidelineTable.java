@@ -185,7 +185,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
                     col.getRowValue().getValue().setChanceRiskNumber(input);
                 },
-                FieldFormatter::setInputOnlyDecimalNumbers,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, null),
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
