@@ -132,7 +132,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         var minSuccess = createStaticColumn("Erwarteter minimaler Anlageerfolg", null);
         getColumns().add(minSuccess);
         minSuccess.getColumns().add(createDynamicColumn(
-                "Performance innerhalb 12 Monate (%)",
+                "Performance innerhalb 1 Jahr (%)",
                 "Gibt den minimal erwarteten Wertzuwachs der Anlage innerhalb eines Jahres an.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getPerformance())),
                 col -> {
@@ -298,13 +298,20 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
             }
         };
 
-        TreeTableColumn<InvestmentGuideline.Entry, String> newColumn = new TreeTableColumn<>(columnName);
+        TreeTableColumn<InvestmentGuideline.Entry, String> newColumn = new TreeTableColumn<>();
         newColumn.setEditable(true);
         newColumn.setCellFactory(cellFactory);
 
-        if (columnDescr != null) {
-            newColumn.setGraphic(new Label(""));
-            Tooltip.install(newColumn.getGraphic(), new Tooltip(columnDescr));
+        if (columnDescr == null) {
+            newColumn.setText(columnName);
+        } else { // Otherwise use the columns graphic as column label, to add a tooltip
+            Label columnLabel = new Label(columnName);
+            columnLabel.setMinWidth(Region.USE_PREF_SIZE);
+            columnLabel.setTooltip(new Tooltip(columnDescr));
+            columnLabel.widthProperty().addListener((observableValue, oldWidth, newWidth)
+                    -> newColumn.setPrefWidth(newWidth.doubleValue() + 13) // add 13 padding
+            );
+            newColumn.setGraphic(columnLabel);
         }
 
         if (cellValueFactory != null) newColumn.setCellValueFactory(cell -> {
