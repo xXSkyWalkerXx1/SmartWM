@@ -168,7 +168,9 @@ public class OwnerOverviewController implements Openable {
                 inputChurchTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         );
         owner.setState(inputState.getValue());
+
         if (!ownerService.save(owner)) return;
+        loadOwnerData();
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(
