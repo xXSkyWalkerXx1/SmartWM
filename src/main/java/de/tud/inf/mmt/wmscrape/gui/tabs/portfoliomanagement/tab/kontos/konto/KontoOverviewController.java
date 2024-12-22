@@ -126,7 +126,9 @@ public class KontoOverviewController implements Openable {
                 inputNotice, inputBankName, inputIban, inputKontoNumber, inputInterestRate, inputInterestDays, inputInterestInterval
         );
         account.setState(inputState.getValue());
+
         if (!accountService.save(account)) return;
+        loadAccountData();
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(
