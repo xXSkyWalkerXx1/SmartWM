@@ -55,11 +55,10 @@ public class OwnerService {
                     null
             );
         } catch (Exception e) {
-            e.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Unerwarteter Fehler",
-                    "Der Inhaber konnte nicht gespeichert werden.",
+                    "Der Inhaber konnte nicht gespeichert werden.\nGrund: " + e.getMessage(),
                     null
             );
         }
