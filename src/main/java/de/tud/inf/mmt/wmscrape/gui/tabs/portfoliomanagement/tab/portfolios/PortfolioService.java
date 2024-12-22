@@ -31,6 +31,12 @@ public class PortfolioService {
         try {
             return portfolioRepository.findAll();
         } catch (Exception e) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehler",
+                    "Die Portfolios konnten nicht geladen werden.\nGrund: " + e.getMessage(),
+                    null
+            );
             return new ArrayList<>();
         }
     }

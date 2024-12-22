@@ -29,6 +29,12 @@ public class OwnerService {
         try {
             return ownerRepository.findAll();
         } catch (Exception e) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehler",
+                    "Die Inhaber konnten nicht geladen werden.\nGrund: " + e.getMessage(),
+                    null
+            );
             return new ArrayList<>();
         }
     }

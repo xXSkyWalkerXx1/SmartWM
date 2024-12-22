@@ -32,6 +32,12 @@ public class AccountService {
         try {
             return accountRepository.findAll();
         } catch (Exception e) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehler",
+                    "Die Konten konnten nicht geladen werden.\nGrund: " + e.getMessage(),
+                    null
+            );
             return new ArrayList<>();
         }
     }
