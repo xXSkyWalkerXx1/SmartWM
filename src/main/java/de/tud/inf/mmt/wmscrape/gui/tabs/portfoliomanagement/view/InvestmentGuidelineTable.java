@@ -151,7 +151,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
         minSuccess.getColumns().add(createDynamicColumn(
-                "Rendite seit Kauf (%)",
+                "Bruttorendite seit Kauf (%)",
                 "Gibt die minimal erwartete Rendite seit Kauf der Anlage an.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getRendite())),
                 col -> {
