@@ -35,6 +35,15 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
 
         // Set content of combo-boxes
         inputState.getItems().setAll(State.values());
+        inputState.getSelectionModel().selectedItemProperty().addListener((observableValue, state, t1) -> {
+            if (t1 == State.DEACTIVATED) {
+                inputDeactivatedAt.setDisable(false);
+            } else {
+                inputDeactivatedAt.setDisable(true);
+                inputDeactivatedAt.setValue(null);
+            }
+            areComboboxInputsValid();
+        });
 
         // Set the owner's information
         inputForename.setText(owner.getForename());
@@ -81,16 +90,6 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
         if (owner.getTaxInformation().getSolidaritySurchargeTaxRateBigDecimal() != null) {
             inputSolidaritySurchargeTaxRate.setText(FormatUtils.formatFloat((float) owner.getTaxInformation().getSolidaritySurchargeTaxRate()));
         }
-
-        inputState.getSelectionModel().selectedItemProperty().addListener((observableValue, state, t1) -> {
-            if (t1 == State.DEACTIVATED) {
-                inputDeactivatedAt.setDisable(false);
-            } else {
-                inputDeactivatedAt.setDisable(true);
-                inputDeactivatedAt.setValue(null);
-            }
-            areComboboxInputsValid();
-        });
 
         // Highlight fields that are invalid
         areTextFieldsValid();
