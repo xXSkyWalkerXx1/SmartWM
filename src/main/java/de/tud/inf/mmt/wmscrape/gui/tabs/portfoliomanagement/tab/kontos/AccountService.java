@@ -70,7 +70,6 @@ public class AccountService {
             accountRepository.save(account);
             return true;
         } catch (DataAccessException e) {
-            e.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Fehler",
