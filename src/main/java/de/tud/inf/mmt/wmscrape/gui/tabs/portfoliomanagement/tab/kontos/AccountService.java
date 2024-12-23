@@ -42,6 +42,14 @@ public class AccountService {
         }
     }
 
+    /**
+     * Deletes the account by id.
+     * @param id id of the account to delete.
+     */
+    public void deleteById(long id) {
+        accountRepository.deleteById(id);
+    }
+
     public Account getAccountById(long id) {
         return accountRepository.findById(id).orElseThrow();
     }
