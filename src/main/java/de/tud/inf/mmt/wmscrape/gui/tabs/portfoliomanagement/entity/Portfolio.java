@@ -32,9 +32,6 @@ public class Portfolio extends FinancialAsset {
     @JoinColumn(name = "investment_guideline_id", nullable = false)
     private InvestmentGuideline investmentGuideline = new InvestmentGuideline();
 
-    /**
-     * ToDo: Refactor!
-     */
     @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "depot_id", nullable = false)
     private Set<Depot> depots = Collections.emptySet();
@@ -74,6 +71,10 @@ public class Portfolio extends FinancialAsset {
     @Override
     public Currency getValueCurrency() {
         return Currency.getInstance("EUR");
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
