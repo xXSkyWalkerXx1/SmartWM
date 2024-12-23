@@ -5,6 +5,8 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.dialog.Inconsistenci
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
@@ -16,6 +18,8 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungOrderController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungWertpapiervergleichController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog.FixAccountInconcistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoOverviewController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoTransactionsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
@@ -33,6 +37,7 @@ import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
 
@@ -52,6 +57,8 @@ public class PortfolioManagementTabController {
     private InconsistenciesDialog inconsistenciesDialogController;
     @Autowired
     private FixOwnerInconsistenciesDialog fixOwnerInconsistenciesDialog;
+    @Autowired
+    private FixAccountInconcistenciesDialog fixAccountInconcistenciesDialog;
 
     @Autowired
     OwnerRepository ownerRepository;
@@ -59,6 +66,8 @@ public class PortfolioManagementTabController {
     PortfolioRepository portfolioRepository;
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    AccountService accountService;
 
     @Autowired
     private PortfolioManagementTabManager portfolioManagementTabManager;
@@ -372,50 +381,54 @@ public class PortfolioManagementTabController {
                         showInconsistenciesDialog();
                     });
 
+                    // ToDo: Portfolios here!
+                    // portfolios
+                    /*
+                    List<Long> inconsistentPortfolioIds = portfolioRepository.findAllByOwnerOrInvestmentguidelineIsInvalid();
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByNullEntry());
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByInvalidLiteral());
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllInvalidInvestmentguidelines());
+                    inconsistentPortfolioIds = new ArrayList<>(new HashSet<>(inconsistentPortfolioIds)); // to remove duplicates
+
+                    inconsistentPortfolioIds.forEach(portfolioId -> PrimaryTabManager.showDialogWithAction(
+                            Alert.AlertType.WARNING,
+                            "Portfolio inkonsistent",
+                            String.format(
+                                    "Auf Grund von Inkonsistenzen im Portfolio '%s' muss dieses sowie die enthaltenen Konten und Depots nun gelöscht werden.",
+                                    portfolioRepository.findNameBy(portfolioId).get()
+                            ),
+                            null,
+                            o -> portfolioRepository.deleteById(portfolioId)
+                    ));
+                     */
+
+                    // accounts
+                    List<Long> inconsistentAccountIds = new ArrayList<>();
+                    inconsistentAccountIds.addAll(accountRepository.findAllByOwnerAndPortfolioIsInvalid());
+                    inconsistentAccountIds.addAll(accountRepository.findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull());
+                    inconsistentAccountIds.addAll(accountRepository.findByStateNotInOrTypeNotInOrInterestIntervalNotIn(
+                            State.getValuesAsString(), AccountType.getValuesAsString(), InterestInterval.getValuesAsString())
+                    );
+                    inconsistentAccountIds.addAll(accountRepository.findByInterestRateIsNotBetween0And100());
+                    inconsistentAccountIds.addAll(accountRepository.findByInterestDaysIsNotBetween0And365());
+                    inconsistentAccountIds.addAll(accountRepository.findByCurrencyIsNotIn(
+                            Currency.getAvailableCurrencies().stream().map(Currency::getCurrencyCode).collect(Collectors.toList()))
+                    );
+                    inconsistentAccountIds.addAll(accountService.findByCurrencyHasNoExchangeCourse());
+                    inconsistentAccountIds = new ArrayList<>(new HashSet<>(inconsistentAccountIds)); // to remove duplicates
+
+                    inconsistentAccountIds.forEach(accountId -> {
+                        fixAccountInconcistenciesDialog.setAccount(accountRepository.reconstructAccount(accountId));
+                        inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/kontos/dialog/fix_account_inconsistencies_dialog.fxml");
+                        inconsistenciesDialogController.setStageTitle("Konto inkonsistent");
+                        inconsistenciesDialogController.setController(fixAccountInconcistenciesDialog);
+                        showInconsistenciesDialog();
+                    });
+
                     // check if there are still inconsistencies
-                    inconsistenciesExists = ownerRepository.inconsistentOwnerExists();
+                    inconsistenciesExists = ownerRepository.inconsistentOwnerExists()
+                            && accountRepository.inconsistentAccountsExists();
                 }
-
-                // accounts
-                /*
-                List<Long> inconsistentAccountIds = accountRepository.findAllByOwnerAndPortfolioIsInvalid();
-                inconsistentAccountIds.addAll(accountRepository.findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull());
-                inconsistentAccountIds.addAll(accountRepository.findByStateNotInOrTypeNotInOrInterestIntervalNotIn(List.of(State.values()), List.of(AccountType.values()), List.of(InterestInterval.values())));
-                inconsistentAccountIds.addAll(accountRepository.findByInterestRateIsNullOrInterestRateIsLessThanOrInterestRateIsGreaterThan(BigDecimal.ZERO, BigDecimal.valueOf(100)));
-                inconsistentAccountIds.addAll(accountRepository.findByCurrencyIsNotIn(Currency.getAvailableCurrencies()));
-                inconsistentAccountIds = new ArrayList<>(new HashSet<>(inconsistentAccountIds)); // to remove duplicates
-
-                inconsistentAccountIds.forEach(accountId -> PrimaryTabManager.showDialogWithAction(
-                        Alert.AlertType.WARNING,
-                        "Konto inkonsistent",
-                        String.format(
-                                "Auf Grund von Inkonsistenzen im Konto '%s', muss dieses nun gelöscht werden.",
-                                accountRepository.findIbanBy(accountId).get()
-                        ),
-                        null,
-                        o -> accountRepository.deleteById(accountId)
-                ));
-                 */
-
-                // portfolios
-                /*
-                List<Long> inconsistentPortfolioIds = portfolioRepository.findAllByOwnerOrInvestmentguidelineIsInvalid();
-                inconsistentPortfolioIds.addAll(portfolioRepository.findAllByNullEntry());
-                inconsistentPortfolioIds.addAll(portfolioRepository.findAllByInvalidLiteral());
-                inconsistentPortfolioIds.addAll(portfolioRepository.findAllInvalidInvestmentguidelines());
-                inconsistentPortfolioIds = new ArrayList<>(new HashSet<>(inconsistentPortfolioIds)); // to remove duplicates
-
-                inconsistentPortfolioIds.forEach(portfolioId -> PrimaryTabManager.showDialogWithAction(
-                        Alert.AlertType.WARNING,
-                        "Portfolio inkonsistent",
-                        String.format(
-                                "Auf Grund von Inkonsistenzen im Portfolio '%s' muss dieses sowie die enthaltenen Konten und Depots nun gelöscht werden.",
-                                portfolioRepository.findNameBy(portfolioId).get()
-                        ),
-                        null,
-                        o -> portfolioRepository.deleteById(portfolioId)
-                ));
-                 */
             }
 
             // call open method of controller to refresh data
