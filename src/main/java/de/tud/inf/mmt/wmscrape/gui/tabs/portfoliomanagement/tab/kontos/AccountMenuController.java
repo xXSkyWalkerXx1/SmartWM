@@ -99,7 +99,7 @@ public class AccountMenuController implements Openable {
                 createAccountDialog,
                 false
         );
-        createAccountDialog.initialize();
+        createAccountDialog.open();
     }
 
     /**
