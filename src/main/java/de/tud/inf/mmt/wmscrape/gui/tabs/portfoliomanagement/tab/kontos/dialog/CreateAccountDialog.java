@@ -7,6 +7,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
@@ -23,7 +24,7 @@ import java.util.Comparator;
 import java.util.Currency;
 
 @Controller
-public class CreateAccountDialog {
+public class CreateAccountDialog implements Openable {
 
     Account account;
 
@@ -64,7 +65,7 @@ public class CreateAccountDialog {
     ComboBox<InterestInterval> inputInterestInterval;
 
     @FXML
-    public void initialize() {
+    protected void initialize() {
         account = new Account();
 
         // Format input fields
@@ -82,14 +83,17 @@ public class CreateAccountDialog {
         );
         inputCurrencyCode.getSelectionModel().select(Currency.getInstance("EUR"));
 
+        inputInterestInterval.getItems().setAll(InterestInterval.values());
+        inputInterestInterval.getSelectionModel().selectFirst();
+    }
+
+    @Override
+    public void open() {
         inputOwner.getItems().setAll(ownerService.getAll());
         inputOwner.getSelectionModel().selectFirst();
 
         inputPortfolio.getItems().setAll(portfolioService.getAll());
         inputPortfolio.getSelectionModel().selectFirst();
-
-        inputInterestInterval.getItems().setAll(InterestInterval.values());
-        inputInterestInterval.getSelectionModel().selectFirst();
     }
 
     @FXML
