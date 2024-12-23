@@ -157,4 +157,8 @@ public class OwnerService {
         }
         return true;
     }
+
+    public OwnerRepository getOwnerRepository() {
+        return ownerRepository;
+    }
 }
