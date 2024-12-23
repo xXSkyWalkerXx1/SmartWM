@@ -141,6 +141,7 @@ public class Account extends FinancialAsset {
     }
 
     public Currency getCurrency() {
+        if (currencyCode == null) return null;
         return Currency.getInstance(currencyCode);
     }
 
