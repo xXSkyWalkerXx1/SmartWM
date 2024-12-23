@@ -1032,12 +1032,9 @@ public class TableFactory {
         tableBuilder.setActionOnDoubleClickRow(openAccountOverviewAction);
 
         tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
-        tableBuilder.addRowContextMenuItem("Transaktionen anzeigen", new Consumer<Account>() {
-            @Override
-            public void accept(Account account) {
-                // ToDo: implement in future work
-                throw new NotImplementedException("Not implemented yet");
-            }
+        tableBuilder.addRowContextMenuItem("Transaktionen anzeigen", account -> {
+            Navigator.navigateToAccountTransactions(portfolioManagementTabManager, account);
+            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
         });
         tableBuilder.addRowContextMenuItem("Löschen", new Consumer<Account>() {
             @Override
