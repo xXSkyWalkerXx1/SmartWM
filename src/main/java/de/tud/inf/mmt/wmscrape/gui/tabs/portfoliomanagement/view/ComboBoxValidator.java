@@ -11,14 +11,16 @@ public class ComboBoxValidator {
      * @return True, if all ComboBoxes have a selected item.
      */
     public static boolean areComboboxInputsValid(List<ComboBox<?>> comboBoxes) {
+        boolean valid = true;
+
         for (ComboBox<?> comboBox : comboBoxes) {
             if (comboBox.getSelectionModel().getSelectedItem() == null) {
                 comboBox.getStyleClass().add("bad-input");
-                return false;
+                valid = false;
             } else {
                 comboBox.getStyleClass().remove("bad-input");
             }
         }
-        return true;
+        return valid;
     }
 }
