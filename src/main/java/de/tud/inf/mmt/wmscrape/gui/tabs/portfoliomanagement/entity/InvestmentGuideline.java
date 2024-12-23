@@ -35,7 +35,7 @@ public class InvestmentGuideline {
          */
         @IntRange(from = 1, to = 12)
         @Column(name = "max_riskclass")
-        private int maxRiskclass;
+        private int maxRiskclass = 1;
 
         @Column(name = "max_volatility")
         private BigDecimal maxVolatility = BigDecimal.valueOf(0); // %, within 1 year
@@ -47,7 +47,7 @@ public class InvestmentGuideline {
         private BigDecimal rendite = BigDecimal.valueOf(0); // %, since buy
 
         @Column(name = "chance_risk_number")
-        private BigDecimal chanceRiskNumber = BigDecimal.valueOf(0); // %
+        private BigDecimal chanceRiskNumber = BigDecimal.valueOf(100); // %
 
         @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
         @JoinColumn(name = "child_entry_id") // ToDo: rename to parent_entry_id
