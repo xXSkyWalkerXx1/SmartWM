@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.ComboBoxValidator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.fxml.FXML;
@@ -158,14 +159,6 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
     }
 
     private boolean areComboboxInputsValid() {
-        for (ComboBox<?> comboBox : List.of(inputState, inputMaritalState)) {
-            if (comboBox.getSelectionModel().getSelectedItem() == null) {
-                comboBox.getStyleClass().add("bad-input");
-                return false;
-            } else {
-                comboBox.getStyleClass().remove("bad-input");
-            }
-        }
-        return true;
+        return ComboBoxValidator.areComboboxInputsValid(List.of(inputState, inputMaritalState));
     }
 }
