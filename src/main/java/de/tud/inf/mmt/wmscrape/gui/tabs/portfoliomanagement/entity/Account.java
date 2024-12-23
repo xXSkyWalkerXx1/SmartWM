@@ -131,7 +131,7 @@ public class Account extends FinancialAsset {
 
         if (State.ACTIVATED.equals(state)) {
             setDeactivatedAt(null);
-        } else {
+        } else if (State.DEACTIVATED.equals(state)) {
             setDeactivatedAt(Calendar.getInstance().getTime());
         }
     }
