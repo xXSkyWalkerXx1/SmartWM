@@ -148,4 +148,8 @@ public class PortfolioService {
         }
         return false;
     }
+
+    public PortfolioRepository getPortfolioRepository() {
+        return portfolioRepository;
+    }
 }
