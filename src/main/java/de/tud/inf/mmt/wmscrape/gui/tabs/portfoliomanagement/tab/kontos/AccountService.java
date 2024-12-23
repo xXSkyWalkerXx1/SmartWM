@@ -53,6 +53,7 @@ public class AccountService {
      */
     public Double getLatestExchangeCourse(Currency fromCurrency) throws DataAccessException {
         String currency = fromCurrency.toString().toLowerCase();
+        if ("eur".equals(currency)) return 1.0;
         return jdbcTemplate.queryForObject(String.format(
                 "SELECT wk.eur_%s FROM wechselkurse wk WHERE wk.eur_%s IS NOT NULL ORDER BY wk.datum DESC LIMIT 1",
                         currency,
@@ -62,6 +63,32 @@ public class AccountService {
         );
     }
 
+    /**
+     * @return all accounts where the currency has no exchange course.
+     */
+    public List<Long> findByCurrencyHasNoExchangeCourse() {
+        List<Long> idsOfInvalidAccounts = new ArrayList<>();
+
+        for (Long id : accountRepository.getAllIds()) {
+            Optional<String> currencyCode = accountRepository.findCurrencyCodeBy(id);
+
+            if (currencyCode.isPresent()) {
+                try {
+                    getLatestExchangeCourse(Currency.getInstance(currencyCode.get()));
+                } catch (Exception e) {
+                    idsOfInvalidAccounts.add(id);
+                }
+            } else {
+                idsOfInvalidAccounts.add(id);
+            }
+        }
+        return idsOfInvalidAccounts;
+    }
+
+    /**
+     * @param account to save.
+     * @return true if the account was successfully saved, false otherwise.
+     */
     public boolean save(Account account) {
         try {
             if (!Currency.getInstance("EUR").equals(account.getCurrency())) {
