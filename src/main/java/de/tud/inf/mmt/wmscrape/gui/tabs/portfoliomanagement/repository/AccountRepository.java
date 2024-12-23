@@ -5,6 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository("pAccountRepository")
 public interface AccountRepository extends JpaRepository<Account, Long> {
@@ -28,6 +30,26 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Long> getAllIds();
 
     // region Queries to check for inconsistencies
+    /**
+     * Fast way to check if any inconsistency in accounts exists.
+     * @return true if any inconsistency in accounts exists, otherwise false.
+     */
+    @Transactional
+    default boolean inconsistentAccountsExists() {
+        return !findAllByOwnerAndPortfolioIsInvalid().isEmpty()
+                || !findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull().isEmpty()
+                || !findByStateNotInOrTypeNotInOrInterestIntervalNotIn(
+                        State.getValuesAsString(),
+                        AccountType.getValuesAsString(),
+                        InterestInterval.getValuesAsString()).isEmpty()
+                || !findByInterestRateIsNotBetween0And100().isEmpty()
+                || !findByInterestDaysIsNotBetween0And365().isEmpty()
+                || !findByCurrencyIsNotIn(Currency.getAvailableCurrencies().stream()
+                .map(Currency::getCurrencyCode)
+                .collect(Collectors.toList()))
+                .isEmpty();
+    }
+
     /**
      * @return all accounts where the owner or the portfolio is null or invalid.
      */
@@ -49,8 +71,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     /**
      * @param state pass always {@code State.getValuesAsString()}.
-     * @param type pass always {@code AccountType.values()}.
-     * @param interestInterval pass always {@code InterestInterval.values()}.
+     * @param type pass always {@code AccountType.getValuesAsString()}.
+     * @param interestInterval pass always {@code InterestInterval.getValuesAsString()}.
      * @return all accounts where the state, type or interest interval is not mappable to a literal of the enum.
      */
     @Query(value = "SELECT a.id " +
@@ -79,7 +101,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Long> findByInterestDaysIsNotBetween0And365();
 
     /**
-     * @param currencies pass always {@code Currency.getAvailableCurrencies()}.
+     * @param currencies pass always {@code Currency.getAvailableCurrencies()} as strings.
      * @return Accounts with an invalid currency.
      */
     @Query(value = "SELECT a.id " +
