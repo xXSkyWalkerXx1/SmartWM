@@ -39,7 +39,7 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
         inputState.getSelectionModel().selectedItemProperty().addListener((observableValue, state, t1) -> {
             if (t1 == State.DEACTIVATED) {
                 inputDeactivatedAt.setDisable(false);
-            } else {
+            } else if (t1 == State.ACTIVATED) {
                 inputDeactivatedAt.setDisable(true);
                 inputDeactivatedAt.setValue(null);
             }
