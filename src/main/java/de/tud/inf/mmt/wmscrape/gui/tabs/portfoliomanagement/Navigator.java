@@ -47,6 +47,20 @@ public class Navigator {
     }
 
     /**
+     * Navigates to transactions of specific account.
+     */
+    public static void navigateToAccountTransactions(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
+                                                     @NonNull Account account) {
+        portfolioManagementTabManager.showKontoTabs(account);
+
+        var portfolioManagementController = portfolioManagementTabManager.getPortfolioController();
+        portfolioManagementController
+                .getPortfolioManagementTabPane()
+                .getSelectionModel()
+                .select(portfolioManagementController.getKontoTransaktionenTab());
+    }
+
+    /**
      * Navigates to overview of specific depot.
      */
     public static void navigateToDepot(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
