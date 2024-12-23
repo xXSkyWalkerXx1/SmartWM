@@ -361,9 +361,7 @@ public class PortfolioManagementTabController {
                     tabController,
                     ownerController, accountMenuController, portfolioListController
             )) {
-                boolean inconsistenciesExists = ownerRepository.inconsistentOwnerExists();
-
-                while (inconsistenciesExists) {
+                while (ownerRepository.inconsistentOwnerExists() || accountRepository.inconsistentAccountsExists()) {
                     // owners
                     List<Long> inconsistentOwnerIds = new ArrayList<>();
                     inconsistentOwnerIds.addAll(ownerRepository.findAllByAddressOrTaxInformationIsInvalid());
@@ -424,10 +422,6 @@ public class PortfolioManagementTabController {
                         inconsistenciesDialogController.setController(fixAccountInconcistenciesDialog);
                         showInconsistenciesDialog();
                     });
-
-                    // check if there are still inconsistencies
-                    inconsistenciesExists = ownerRepository.inconsistentOwnerExists()
-                            || accountRepository.inconsistentAccountsExists();
                 }
             }
 
