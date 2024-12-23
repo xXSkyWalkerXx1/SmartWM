@@ -13,12 +13,35 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface OwnerRepository extends JpaRepository<Owner, Long> {
+
+    @Query(value = "SELECT o.id FROM inhaber o", nativeQuery = true)
+    List<Long> getAllIds();
+
+    /**
+     * @return all owners as fake owners. A fake owner is an owner with only the id, forename and aftername set (if available).
+     */
+    default List<Owner> findAllAsFake() {
+        List<Owner> fakeOwners = new ArrayList<>();
+
+        for (Long ownerId: getAllIds()) {
+            Owner fakeOwner = new Owner();
+            fakeOwner.setId(ownerId);
+            fakeOwner.setForename(findForenameById(ownerId).orElse(null));
+            fakeOwner.setAftername(findAfternameById(ownerId).orElse(null));
+            fakeOwner.getTaxInformation().setTaxNumber(findTaxNumberByTaxInformationId(
+                    findTaxInformationIdByOwnerId(ownerId).orElse(null)).orElse(null)
+            );
+            fakeOwners.add(fakeOwner);
+        }
+        return fakeOwners;
+    }
 
     // region Queries to check for inconsistencies
     /**
