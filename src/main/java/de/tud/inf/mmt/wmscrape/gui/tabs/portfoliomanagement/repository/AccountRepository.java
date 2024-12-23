@@ -1,14 +1,23 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,17 +88,144 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Long> findByCurrencyIsNotIn(Collection<String> currencies);
     // endregion
 
+    // region Transaction to reconstruct an account
+    /**
+     * @param id the id of the account to reconstruct.
+     * @return the account with the given id, reconstructed (but possible with invalid values) from the database by native queries instead of via JPA.
+     */
+    @Transactional
+    @NonNull
+    default Account reconstructAccount(Long id) {
+        Account reconstructedAccount = new Account();
+        reconstructedAccount.setId(id);
+        reconstructedAccount.setBankName(findBankNameBy(id).orElse(null));
+        reconstructedAccount.setCreatedAt(findCreatedAtBy(id).orElse(null));
+        reconstructedAccount.setDeactivatedAt(findDeactivatedAtBy(id).orElse(null));
+        reconstructedAccount.setDescription(findDescriptionBy(id).orElse(null));
+        reconstructedAccount.setIban(findIbanBy(id).orElse(null));
+        reconstructedAccount.setInterestDays(findInterestDaysBy(id).orElse(null));
+        reconstructedAccount.setKontoNumber(findKontoNumberBy(id).orElse(null));
+        reconstructedAccount.setNotice(findNoticeBy(id).orElse(null));
 
+        findBalanceBy(id).ifPresent(balance
+                -> reconstructedAccount.setBalance(balance.doubleValue())
+        );
+        findCurrencyCodeBy(id).ifPresent(currencyCode -> {
+            try {
+                reconstructedAccount.setCurrencyCode(Currency.getInstance(currencyCode));
+            } catch (Exception ignore) {
+                // Currency code is invalid
+            }
+                }
+        );
+        findInterestRateBy(id).ifPresent(interestRate
+                -> reconstructedAccount.setInterestRate(interestRate.doubleValue())
+        );
+        findOwnerBy(id).ifPresent(ownerId -> {
+            String forename = findForenameById(ownerId).orElse(null);
+            String aftername = findAfternameById(ownerId).orElse(null);
 
+            if (forename == null || aftername == null) {
+                throw new IllegalStateException("Owner shouldn't be inconsistent here anymore.");
+            }
+
+            /*
+            Be aware! This owner is not fully reconstructed, so we can't use it for further operations.
+            But it's enough to display the owner in the GUI.
+             */
+            Owner fakeOwner = new Owner();
+            fakeOwner.setId(ownerId);
+            fakeOwner.setForename(forename);
+            fakeOwner.setAftername(aftername);
+            reconstructedAccount.setOwner(fakeOwner);
+        });
+        findPortfolioBy(id).ifPresent(portfolioId -> {
+            // This portfolio is not fully reconstructed, so we can't use it for further operations.
+            // But it's enough to display the portfolio in the GUI.
+            String portfolioName = findPortfolioNameById(portfolioId).orElse(null);
+
+            if (portfolioName == null) {
+                throw new IllegalStateException("Portfolio shouldn't be inconsistent here anymore.");
+            }
+
+            Portfolio fakePortfolio = new Portfolio();
+            fakePortfolio.setId(portfolioId);
+            fakePortfolio.setName(portfolioName);
+            reconstructedAccount.setPortfolio(fakePortfolio);
+        });
+
+        reconstructedAccount.setState(findStateBy(id).map(s -> {
+            try {
+                return State.valueOf(s);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }).orElse(null)
+        );
+        reconstructedAccount.setType(findAccountTypeBy(id).map(s -> {
+            try {
+                return AccountType.valueOf(s);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }).orElse(null)
+        );
+        reconstructedAccount.setInterestInterval(findInterestIntervalBy(id).map(s -> {
+            try {
+                return InterestInterval.valueOf(s);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }).orElse(null)
+        );
+
+        return reconstructedAccount;
+    }
+
+    @Query(value = "SELECT a.balance FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<BigDecimal> findBalanceBy(Long id);
+    @Query(value = "SELECT a.bank_name FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<String> findBankNameBy(Long id);
+    @Query(value = "SELECT a.created_at FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<Timestamp> findCreatedAtBy(Long id);
+    @Query(value = "SELECT a.deactivated_at FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<Timestamp> findDeactivatedAtBy(Long id);
     @Query(value = "SELECT a.currency_code FROM pkonto a WHERE a.id = :id", nativeQuery = true)
     Optional<String> findCurrencyCodeBy(Long id);
-
+    @Query(value = "SELECT a.description FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<String> findDescriptionBy(Long id);
     @Query(value = "SELECT a.iban FROM pkonto a WHERE a.id = :id", nativeQuery = true)
     Optional<String> findIbanBy(Long id);
+    @Query(value = "SELECT a.interest_days FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<String> findInterestDaysBy(Long id);
+    @Query(value = "SELECT a.interest_interval FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<String> findInterestIntervalBy(Long id);
+    @Query(value = "SELECT a.interest_rate FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<BigDecimal> findInterestRateBy(Long id);
+    @Query(value = "SELECT a.konto_number FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<String> findKontoNumberBy(Long id);
+    @Query(value = "SELECT a.notice FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<String> findNoticeBy(Long id);
+    @Query(value = "SELECT a.state FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<String> findStateBy(Long id);
+    @Query(value = "SELECT a.type FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<String> findAccountTypeBy(Long id);
+    @Query(value = "SELECT a.owner_id FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<Long> findOwnerBy(Long id);
+    @Query(value = "SELECT o.forename FROM inhaber o WHERE o.id = :id", nativeQuery = true)
+    Optional<String> findForenameById(Long id);
+    @Query(value = "SELECT o.aftername FROM inhaber o WHERE o.id = :id", nativeQuery = true)
+    Optional<String> findAfternameById(Long id);
+    @Query(value = "SELECT a.portfolio_id FROM pkonto a WHERE a.id = :id", nativeQuery = true)
+    Optional<Long> findPortfolioBy(Long id);
+    @Query(value = "SELECT p.name FROM portfolio p WHERE p.id = :id", nativeQuery = true)
+    Optional<String> findPortfolioNameById(Long id);
+    // endregion
 
+    // region Transaction to delete owner natively
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM pkonto p WHERE p.id = :id", nativeQuery = true)
-    void deleteById(@Param("id") Long id);
-
+    void deleteById(@NonNull @Param("id") Long id);
+    // endregion
 }
