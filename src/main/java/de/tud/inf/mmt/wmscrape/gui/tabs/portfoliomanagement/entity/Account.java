@@ -148,6 +148,10 @@ public class Account extends FinancialAsset {
         return balance.doubleValue();
     }
 
+    public BigDecimal getBalanceBigDecimal() {
+        return balance;
+    }
+
     public void setBalance(double balance) {
         this.balance = BigDecimal.valueOf(balance).setScale(2, RoundingMode.HALF_DOWN);
     }
@@ -198,6 +202,10 @@ public class Account extends FinancialAsset {
 
     public void setKontoNumber(String kontoNumber) {
         this.kontoNumber = kontoNumber;
+    }
+
+    public BigDecimal getInterestRateBigDecimal() {
+        return interestRate;
     }
 
     public double getInterestRate() {
