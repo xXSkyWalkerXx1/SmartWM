@@ -427,7 +427,7 @@ public class PortfolioManagementTabController {
 
                     // check if there are still inconsistencies
                     inconsistenciesExists = ownerRepository.inconsistentOwnerExists()
-                            && accountRepository.inconsistentAccountsExists();
+                            || accountRepository.inconsistentAccountsExists();
                 }
             }
 
