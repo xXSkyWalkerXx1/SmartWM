@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="650.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog.CreateAccountDialog">
+<AnchorPane prefHeight="650.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog.FixAccountInconcistenciesDialog">
     <children>
         <SplitPane dividerPositions="0.4746031746031746, 0.6825396825396826" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
@@ -67,8 +67,8 @@
                               <TextField fx:id="inputBalance" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
-                        <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                        <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                        <DatePicker fx:id="inputCreatedAt" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <DatePicker fx:id="inputDeactivatedAt" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                             </children>
                         </GridPane>
                     </children>
