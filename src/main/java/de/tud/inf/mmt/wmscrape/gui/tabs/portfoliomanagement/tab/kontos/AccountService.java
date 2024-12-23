@@ -16,6 +16,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.*;
@@ -52,6 +53,16 @@ public class AccountService {
 
     public Account getAccountById(long id) {
         return accountRepository.findById(id).orElseThrow();
+    }
+
+    /**
+     * Deletes the account and saves it again.
+     * @return true if the account was successfully saved, false otherwise.
+     */
+    @Transactional
+    public boolean reSave(Account account) {
+        deleteById(account.getId());
+        return save(account);
     }
 
     /**
