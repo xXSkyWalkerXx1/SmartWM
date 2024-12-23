@@ -97,13 +97,13 @@ public class CreateAccountDialog implements Openable {
     }
 
     @FXML
-    private void onCancel() {
+    protected void onCancel() {
         portfolioManagementTabManager.getPortfolioController().getAccountMenuController().open();
         inputType.getScene().getWindow().hide();
     }
 
     @FXML
-    private void onSave() {
+    protected void onSave() {
         // Validate first
         if (FieldValidator.isInputEmpty(
                 inputDescription, inputBalance, inputBankName, inputIban,
