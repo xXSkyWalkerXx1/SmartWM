@@ -110,8 +110,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         ));
         getColumns().add(createDynamicColumn(
                 "Max. Volatilität innerhalb 1 Jahr (%)",
-                "Die maximale Volatilität gibt an, wie stark der Wert der Anlage innerhalb eines Jahres " +
-                        "schwanken kann.\nEin höherer Wert bedeutet eine höhere Schwankungsbreite.",
+                "Die maximale Volatilität (0-100) gibt an, wie stark der Wert der Anlage innerhalb eines Jahres " +
+                        "schwanken (insbesondere fallen) kann.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getMaxVolatility())),
                 col -> {
                     // Try to parse input
@@ -124,7 +124,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
                     col.getRowValue().getValue().setMaxVolatility(input);
                 },
-                textField -> FieldFormatter.setInputFloatRange(textField, 0f, null),
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 true,
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
@@ -171,8 +171,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         ));
 
         getColumns().add(createDynamicColumn(
-                "Chancen-Risiko-Zahl (%)",
-                "Gibt an, um wie viel besser oder schlechter eine Anlage zum Benchmark ist.",
+                "Minimale Chancen-Risiko-Zahl (%)",
+                "Beschreibt, um wie viel besser oder maximal schlechter eine Anlage zum Benchmark ist.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getChanceRiskNumber())),
                 col -> {
                     // Try to parse input
