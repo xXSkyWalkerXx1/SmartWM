@@ -164,7 +164,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             // But it's enough to display the portfolio in the GUI.
             String portfolioName = findPortfolioNameById(portfolioId).orElse(null);
 
-            // Means owner is inconsistent or the foreign-key to it is invalid
+            // Means portfolio is inconsistent or the foreign-key to it is invalid
             if (portfolioName == null) return;
 
             Portfolio fakePortfolio = new Portfolio();
