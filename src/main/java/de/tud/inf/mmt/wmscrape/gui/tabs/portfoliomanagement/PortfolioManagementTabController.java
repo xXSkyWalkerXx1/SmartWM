@@ -408,7 +408,7 @@ public class PortfolioManagementTabController {
                             State.getValuesAsString(), AccountType.getValuesAsString(), InterestInterval.getValuesAsString())
                     );
                     inconsistentAccountIds.addAll(accountRepository.findByInterestRateIsNotBetween0And100());
-                    inconsistentAccountIds.addAll(accountRepository.findByInterestDaysIsNotBetween0And365());
+                    inconsistentAccountIds.addAll(accountRepository.findByInterestDaysIsNotBetween0And366());
                     inconsistentAccountIds.addAll(accountRepository.findByCurrencyIsNotIn(
                             Currency.getAvailableCurrencies().stream().map(Currency::getCurrencyCode).collect(Collectors.toList()))
                     );

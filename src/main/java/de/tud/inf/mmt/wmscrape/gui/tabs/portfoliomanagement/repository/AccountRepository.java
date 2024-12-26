@@ -5,7 +5,6 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -43,7 +42,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
                         AccountType.getValuesAsString(),
                         InterestInterval.getValuesAsString()).isEmpty()
                 || !findByInterestRateIsNotBetween0And100().isEmpty()
-                || !findByInterestDaysIsNotBetween0And365().isEmpty()
+                || !findByInterestDaysIsNotBetween0And366().isEmpty()
                 || !findByCurrencyIsNotIn(Currency.getAvailableCurrencies().stream()
                 .map(Currency::getCurrencyCode)
                 .collect(Collectors.toList()))
@@ -97,8 +96,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      */
     @Query(value = "SELECT a.id " +
             "FROM pkonto a " +
-            "WHERE a.interest_days IS NULL OR a.interest_days NOT BETWEEN 0 AND 365", nativeQuery = true)
-    List<Long> findByInterestDaysIsNotBetween0And365();
+            "WHERE a.interest_days IS NULL OR a.interest_days NOT BETWEEN 0 AND 366", nativeQuery = true)
+    List<Long> findByInterestDaysIsNotBetween0And366();
 
     /**
      * @param currencies pass always {@code Currency.getAvailableCurrencies()} as strings.
