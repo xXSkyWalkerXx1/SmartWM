@@ -1,12 +1,13 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import javafx.fxml.FXML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class KontoTransactionsController {
+public class KontoTransactionsController implements Openable {
 
     @FXML
     PortfolioManagementTabManager portfolioManagementTabManager;
@@ -14,5 +15,10 @@ public class KontoTransactionsController {
     @Autowired
     public KontoTransactionsController(PortfolioManagementTabManager portfolioManagementTabManager) {
         this.portfolioManagementTabManager = portfolioManagementTabManager;
+    }
+
+    @Override
+    public void open() {
+
     }
 }
