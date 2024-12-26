@@ -570,6 +570,17 @@ public class TableFactory {
                     );
                 }
         );
+        tableBuilder.addRowContextMenuItem(
+                "Status umschalten",
+                portfolio -> {
+                    if (State.ACTIVATED.equals(portfolio.getState())) {
+                        portfolio.setState(State.DEACTIVATED);
+                    } else {
+                        portfolio.setState(State.ACTIVATED);
+                    }
+                    portfolioService.save(portfolio);
+                    portfolioListController.open();
+                });
         tableBuilder.addRowContextMenuItem("Löschen", portfolio -> portfolioService.delete(portfolio, portfolioListController));
 
         return tableBuilder.getResult();
@@ -602,6 +613,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Deutschland",
                 0.12f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getGermany())),
                 col -> {
@@ -623,6 +635,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Europa ohne BRD",
                 0.13f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getEurope_without_brd())),
                 col -> {
@@ -644,6 +657,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Nordamerika, USA",
                 0.15f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getNorthamerica_with_usa())),
                 col -> {
@@ -665,6 +679,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Asien (ohne China)",
                 0.12f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getAsia_without_china())),
                 col -> {
@@ -686,6 +701,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "China",
                 0.12f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getChina())),
                 col -> {
@@ -708,6 +724,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Japan",
                 0.12f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getJapan())),
                 col -> {
@@ -730,6 +747,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Emergine Markets",
                 0.12f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getEmergine_markets())),
                 col -> {
@@ -780,6 +798,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Euro",
                 0.09f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getEuro())),
                 col -> {
@@ -802,6 +821,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "US-Dollar",
                 0.10f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getUsd())),
                 col -> {
@@ -824,6 +844,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Schweizer Franken",
                 0.15f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getChf())),
                 col -> {
@@ -846,6 +867,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Britische Pfunds",
                 0.13f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getGbp())),
                 col -> {
@@ -868,6 +890,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Japanischer Yen",
                 0.14f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getYen())),
                 col -> {
@@ -890,6 +913,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Asiatische Währungen",
                 0.16f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getAsiaCurrencies())),
                 col -> {
@@ -912,6 +936,7 @@ public class TableFactory {
         tableBuilder.addEditableColumn(
                 "Alle andere",
                 0.11f,
+                textField -> FieldFormatter.setInputFloatRange(textField, 0f, 100f),
                 cellDataFeatures ->
                         new SimpleStringProperty(FormatUtils.formatFloat(cellDataFeatures.getValue().getOthers())),
                 col -> {
@@ -1036,6 +1061,18 @@ public class TableFactory {
             Navigator.navigateToAccountTransactions(portfolioManagementTabManager, account);
             portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
         });
+        tableBuilder.addRowContextMenuItem(
+                "Status umschalten",
+                account -> {
+                    if (State.ACTIVATED.equals(account.getState())) {
+                        account.setState(State.DEACTIVATED);
+                    } else {
+                        account.setState(State.ACTIVATED);
+                    }
+                    accountService.save(account);
+                    accountMenuController.open();
+                }
+        );
         tableBuilder.addRowContextMenuItem("Löschen", account -> accountService.delete(account, accountMenuController));
 
         return tableBuilder.getResult();
