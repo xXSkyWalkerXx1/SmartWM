@@ -147,9 +147,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             String forename = findForenameById(ownerId).orElse(null);
             String aftername = findAfternameById(ownerId).orElse(null);
 
-            if (forename == null || aftername == null) {
-                throw new IllegalStateException("Owner shouldn't be inconsistent here anymore.");
-            }
+            // Means owner is inconsistent or the foreign-key to it is invalid
+            if (forename == null || aftername == null) return;
 
             /*
             Be aware! This owner is not fully reconstructed, so we can't use it for further operations.
@@ -166,9 +165,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             // But it's enough to display the portfolio in the GUI.
             String portfolioName = findPortfolioNameById(portfolioId).orElse(null);
 
-            if (portfolioName == null) {
-                throw new IllegalStateException("Portfolio shouldn't be inconsistent here anymore.");
-            }
+            // Means owner is inconsistent or the foreign-key to it is invalid
+            if (portfolioName == null) return;
 
             Portfolio fakePortfolio = new Portfolio();
             fakePortfolio.setId(portfolioId);
