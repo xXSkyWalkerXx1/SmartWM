@@ -24,6 +24,12 @@ public class FieldFormatter {
             // allow only one comma
             if (change.getText().equals(",") && change.getControlText().contains(",")) return null;
 
+            // allow only two decimal places
+            if (change.getControlNewText().contains(",")) {
+                String[] parts = change.getControlNewText().split(",");
+                if (parts.length == 2 && parts[1].length() > 2) return null;
+            }
+
             // don't allow dots
             if (change.getText().equals(".")) return null;
 
@@ -87,13 +93,19 @@ public class FieldFormatter {
             }
 
             // allow only one comma
-            if (change.getText().equals(",") && change.getControlText().contains(",")) return null;
+            if (change.getControlText().contains(",") && change.getText().equals(",")) return null;
+
+            // allow only two decimal places
+            if (change.getControlNewText().contains(",")) {
+                String[] parts = change.getControlNewText().split(",");
+                if (parts.length == 2 && parts[1].length() > 2) return null;
+            }
 
             // don't allow dots
             if (change.getText().equals(".")) return null;
 
+            // otherwise try to parse and check input
             try {
-                // otherwise try to parse and check input
                 if (FormatUtils.parseFloat(change.getControlNewText()) >= from
                         && (to == null || FormatUtils.parseFloat(change.getControlNewText()) <= to)) {
                     if (changePredicate != null && !changePredicate.test(change)) return null;
