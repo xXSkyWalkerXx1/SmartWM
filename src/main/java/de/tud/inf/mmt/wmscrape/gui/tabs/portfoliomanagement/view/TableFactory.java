@@ -1036,13 +1036,7 @@ public class TableFactory {
             Navigator.navigateToAccountTransactions(portfolioManagementTabManager, account);
             portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
         });
-        tableBuilder.addRowContextMenuItem("Löschen", new Consumer<Account>() {
-            @Override
-            public void accept(Account account) {
-                // ToDo: implement in future work
-                accountService.delete(account, accountMenuController);
-            }
-        });
+        tableBuilder.addRowContextMenuItem("Löschen", account -> accountService.delete(account, accountMenuController));
 
         return tableBuilder.getResult();
     }
