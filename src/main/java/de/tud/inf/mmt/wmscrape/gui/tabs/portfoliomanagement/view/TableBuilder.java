@@ -66,13 +66,15 @@ public class TableBuilder<S> {
     }
 
     /**
-     * Creates and adds a new editable (with text-field) column in decimal-format.
+     * Creates and adds a new editable (with text-field) column in decimal-format from 0f to 100f.
      * @param columnWidth (%), defines column width depending on table width.
      * @param cellValueFactory Defines what is shown in a cell.
      * @param onCommit Defines what will be updated on commit.
+     * @param textFieldFormatter Defines how the text-field is formatted. Use f.e. {@link FieldFormatter}
      */
     public <T> void addEditableColumn(@NonNull String columnName,
                                       float columnWidth,
+                                      @NonNull Consumer<TextField> textFieldFormatter,
                                       @NonNull Callback<TableColumn.CellDataFeatures<S, String>, ObservableValue<String>> cellValueFactory,
                                       @NonNull EventHandler<TableColumn.CellEditEvent<S, String>> onCommit) {
         Callback<TableColumn<S, String>, TableCell<S, String>> cellFactory = new Callback<>() {
@@ -83,7 +85,7 @@ public class TableBuilder<S> {
                     final TextField inputField = new TextField();
 
                     {
-                        FieldFormatter.setInputOnlyDecimalNumbers(inputField);
+                        textFieldFormatter.accept(inputField);
                         inputField.setOnAction(commit -> commitEdit(inputField.getText()));
                     }
 
