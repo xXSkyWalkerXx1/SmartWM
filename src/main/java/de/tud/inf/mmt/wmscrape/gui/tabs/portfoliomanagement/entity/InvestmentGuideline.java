@@ -35,7 +35,7 @@ public class InvestmentGuideline {
          */
         @IntRange(from = 1, to = 12)
         @Column(name = "max_riskclass")
-        private int maxRiskclass = 1;
+        private Integer maxRiskclass = 1;
 
         @Column(name = "max_volatility")
         private BigDecimal maxVolatility = BigDecimal.valueOf(0); // %, within 1 year
@@ -79,11 +79,11 @@ public class InvestmentGuideline {
             this.assetAllocation = BigDecimal.valueOf(assetAllocation).setScale(2,RoundingMode.HALF_DOWN);
         }
 
-        public int getMaxRiskclass() {
+        public Integer getMaxRiskclass() {
             return maxRiskclass;
         }
 
-        public void setMaxRiskclass(int maxRiskclass) {
+        public void setMaxRiskclass(Integer maxRiskclass) {
             this.maxRiskclass = maxRiskclass;
         }
 
