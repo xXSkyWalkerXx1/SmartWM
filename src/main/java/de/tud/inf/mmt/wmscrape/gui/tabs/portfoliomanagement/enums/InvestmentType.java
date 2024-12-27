@@ -2,7 +2,9 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums;
 
 import org.springframework.lang.NonNull;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public enum InvestmentType {
     LIQUIDITY("Liquidität", true),
@@ -62,5 +64,12 @@ public enum InvestmentType {
 
     public boolean isChild() {
         return !isParent;
+    }
+
+    /**
+     * Returns the enum value as a string, using {@code Enum.name()}.
+     */
+    public static List<String> getValuesAsString() {
+        return Arrays.stream(InvestmentType.values()).map(InvestmentType::name).collect(Collectors.toList());
     }
 }
