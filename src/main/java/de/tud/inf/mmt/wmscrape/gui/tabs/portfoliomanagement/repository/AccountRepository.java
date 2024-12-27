@@ -60,12 +60,17 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Long> findAllByOwnerAndPortfolioIsInvalid();
 
     /**
-     * @return all accounts where the currency code, balance, bank name, konto number, interest rate, iban or the created_at date is null.
+     * @return all accounts where the currency code, balance, bank name, konto number, interest rate, iban or the created_at date is null or empty.
      */
     @Query(value = "SELECT a.id " +
             "FROM pkonto a " +
-            "WHERE a.currency_code IS NULL OR a.balance IS NULL OR a.bank_name IS NULL OR a.konto_number IS NULL " +
-            "OR a.interest_rate IS NULL OR a.iban IS NULL OR a.created_at IS NULL", nativeQuery = true)
+            "WHERE a.currency_code IS NULL OR TRIM(a.currency_code) = '' " +
+            "OR a.balance IS NULL " +
+            "OR a.bank_name IS NULL OR TRIM(a.bank_name) = '' " +
+            "OR a.konto_number IS NULL OR TRIM(a.konto_number) = '' " +
+            "OR a.interest_rate IS NULL " +
+            "OR a.iban IS NULL OR TRIM(a.iban) = '' " +
+            "OR a.created_at IS NULL", nativeQuery = true)
     List<Long> findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull();
 
     /**
