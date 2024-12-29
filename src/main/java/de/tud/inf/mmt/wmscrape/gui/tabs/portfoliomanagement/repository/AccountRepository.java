@@ -33,7 +33,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      * Fast way to check if any inconsistency in accounts exists.
      * @return true if any inconsistency in accounts exists, otherwise false.
      */
-    @Transactional
     default boolean inconsistentAccountsExists() {
         return !findAllByOwnerAndPortfolioIsInvalid().isEmpty()
                 || !findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull().isEmpty()
