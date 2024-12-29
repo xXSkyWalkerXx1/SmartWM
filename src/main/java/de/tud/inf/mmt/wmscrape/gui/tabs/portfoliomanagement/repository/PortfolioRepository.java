@@ -119,7 +119,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "JOIN anlagen_richtlinie_eintrag e ON e.entry_id = g.id " +
             "LEFT JOIN anlagen_richtlinie_eintrag c ON c.child_entry_id = e.id " +
             "GROUP BY p.id, e.investment_type " +
-            "HAVING SUM(c.asset_allocation) IS NOT NULL AND SUM(c.asset_allocation) != 0 AND SUM(c.asset_allocation) != 100",
+            "HAVING SUM(c.asset_allocation) != 0 AND SUM(c.asset_allocation) != 100",
             nativeQuery = true)
     List<Long> findAllByChildSumIsNot0And100();
 
@@ -177,19 +177,31 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
     @Query(value = "SELECT p.id " +
             "FROM portfolio p " +
-            "LEFT JOIN inhaber o ON o.id = p.owner_id " +
-            "LEFT JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
-            "LEFT JOIN anlagen_richtlinie_unterteilung_ort gl ON gl.id = g.division_by_location_id " +
-            "WHERE SUM(gl.asia_without_china, gl.china, gl.emergine_markets, gl.europe_without_brd, gl.germany, gl.japan, gl.northamerica_with_usa) != 100",
+            "JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
+            "JOIN anlagen_richtlinie_unterteilung_ort gl ON gl.id = g.division_by_location_id " +
+            "GROUP BY p.id " +
+            "HAVING SUM(COALESCE(gl.asia_without_china, 0)) + " + // if the value of the column is null, set it to 0
+            "SUM(COALESCE(gl.china, 0)) + " +
+            "SUM(COALESCE(gl.emergine_markets, 0)) + " +
+            "SUM(COALESCE(gl.europe_without_brd, 0)) + " +
+            "SUM(COALESCE(gl.germany, 0)) + " +
+            "SUM(COALESCE(gl.japan, 0)) + " +
+            "SUM(COALESCE(gl.northamerica_with_usa, 0)) != 100",
             nativeQuery = true)
     List<Long> findAllBySumOfDivisionByLocationIsNot100();
 
     @Query(value = "SELECT p.id " +
             "FROM portfolio p " +
-            "LEFT JOIN inhaber o ON o.id = p.owner_id " +
-            "LEFT JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
-            "LEFT JOIN anlagen_richtlinie_unterteilung_währung gc ON gc.id = g.division_by_currency_id " +
-            "WHERE SUM(gc.asia_currencies, gc.chf, gc.euro, gc.gbp, gc.others, gc.usd, gc.yen) != 100",
+            "JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
+            "JOIN anlagen_richtlinie_unterteilung_währung gc ON gc.id = g.division_by_currency_id " +
+            "GROUP BY p.id " +
+            "HAVING SUM(COALESCE(gc.asia_currencies, 0)) + " +
+            "SUM(COALESCE(gc.chf, 0)) + " +
+            "SUM(COALESCE(gc.euro, 0)) + " +
+            "SUM(COALESCE(gc.gbp, 0)) + " +
+            "SUM(COALESCE(gc.others, 0)) + " +
+            "SUM(COALESCE(gc.usd, 0)) + " +
+            "SUM(COALESCE(gc.yen, 0)) != 100",
             nativeQuery = true)
     List<Long> findAllBySumOfDivisionByCurrencyIsNot100();
     // endregion
