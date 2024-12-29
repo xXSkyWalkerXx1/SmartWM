@@ -123,7 +123,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             nativeQuery = true)
     List<Long> findAllByChildSumIsNot0And100();
 
-    @Query(value = "SELECT e.investment_type, c.investment_type " +
+    @Query(value = "SELECT e.investment_type AS parent_investment_type, c.investment_type AS child_investment_type " +
             "FROM portfolio p " +
             "JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
             "JOIN anlagen_richtlinie_eintrag e ON e.entry_id = g.id " +
