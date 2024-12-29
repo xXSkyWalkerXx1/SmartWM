@@ -30,9 +30,6 @@ public class InvestmentGuideline {
         @Column(name = "asset_allocation")
         private BigDecimal assetAllocation = BigDecimal.valueOf(0); // %
 
-        /**
-         * Is 0 (means an invalid risk-class), if {@code type} is a child.
-         */
         @IntRange(from = 1, to = 12)
         @Column(name = "max_riskclass")
         private Integer maxRiskclass = 1;
@@ -61,6 +58,10 @@ public class InvestmentGuideline {
         // region Getters & Setters
         public Long getId() {
             return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
         }
 
         public InvestmentType getType() {
@@ -148,6 +149,10 @@ public class InvestmentGuideline {
             return id;
         }
 
+        public void setId(Long id) {
+            this.id = id;
+        }
+
         public float getGermany() {
             return germany.floatValue();
         }
@@ -233,6 +238,10 @@ public class InvestmentGuideline {
 
         public Long getId() {
             return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
         }
 
         public float getEuro() {
@@ -354,6 +363,10 @@ public class InvestmentGuideline {
     // region Getters & Setters
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public List<Entry> getEntries() {
