@@ -80,9 +80,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      */
     @Query(value = "SELECT a.id " +
             "FROM pkonto a " +
-            "WHERE a.state NOT IN :state " +
-            "OR a.type NOT IN :type " +
-            "OR a.interest_interval NOT IN :interestInterval", nativeQuery = true)
+            "WHERE a.state IS NULL OR a.state NOT IN :state " +
+            "OR a.type IS NULL OR a.type NOT IN :type " +
+            "OR a.interest_interval IS NULL OR a.interest_interval NOT IN :interestInterval", nativeQuery = true)
     List<Long> findByStateNotInOrTypeNotInOrInterestIntervalNotIn(Collection<String> state,
                                                                   Collection<String> type,
                                                                   Collection<String> interestInterval);
