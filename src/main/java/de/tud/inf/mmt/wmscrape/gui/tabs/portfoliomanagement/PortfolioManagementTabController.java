@@ -379,26 +379,23 @@ public class PortfolioManagementTabController {
                         showInconsistenciesDialog();
                     });
 
-                    // ToDo: Portfolios here!
                     // portfolios
-                    /*
-                    List<Long> inconsistentPortfolioIds = portfolioRepository.findAllByOwnerOrInvestmentguidelineIsInvalid();
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByNullEntry());
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByInvalidLiteral());
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllInvalidInvestmentguidelines());
+                    List<Long> inconsistentPortfolioIds = new ArrayList<>();
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByNameIsNullOrCreatedAtIsNull());
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByOwnerOrInvestmentguidelineIsInvalid());
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByStateNotIn(State.getValuesAsString()));
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByInvalidInvestmentGuidelineEntries());
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllBySumOfDivisionByLocationIsNot100());
+                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllBySumOfDivisionByCurrencyIsNot100());
                     inconsistentPortfolioIds = new ArrayList<>(new HashSet<>(inconsistentPortfolioIds)); // to remove duplicates
 
                     inconsistentPortfolioIds.forEach(portfolioId -> PrimaryTabManager.showDialogWithAction(
                             Alert.AlertType.WARNING,
                             "Portfolio inkonsistent",
-                            String.format(
-                                    "Auf Grund von Inkonsistenzen im Portfolio '%s' muss dieses sowie die enthaltenen Konten und Depots nun gelöscht werden.",
-                                    portfolioRepository.findNameBy(portfolioId).get()
-                            ),
+                            "Auf Grund von Inkonsistenzen im Portfolio muss dieses sowie die enthaltenen Konten und Depots nun gelöscht werden.",
                             null,
                             o -> portfolioRepository.deleteById(portfolioId)
                     ));
-                     */
 
                     // accounts
                     List<Long> inconsistentAccountIds = new ArrayList<>();
