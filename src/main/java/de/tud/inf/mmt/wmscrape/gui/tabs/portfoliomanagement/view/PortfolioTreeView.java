@@ -38,11 +38,22 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
         @Override
         public String toString() {
             if (isRoot) return asset.toString();
-            return String.format(
+            if (asset instanceof Portfolio) return String.format(
                     "%s\t(%s €)",
                     asset,
                     FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
             );
+            if (asset instanceof Account) return String.format(
+                    "Konto: %s\t(%s €)",
+                    asset,
+                    FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
+            );
+            if (asset instanceof Depot) return String.format(
+                    "Depot: %s\t(%s €)",
+                    asset,
+                    FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
+            );
+            throw new IllegalArgumentException("Unknown asset type: " + asset.getClass());
         }
     }
 
