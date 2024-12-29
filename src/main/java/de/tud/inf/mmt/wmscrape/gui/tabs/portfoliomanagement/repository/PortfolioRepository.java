@@ -75,11 +75,11 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
     /**
      * @param states pass always {@code State.getValuesAsString()}.
-     * @return all portfolios where the state is not 'ACTIVATED' or 'DEACTIVATED'.
+     * @return all portfolios where the state is not valid.
      */
-    @Query("SELECT p.id " +
+    @Query(value = "SELECT p.id " +
             "FROM Portfolio p " +
-            "WHERE p.state NOT IN :states")
+            "WHERE p.state NOT IN :states", nativeQuery = true)
     List<Long> findAllByStateNotIn(List<String> states);
 
     /**
