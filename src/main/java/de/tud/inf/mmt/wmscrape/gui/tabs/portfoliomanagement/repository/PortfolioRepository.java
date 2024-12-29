@@ -38,6 +38,19 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
     // region Queries to check for inconsistencies
     /**
+     * Fast way to check if any inconsistency in portfolios exists.
+     * @return true if any inconsistent portfolios exists, otherwise false.
+     */
+    default boolean inconsistentPortfoliosExists() {
+        return !findAllByNameIsNullOrCreatedAtIsNull().isEmpty()
+                || !findAllByOwnerOrInvestmentguidelineIsInvalid().isEmpty()
+                || !findAllByStateNotIn(State.getValuesAsString()).isEmpty()
+                || !findAllByInvalidInvestmentGuidelineEntries().isEmpty()
+                || !findAllBySumOfDivisionByLocationIsNot100().isEmpty()
+                || !findAllBySumOfDivisionByCurrencyIsNot100().isEmpty();
+    }
+
+    /**
      * @return all portfolios where the name is null or empty.
      */
     @Query(value = "SELECT p.id " +
