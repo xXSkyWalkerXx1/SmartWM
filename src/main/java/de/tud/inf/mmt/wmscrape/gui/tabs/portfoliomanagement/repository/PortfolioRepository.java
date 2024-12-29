@@ -79,7 +79,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
      */
     @Query(value = "SELECT p.id " +
             "FROM Portfolio p " +
-            "WHERE p.state NOT IN :states", nativeQuery = true)
+            "WHERE p.state IS NULL OR p.state NOT IN :states", nativeQuery = true)
     List<Long> findAllByStateNotIn(List<String> states);
 
     /**
@@ -91,11 +91,11 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "JOIN anlagen_richtlinie_eintrag e ON e.entry_id = g.id " +
             "LEFT JOIN anlagen_richtlinie_eintrag c ON c.child_entry_id = e.id " +
             "WHERE e.asset_allocation NOT BETWEEN 0 AND 100 OR c.asset_allocation NOT BETWEEN 0 AND 100 " +
-            "OR e.chance_risk_number < 0 OR c.chance_risk_number != 100 " +
-            "OR e.max_riskclass NOT BETWEEN 1 AND 12 OR c.max_riskclass != 1 " +
-            "OR e.max_volatility NOT BETWEEN 0 AND 100 OR c.max_volatility != 0 " +
-            "OR e.performance < 0 OR c.performance != 0 " +
-            "OR e.rendite < 0 OR c.rendite != 0" , nativeQuery = true)
+            "OR e.chance_risk_number < 0 OR c.chance_risk_number < 0 " +
+            "OR e.max_riskclass NOT BETWEEN 1 AND 12 OR c.max_riskclass NOT BETWEEN 1 AND 12 " +
+            "OR e.max_volatility NOT BETWEEN 0 AND 100 OR c.max_volatility NOT BETWEEN 0 AND 100 " +
+            "OR e.performance < 0 OR c.performance < 0 " +
+            "OR e.rendite < 0 OR c.rendite < 0" , nativeQuery = true)
     List<Long> findAllByInvalidValues();
 
     /**
