@@ -105,7 +105,8 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "FROM portfolio p " +
             "JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
             "JOIN anlagen_richtlinie_eintrag e ON e.entry_id = g.id " +
-            "WHERE SUM(e.asset_allocation) != 100", nativeQuery = true)
+            "GROUP BY p.id " +
+            "HAVING SUM(e.asset_allocation) != 100", nativeQuery = true)
     List<Long> findAllByParentSumIsNot100();
 
     /**
