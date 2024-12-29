@@ -85,7 +85,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     /**
      * @return all portfolios where value-ranges are not valid (f.e. asset_allocation is 300%).
      */
-    @Query(value = "SELECT p.id " +
+    @Query(value = "SELECT DISTINCT p.id " +
             "FROM portfolio p " +
             "JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
             "JOIN anlagen_richtlinie_eintrag e ON e.entry_id = g.id " +
