@@ -361,7 +361,9 @@ public class PortfolioManagementTabController {
                     tabController,
                     ownerController, accountMenuController, portfolioListController
             )) {
-                while (ownerRepository.inconsistentOwnerExists() || accountRepository.inconsistentAccountsExists()) {
+                while (ownerRepository.inconsistentOwnerExists()
+                        || accountRepository.inconsistentAccountsExists()
+                        || portfolioRepository.inconsistentPortfoliosExists()) {
                     // owners
                     List<Long> inconsistentOwnerIds = new ArrayList<>();
                     inconsistentOwnerIds.addAll(ownerRepository.findAllByAddressOrTaxInformationIsInvalid());
