@@ -78,6 +78,7 @@ public class InvestmentGuideline {
 
         public void setAssetAllocation(float assetAllocation) {
             this.assetAllocation = BigDecimal.valueOf(assetAllocation).setScale(2,RoundingMode.HALF_DOWN);
+            childEntries.forEach(entry -> entry.setAssetAllocation(assetAllocation));
         }
 
         public Integer getMaxRiskclass() {
@@ -86,6 +87,7 @@ public class InvestmentGuideline {
 
         public void setMaxRiskclass(Integer maxRiskclass) {
             this.maxRiskclass = maxRiskclass;
+            childEntries.forEach(entry -> entry.setMaxRiskclass(maxRiskclass));
         }
 
         public float getMaxVolatility() {
@@ -94,6 +96,7 @@ public class InvestmentGuideline {
 
         public void setMaxVolatility(float maxVolatility) {
             this.maxVolatility = BigDecimal.valueOf(maxVolatility).setScale(2,RoundingMode.HALF_DOWN);
+            childEntries.forEach(entry -> entry.setMaxVolatility(maxVolatility));
         }
 
         public float getPerformance() {
@@ -102,6 +105,7 @@ public class InvestmentGuideline {
 
         public void setPerformance(float performance) {
             this.performance = BigDecimal.valueOf(performance).setScale(2,RoundingMode.HALF_DOWN);
+            childEntries.forEach(entry -> entry.setPerformance(performance));
         }
 
         public float getRendite() {
@@ -110,6 +114,7 @@ public class InvestmentGuideline {
 
         public void setRendite(float rendite) {
             this.rendite = BigDecimal.valueOf(rendite).setScale(2,RoundingMode.HALF_DOWN);
+            childEntries.forEach(entry -> entry.setRendite(rendite));
         }
 
         public float getChanceRiskNumber() {
@@ -118,6 +123,7 @@ public class InvestmentGuideline {
 
         public void setChanceRiskNumber(float chanceRiskNumber) {
             this.chanceRiskNumber = BigDecimal.valueOf(chanceRiskNumber).setScale(2,RoundingMode.HALF_DOWN);
+            childEntries.forEach(entry -> entry.setChanceRiskNumber(chanceRiskNumber));
         }
 
         public List<Entry> getChildEntries() {
