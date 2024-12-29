@@ -59,7 +59,9 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
      * @param states pass always {@code State.getValuesAsString()}.
      * @return all owners where the state is not in the given states.
      */
-    @Query(value = "SELECT o.id FROM inhaber o WHERE o.state NOT IN :states", nativeQuery = true)
+    @Query(value = "SELECT o.id " +
+            "FROM inhaber o " +
+            "WHERE o.state IS NULL OR o.state NOT IN :states", nativeQuery = true)
     List<Long> findAllByStateIsNotIn(@Param("states") Collection<String> states);
 
     /**
