@@ -357,14 +357,7 @@ public class PortfolioManagementTabController {
                         || accountRepository.inconsistentAccountsExists()
                         || portfolioRepository.inconsistentPortfoliosExists()) {
                     // owners
-                    List<Long> inconsistentOwnerIds = new ArrayList<>();
-                    inconsistentOwnerIds.addAll(ownerRepository.findAllByAddressOrTaxInformationIsInvalid());
-                    inconsistentOwnerIds.addAll(ownerRepository.findAllByForenameIsNullOrAfternameIsNullOrCreatedAtIsNull());
-                    inconsistentOwnerIds.addAll(ownerRepository.findAllByAddressContainingNullValues());
-                    inconsistentOwnerIds.addAll(ownerRepository.findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()));
-                    inconsistentOwnerIds.addAll(ownerRepository.findAllByStateIsNotIn(State.getValuesAsString()));
-                    inconsistentOwnerIds = new ArrayList<>(new HashSet<>(inconsistentOwnerIds)); // to remove duplicates
-
+                    Set<Long> inconsistentOwnerIds = ownerRepository.getInconsistentOwnerIds();
                     inconsistentOwnerIds.forEach(ownerId -> {
                         fixOwnerInconsistenciesDialog.setOwner(ownerRepository.reconstructOwner(ownerId));
                         inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/owners/dialog/fix_owner_inconsistencies_dialog.fxml");
@@ -374,15 +367,7 @@ public class PortfolioManagementTabController {
                     });
 
                     // portfolios
-                    List<Long> inconsistentPortfolioIds = new ArrayList<>();
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByNameIsNullOrCreatedAtIsNull());
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByOwnerOrInvestmentguidelineIsInvalid());
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByStateNotIn(State.getValuesAsString()));
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllByInvalidInvestmentGuidelineEntries());
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllBySumOfDivisionByLocationIsNot100());
-                    inconsistentPortfolioIds.addAll(portfolioRepository.findAllBySumOfDivisionByCurrencyIsNot100());
-                    inconsistentPortfolioIds = new ArrayList<>(new HashSet<>(inconsistentPortfolioIds)); // to remove duplicates
-
+                    Set<Long> inconsistentPortfolioIds = portfolioRepository.getInconsistentPortfolioIds();
                     inconsistentPortfolioIds.forEach(portfolioId -> {
                         fixPortfolioInconsistenciesDialog.setPortfolio(portfolioRepository.reconstructPortfolio(portfolioId));
                         inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/portfolios/dialog/fix_portfolio_inconsistencies_dialog.fxml");
@@ -392,19 +377,8 @@ public class PortfolioManagementTabController {
                     });
 
                     // accounts
-                    List<Long> inconsistentAccountIds = new ArrayList<>();
-                    inconsistentAccountIds.addAll(accountRepository.findAllByOwnerAndPortfolioIsInvalid());
-                    inconsistentAccountIds.addAll(accountRepository.findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull());
-                    inconsistentAccountIds.addAll(accountRepository.findByStateNotInOrTypeNotInOrInterestIntervalNotIn(
-                            State.getValuesAsString(), AccountType.getValuesAsString(), InterestInterval.getValuesAsString())
-                    );
-                    inconsistentAccountIds.addAll(accountRepository.findByInterestRateIsNotBetween0And100());
-                    inconsistentAccountIds.addAll(accountRepository.findByInterestDaysIsNotBetween0And366());
-                    inconsistentAccountIds.addAll(accountRepository.findByCurrencyIsNotIn(
-                            Currency.getAvailableCurrencies().stream().map(Currency::getCurrencyCode).collect(Collectors.toList()))
-                    );
+                    Set<Long> inconsistentAccountIds = accountRepository.getInconsistentAccountIds();
                     inconsistentAccountIds.addAll(accountService.findByCurrencyHasNoExchangeCourse());
-                    inconsistentAccountIds = new ArrayList<>(new HashSet<>(inconsistentAccountIds)); // to remove duplicates
 
                     inconsistentAccountIds.forEach(accountId -> {
                         fixAccountInconcistenciesDialog.setAccount(accountRepository.reconstructAccount(accountId));
