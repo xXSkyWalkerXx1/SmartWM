@@ -149,7 +149,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     /**
      * @return all portfolios where any entry in the investment-guideline is invalid. Invalid means here that the sum of
      * the asset_allocation is not 100%, values are not within their range (f.e. risk-class is not between 1 and 12) or
-     * the investment type is not valid and not all investment types are used.
+     * the investment type is not valid / not all investment types are used or more than one time used.
      */
     default List<Long> findAllByInvalidInvestmentGuidelineEntries() {
         List<Long> invalidEntryIds = new ArrayList<>();
@@ -165,13 +165,31 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             List<String> childInvestmentTypes = resultSet.stream().map(strings -> strings[1]).toList();
 
             Arrays.stream(InvestmentType.values()).forEach(investmentType -> {
-                if (!investmentType.isChild() && !parentsInvestmentTypes.contains(investmentType.name())) {
-                    invalidEntryIds.add(portfolioId);
-                }
-                if (investmentType.isChild() && !childInvestmentTypes.contains(investmentType.name())) {
-                    invalidEntryIds.add(portfolioId);
+                if (!investmentType.isChild()) {
+                    if (Collections.frequency(parentsInvestmentTypes, investmentType.name()) != 1) {
+                        invalidEntryIds.add(portfolioId);
+                    }
+                } else {
+                    if (Collections.frequency(childInvestmentTypes, investmentType.name()) != 1) {
+                        invalidEntryIds.add(portfolioId);
+                    }
                 }
             });
+
+            // Check that parent-entries contains only parent-literals (see InvestmentType) and same with child-entries
+            for (String[] result : resultSet) {
+                try {
+                    InvestmentType parentType = InvestmentType.valueOf(result[0]);
+                    InvestmentType childType = result[1] != null ? InvestmentType.valueOf(result[1]) : null;
+
+                    if (parentType.isChild()) {
+                        invalidEntryIds.add(portfolioId);
+                    }
+                    if (childType != null && (!childType.isChild()) || !parentType.getChilds().contains(childType)) {
+                        invalidEntryIds.add(portfolioId);
+                    }
+                } catch (Exception ignore) {} // mapping-error is already handled above
+            }
         }
         // return without duplicates
         return new ArrayList<>(new HashSet<>(invalidEntryIds));
@@ -206,6 +224,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @NonNull
     default Portfolio reconstructPortfolio(Long id) {
         Portfolio reconstructedPortfolio = new Portfolio();
+        reconstructedPortfolio.getInvestmentGuideline().initializeEntries();
         reconstructedPortfolio.setName(findNameBy(id).orElse(null));
         reconstructedPortfolio.setCreatedAt(findCreatedAtBy(id).orElse(null));
         reconstructedPortfolio.setDeactivatedAt(findDeactivatedAtBy(id).orElse(null));
@@ -237,7 +256,35 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
         findInvestmentGuidelineBy(id).ifPresent(investmentGuidelineId -> {
             reconstructedPortfolio.getInvestmentGuideline().setId(investmentGuidelineId);
 
-            // ToDo: load investment-guideline-entries here
+            // Load parent-entries here
+            for (InvestmentGuideline.Entry parentEntry : reconstructedPortfolio.getInvestmentGuideline().getEntries()) {
+                assert parentEntry.getType() != null; // because we have initialized the entries before
+
+                findInvestmentGuidelineParentEntriesBy(investmentGuidelineId, parentEntry.getType().name())
+                        .ifPresent(resultSet -> {
+                            if (resultSet[1] != null) parentEntry.setAssetAllocation((Float) resultSet[1]);
+                            if (resultSet[2] != null) parentEntry.setChanceRiskNumber((Float) resultSet[2]);
+                            if (resultSet[3] != null) parentEntry.setMaxRiskclass((Integer) resultSet[3]);
+                            if (resultSet[4] != null) parentEntry.setMaxVolatility((Float) resultSet[4]);
+                            if (resultSet[5] != null) parentEntry.setPerformance((Float) resultSet[5]);
+                            if (resultSet[6] != null) parentEntry.setRendite((Float) resultSet[6]);
+
+                            // Load child-entries of parent here
+                            for (InvestmentGuideline.Entry childEntry : reconstructedPortfolio.getInvestmentGuideline().getEntries()) {
+                                assert childEntry.getType() != null; // because we have initialized the entries before
+
+                                findInvestmentGuidelineChildEntriesBy((Long) resultSet[0], childEntry.getType().name())
+                                        .ifPresent(childResultSet -> {
+                                            if (childResultSet[0] != null) childEntry.setAssetAllocation((Float) childResultSet[0]);
+                                            if (childResultSet[1] != null) childEntry.setChanceRiskNumber((Float) childResultSet[1]);
+                                            if (childResultSet[2] != null) childEntry.setMaxRiskclass((Integer) childResultSet[2]);
+                                            if (childResultSet[3] != null) childEntry.setMaxVolatility((Float) childResultSet[3]);
+                                            if (childResultSet[4] != null) childEntry.setPerformance((Float) childResultSet[4]);
+                                            if (childResultSet[5] != null) childEntry.setRendite((Float) childResultSet[5]);
+                                        });
+                            }
+                        });
+            }
 
             // Load division-by-location here
             findDivisionByLocationBy(investmentGuidelineId).ifPresent(divisionByLocationId -> {
@@ -269,7 +316,6 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
                 });
             });
         });
-
         return reconstructedPortfolio;
     }
 
@@ -291,16 +337,30 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     Optional<Long> findInvestmentGuidelineBy(Long id);
     @Query(value = "SELECT g.division_by_location_id FROM anlagen_richtlinie g WHERE g.id = :id", nativeQuery = true)
     Optional<Long> findDivisionByLocationBy(@Param("id") Long investmentGuidelineId);
+    @Query(value = "SELECT g.division_by_currency_id FROM anlagen_richtlinie g WHERE g.id = :id", nativeQuery = true)
+    Optional<Long> findDivisionByCurrencyBy(@Param("id") Long investmentGuidelineId);
+
     @Query(value = "SELECT gl.asia_without_china, gl.china, gl.emergine_markets, gl.europe_without_brd, gl.germany, gl.japan, gl.northamerica_with_usa " +
             "FROM anlagen_richtlinie_unterteilung_ort gl " +
             "WHERE gl.id = :id", nativeQuery = true)
     Optional<BigDecimal[]> findDivisionByLocationValuesBy(@Param("id") Long divisionByLocationId);
-    @Query(value = "SELECT g.division_by_currency_id FROM anlagen_richtlinie g WHERE g.id = :id", nativeQuery = true)
-    Optional<Long> findDivisionByCurrencyBy(@Param("id") Long investmentGuidelineId);
+
     @Query(value = "SELECT gc.asia_currencies, gc.chf, gc.euro, gc.gbp, gc.others, gc.usd, gc.yen " +
             "FROM anlagen_richtlinie_unterteilung_währung gc " +
             "WHERE gc.id = :id", nativeQuery = true)
     Optional<BigDecimal[]> findDivisionByCurrencyValuesBy(@Param("id") Long divisionByCurrencyId);
+
+    @Query(value = "SELECT e.id, e.asset_allocation, e.chance_risk_number, e.max_riskclass, e.max_volatility, e.performance, e.rendite " +
+            "FROM anlagen_richtlinie_eintrag e " +
+            "WHERE e.entry_id = :id AND e.investment_type = :type " +
+            "LIMIT 1", nativeQuery = true)
+    Optional<Object[]> findInvestmentGuidelineParentEntriesBy(@Param("id") Long investmentGuidelineId, @Param("type") String investmentTypeName);
+
+    @Query(value = "SELECT e.asset_allocation, e.chance_risk_number, e.max_riskclass, e.max_volatility, e.performance, e.rendite " +
+            "FROM anlagen_richtlinie_eintrag e " +
+            "WHERE e.child_entry_id = :id AND e.investment_type = :type " +
+            "LIMIT 1", nativeQuery = true)
+    Optional<Object[]> findInvestmentGuidelineChildEntriesBy(@Param("id") Long parentEntryId, @Param("type") String investmentTypeName);
     // endregion
 
     // region Transaction to delete portfolio natively
