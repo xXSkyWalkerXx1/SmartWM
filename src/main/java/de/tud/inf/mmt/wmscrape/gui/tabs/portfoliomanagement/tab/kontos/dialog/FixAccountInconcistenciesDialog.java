@@ -21,8 +21,6 @@ import java.util.List;
 @Controller
 public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
 
-    Account account;
-
     @FXML
     ComboBox<State> inputState;
     @FXML
@@ -32,7 +30,7 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
 
     @FXML
     protected void initialize() {
-        if (account == null) throw new IllegalStateException("Account must be set before initializing dialog.");
+        if (account == null || account.getId() == null) throw new IllegalStateException("Account must be set before initializing dialog.");
         super.initialize();
 
         // Set content of combo-boxes
