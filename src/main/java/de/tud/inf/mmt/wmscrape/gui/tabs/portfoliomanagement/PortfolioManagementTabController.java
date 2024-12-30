@@ -26,6 +26,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerCont
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.dialog.FixOwnerInconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.FixPortfolioInconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.*;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -59,6 +60,8 @@ public class PortfolioManagementTabController {
     private FixOwnerInconsistenciesDialog fixOwnerInconsistenciesDialog;
     @Autowired
     private FixAccountInconcistenciesDialog fixAccountInconcistenciesDialog;
+    @Autowired
+    private FixPortfolioInconsistenciesDialog fixPortfolioInconsistenciesDialog;
 
     @Autowired
     OwnerRepository ownerRepository;
@@ -391,13 +394,13 @@ public class PortfolioManagementTabController {
                     inconsistentPortfolioIds.addAll(portfolioRepository.findAllBySumOfDivisionByCurrencyIsNot100());
                     inconsistentPortfolioIds = new ArrayList<>(new HashSet<>(inconsistentPortfolioIds)); // to remove duplicates
 
-                    inconsistentPortfolioIds.forEach(portfolioId -> PrimaryTabManager.showDialogWithAction(
-                            Alert.AlertType.WARNING,
-                            "Portfolio inkonsistent",
-                            "Auf Grund von Inkonsistenzen im Portfolio muss dieses sowie die enthaltenen Konten und Depots nun gelöscht werden.",
-                            null,
-                            o -> portfolioRepository.deleteById(portfolioId)
-                    ));
+                    inconsistentPortfolioIds.forEach(portfolioId -> {
+                        fixPortfolioInconsistenciesDialog.setPortfolio(portfolioRepository.reconstructPortfolio(portfolioId));
+                        inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/portfolios/dialog/fix_portfolio_inconsistencies_dialog.fxml");
+                        inconsistenciesDialogController.setStageTitle("Portfolio inkonsistent");
+                        inconsistenciesDialogController.setController(fixPortfolioInconsistenciesDialog);
+                        showInconsistenciesDialog();
+                    });
 
                     // accounts
                     List<Long> inconsistentAccountIds = new ArrayList<>();
