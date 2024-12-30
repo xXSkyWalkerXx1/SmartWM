@@ -354,7 +354,6 @@ public class InvestmentGuideline {
             if (!type.isChild()) { // is parent
                 parentEntry = new Entry();
                 parentEntry.setType(type);
-                parentEntry.setMaxRiskclass(1);
 
                 for (InvestmentType childType : type.getChilds()) {
                     var childEntry = new Entry();
