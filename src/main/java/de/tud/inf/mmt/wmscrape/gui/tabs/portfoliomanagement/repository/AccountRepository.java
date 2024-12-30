@@ -37,6 +37,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
                         State.getValuesAsString(),
                         AccountType.getValuesAsString(),
                         InterestInterval.getValuesAsString()).isEmpty()
+                || !findAllByStateIsDeactivatedButDeactivatedAtIsNull().isEmpty()
                 || !findByInterestRateIsNotBetween0And100().isEmpty()
                 || !findByInterestDaysIsNotBetween0And366().isEmpty()
                 || !findByCurrencyIsNotIn(Currency.getAvailableCurrencies().stream()

@@ -48,6 +48,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
         return !findAllByNameIsNullOrCreatedAtIsNull().isEmpty()
                 || !findAllByOwnerOrInvestmentguidelineIsInvalid().isEmpty()
                 || !findAllByStateNotIn(State.getValuesAsString()).isEmpty()
+                || !findAllByStateIsDeactivatedButDeactivatedAtIsNull().isEmpty()
                 || !findAllByInvalidInvestmentGuidelineEntries().isEmpty()
                 || !findAllBySumOfDivisionByLocationIsNot100().isEmpty()
                 || !findAllBySumOfDivisionByCurrencyIsNot100().isEmpty();
