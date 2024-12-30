@@ -1,7 +1,9 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.PortfolioRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.ComboBoxValidator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import javafx.fxml.FXML;
@@ -19,12 +21,18 @@ import java.util.List;
 @Controller
 public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
 
+    private final PortfolioRepository portfolioRepository;
     @FXML
     ComboBox<State> inputState;
     @FXML
     DatePicker inputCreatedAt;
     @FXML
     DatePicker inputDeactivatedAt;
+
+    public FixPortfolioInconsistenciesDialog(PortfolioRepository portfolioRepository) {
+        super();
+        this.portfolioRepository = portfolioRepository;
+    }
 
     @Override
     protected void initialize() {
@@ -75,6 +83,42 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
         areTextFieldsValid();
         areComboboxInputsValid();
 
+    }
+
+    @FXML
+    private void onDelete() {
+        portfolioRepository.deleteById(portfolio.getId());
+        onCancel();
+    }
+
+    @Override
+    protected void onSave() {
+        // Validate first
+        if (!areTextFieldsValid() || !areComboboxInputsValid()) return;
+
+        // If everything is valid, we can create and save the new owner
+        portfolioService.writeInput(portfolio, false, inputPortfolioName, inputOwner);
+        portfolio.setState(inputState.getSelectionModel().getSelectedItem());
+        portfolio.setCreatedAt(java.sql.Date.valueOf(LocalDate.parse(
+                inputCreatedAt.getEditor().getText(),
+                DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        )));
+        if (State.DEACTIVATED.equals(portfolio.getState())) {
+            portfolio.setDeactivatedAt(java.sql.Date.valueOf(LocalDate.parse(
+                    inputDeactivatedAt.getEditor().getText(),
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy")
+            )));
+        }
+
+        if (!portfolioService.reSave(portfolio)) return;
+        onCancel();
+
+        // Finally, show success-dialog
+        PrimaryTabManager.showInfoDialog(
+                "Konto aktualisiert",
+                "Das Konto wurde erfolgreich aktualisiert.",
+                inputState
+        );
     }
 
     public void setPortfolio(Portfolio portfolio) {
