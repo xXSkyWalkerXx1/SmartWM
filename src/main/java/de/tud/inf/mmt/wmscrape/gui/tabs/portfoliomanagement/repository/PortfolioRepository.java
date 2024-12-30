@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -224,18 +225,19 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @NonNull
     default Portfolio reconstructPortfolio(Long id) {
         Portfolio reconstructedPortfolio = new Portfolio();
+        reconstructedPortfolio.setId(id);
         reconstructedPortfolio.getInvestmentGuideline().initializeEntries();
         reconstructedPortfolio.setName(findNameBy(id).orElse(null));
         reconstructedPortfolio.setCreatedAt(findCreatedAtBy(id).orElse(null));
         reconstructedPortfolio.setDeactivatedAt(findDeactivatedAtBy(id).orElse(null));
 
-        findStateBy(id).ifPresent(s -> {
+        reconstructedPortfolio.setState(findStateBy(id).map(s -> {
             try {
-                reconstructedPortfolio.setState(State.valueOf(s));
+                return State.valueOf(s);
             } catch (IllegalArgumentException e) {
-                reconstructedPortfolio.setState(null);
+                return null;
             }
-        });
+        }).orElse(null));
         findOwnerBy(id).ifPresent(ownerId -> {
             String forename = findForenameById(ownerId).orElse(null);
             String aftername = findAfternameById(ownerId).orElse(null);
@@ -261,26 +263,30 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
                 assert parentEntry.getType() != null; // because we have initialized the entries before
 
                 findInvestmentGuidelineParentEntriesBy(investmentGuidelineId, parentEntry.getType().name())
-                        .ifPresent(resultSet -> {
-                            if (resultSet[1] != null) parentEntry.setAssetAllocation((Float) resultSet[1]);
-                            if (resultSet[2] != null) parentEntry.setChanceRiskNumber((Float) resultSet[2]);
+                        .ifPresent(resultSet_ -> {
+                            if (resultSet_.length == 0) return;
+                            Object[] resultSet = (Object[]) resultSet_[0];
+                            if (resultSet[1] != null) parentEntry.setAssetAllocation(((BigDecimal) resultSet[1]).floatValue());
+                            if (resultSet[2] != null) parentEntry.setChanceRiskNumber(((BigDecimal) resultSet[2]).floatValue());
                             if (resultSet[3] != null) parentEntry.setMaxRiskclass((Integer) resultSet[3]);
-                            if (resultSet[4] != null) parentEntry.setMaxVolatility((Float) resultSet[4]);
-                            if (resultSet[5] != null) parentEntry.setPerformance((Float) resultSet[5]);
-                            if (resultSet[6] != null) parentEntry.setRendite((Float) resultSet[6]);
+                            if (resultSet[4] != null) parentEntry.setMaxVolatility(((BigDecimal) resultSet[4]).floatValue());
+                            if (resultSet[5] != null) parentEntry.setPerformance(((BigDecimal) resultSet[5]).floatValue());
+                            if (resultSet[6] != null) parentEntry.setRendite(((BigDecimal) resultSet[6]).floatValue());
 
                             // Load child-entries of parent here
-                            for (InvestmentGuideline.Entry childEntry : reconstructedPortfolio.getInvestmentGuideline().getEntries()) {
+                            for (InvestmentGuideline.Entry childEntry : parentEntry.getChildEntries()) {
                                 assert childEntry.getType() != null; // because we have initialized the entries before
 
-                                findInvestmentGuidelineChildEntriesBy((Long) resultSet[0], childEntry.getType().name())
-                                        .ifPresent(childResultSet -> {
-                                            if (childResultSet[0] != null) childEntry.setAssetAllocation((Float) childResultSet[0]);
-                                            if (childResultSet[1] != null) childEntry.setChanceRiskNumber((Float) childResultSet[1]);
+                                findInvestmentGuidelineChildEntryBy(((BigInteger) resultSet[0]).longValue(), childEntry.getType().name())
+                                        .ifPresent(childResultSet_ -> {
+                                            if (childResultSet_.length == 0) return;
+                                            Object[] childResultSet = (Object[]) childResultSet_[0];
+                                            if (childResultSet[0] != null) childEntry.setAssetAllocation(((BigDecimal) childResultSet[0]).floatValue());
+                                            if (childResultSet[1] != null) childEntry.setChanceRiskNumber(((BigDecimal) childResultSet[1]).floatValue());
                                             if (childResultSet[2] != null) childEntry.setMaxRiskclass((Integer) childResultSet[2]);
-                                            if (childResultSet[3] != null) childEntry.setMaxVolatility((Float) childResultSet[3]);
-                                            if (childResultSet[4] != null) childEntry.setPerformance((Float) childResultSet[4]);
-                                            if (childResultSet[5] != null) childEntry.setRendite((Float) childResultSet[5]);
+                                            if (childResultSet[3] != null) childEntry.setMaxVolatility(((BigDecimal) childResultSet[3]).floatValue());
+                                            if (childResultSet[4] != null) childEntry.setPerformance(((BigDecimal) childResultSet[4]).floatValue());
+                                            if (childResultSet[5] != null) childEntry.setRendite(((BigDecimal) childResultSet[5]).floatValue());
                                         });
                             }
                         });
@@ -289,30 +295,34 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             // Load division-by-location here
             findDivisionByLocationBy(investmentGuidelineId).ifPresent(divisionByLocationId -> {
                 reconstructedPortfolio.getInvestmentGuideline().getDivisionByLocation().setId(divisionByLocationId);
-                findDivisionByLocationValuesBy(divisionByLocationId).ifPresent(bigDecimals -> {
+                findDivisionByLocationValuesBy(divisionByLocationId).ifPresent(bigDecimals_ -> {
+                    if (bigDecimals_.length == 0) return;
+                    Object[] bigDecimals = (Object[]) bigDecimals_[0];
                     InvestmentGuideline.DivisionByLocation divisionByLocation = reconstructedPortfolio.getInvestmentGuideline().getDivisionByLocation();
-                    if (bigDecimals[0] != null) divisionByLocation.setAsia_without_china(bigDecimals[0].floatValue());
-                    if (bigDecimals[1] != null) divisionByLocation.setChina(bigDecimals[1].floatValue());
-                    if (bigDecimals[2] != null) divisionByLocation.setEmergine_markets(bigDecimals[2].floatValue());
-                    if (bigDecimals[3] != null) divisionByLocation.setEurope_without_brd(bigDecimals[3].floatValue());
-                    if (bigDecimals[4] != null) divisionByLocation.setGermany(bigDecimals[4].floatValue());
-                    if (bigDecimals[5] != null) divisionByLocation.setJapan(bigDecimals[5].floatValue());
-                    if (bigDecimals[6] != null) divisionByLocation.setNorthamerica_with_usa(bigDecimals[6].floatValue());
+                    if (bigDecimals[0] != null) divisionByLocation.setAsia_without_china(((BigDecimal) bigDecimals[0]).floatValue());
+                    if (bigDecimals[1] != null) divisionByLocation.setChina(((BigDecimal) bigDecimals[1]).floatValue());
+                    if (bigDecimals[2] != null) divisionByLocation.setEmergine_markets(((BigDecimal) bigDecimals[2]).floatValue());
+                    if (bigDecimals[3] != null) divisionByLocation.setEurope_without_brd(((BigDecimal) bigDecimals[3]).floatValue());
+                    if (bigDecimals[4] != null) divisionByLocation.setGermany(((BigDecimal) bigDecimals[4]).floatValue());
+                    if (bigDecimals[5] != null) divisionByLocation.setJapan(((BigDecimal) bigDecimals[5]).floatValue());
+                    if (bigDecimals[6] != null) divisionByLocation.setNorthamerica_with_usa(((BigDecimal) bigDecimals[6]).floatValue());
                 });
             });
 
             // Load division-by-currency here
             findDivisionByCurrencyBy(investmentGuidelineId).ifPresent(divisionByCurrencyId -> {
                 reconstructedPortfolio.getInvestmentGuideline().getDivisionByCurrency().setId(divisionByCurrencyId);
-                findDivisionByCurrencyValuesBy(divisionByCurrencyId).ifPresent(bigDecimals -> {
+                findDivisionByCurrencyValuesBy(divisionByCurrencyId).ifPresent(bigDecimals_ -> {
+                    if (bigDecimals_.length == 0) return;
+                    Object[] bigDecimals = (Object[]) bigDecimals_[0];
                     InvestmentGuideline.DivisionByCurrency divisionByCurrency = reconstructedPortfolio.getInvestmentGuideline().getDivisionByCurrency();
-                    if (bigDecimals[0] != null) divisionByCurrency.setAsia_currencies(bigDecimals[0].floatValue());
-                    if (bigDecimals[1] != null) divisionByCurrency.setChf(bigDecimals[1].floatValue());
-                    if (bigDecimals[2] != null) divisionByCurrency.setEuro(bigDecimals[2].floatValue());
-                    if (bigDecimals[3] != null) divisionByCurrency.setGbp(bigDecimals[3].floatValue());
-                    if (bigDecimals[4] != null) divisionByCurrency.setOthers(bigDecimals[4].floatValue());
-                    if (bigDecimals[5] != null) divisionByCurrency.setUsd(bigDecimals[5].floatValue());
-                    if (bigDecimals[6] != null) divisionByCurrency.setYen(bigDecimals[6].floatValue());
+                    if (bigDecimals[0] != null) divisionByCurrency.setAsia_currencies(((BigDecimal) bigDecimals[0]).floatValue());
+                    if (bigDecimals[1] != null) divisionByCurrency.setChf(((BigDecimal) bigDecimals[1]).floatValue());
+                    if (bigDecimals[2] != null) divisionByCurrency.setEuro(((BigDecimal) bigDecimals[2]).floatValue());
+                    if (bigDecimals[3] != null) divisionByCurrency.setGbp(((BigDecimal) bigDecimals[3]).floatValue());
+                    if (bigDecimals[4] != null) divisionByCurrency.setOthers(((BigDecimal) bigDecimals[4]).floatValue());
+                    if (bigDecimals[5] != null) divisionByCurrency.setUsd(((BigDecimal) bigDecimals[5]).floatValue());
+                    if (bigDecimals[6] != null) divisionByCurrency.setYen(((BigDecimal) bigDecimals[6]).floatValue());
                 });
             });
         });
@@ -343,12 +353,12 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @Query(value = "SELECT gl.asia_without_china, gl.china, gl.emergine_markets, gl.europe_without_brd, gl.germany, gl.japan, gl.northamerica_with_usa " +
             "FROM anlagen_richtlinie_unterteilung_ort gl " +
             "WHERE gl.id = :id", nativeQuery = true)
-    Optional<BigDecimal[]> findDivisionByLocationValuesBy(@Param("id") Long divisionByLocationId);
+    Optional<Object[]> findDivisionByLocationValuesBy(@Param("id") Long divisionByLocationId);
 
     @Query(value = "SELECT gc.asia_currencies, gc.chf, gc.euro, gc.gbp, gc.others, gc.usd, gc.yen " +
             "FROM anlagen_richtlinie_unterteilung_währung gc " +
             "WHERE gc.id = :id", nativeQuery = true)
-    Optional<BigDecimal[]> findDivisionByCurrencyValuesBy(@Param("id") Long divisionByCurrencyId);
+    Optional<Object[]> findDivisionByCurrencyValuesBy(@Param("id") Long divisionByCurrencyId);
 
     @Query(value = "SELECT e.id, e.asset_allocation, e.chance_risk_number, e.max_riskclass, e.max_volatility, e.performance, e.rendite " +
             "FROM anlagen_richtlinie_eintrag e " +
@@ -360,7 +370,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "FROM anlagen_richtlinie_eintrag e " +
             "WHERE e.child_entry_id = :id AND e.investment_type = :type " +
             "LIMIT 1", nativeQuery = true)
-    Optional<Object[]> findInvestmentGuidelineChildEntriesBy(@Param("id") Long parentEntryId, @Param("type") String investmentTypeName);
+    Optional<Object[]> findInvestmentGuidelineChildEntryBy(@Param("id") Long parentEntryId, @Param("type") String investmentTypeName);
     // endregion
 
     // region Transaction to delete portfolio natively
