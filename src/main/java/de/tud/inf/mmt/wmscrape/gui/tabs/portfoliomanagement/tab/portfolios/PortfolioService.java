@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.InvestmentGuideline;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
@@ -12,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.sound.sampled.Port;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -69,6 +72,16 @@ public class PortfolioService {
             );
         }
         return false;
+    }
+
+    /**
+     * Deletes the portfolio and saves it again.
+     * @return true if the portfolio was successfully saved, false otherwise.
+     */
+    @Transactional
+    public boolean reSave(Portfolio portfolio) {
+        deleteById(portfolio.getId());
+        return save(portfolio);
     }
 
     /**
