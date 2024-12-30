@@ -27,6 +27,14 @@ public class PortfolioService {
         return portfolioRepository.findById(id).orElseThrow();
     }
 
+    /**
+     * Deletes the portfolio by id.
+     * @param id id of the account to delete.
+     */
+    public void deleteById(long id) {
+        portfolioRepository.deleteById(id);
+    }
+
     public List<Portfolio> getAll() {
         try {
             return portfolioRepository.findAll();
