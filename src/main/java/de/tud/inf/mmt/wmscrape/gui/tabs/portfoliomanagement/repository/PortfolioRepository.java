@@ -162,7 +162,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
         // Check if all investment types are used
         for (Long portfolioId: getAllIds()) {
             List<String[]> resultSet = findAllUsedInvestmentTypesBy(portfolioId);
-            List<String> parentsInvestmentTypes = resultSet.stream().map(strings -> strings[0]).toList();
+            List<String> parentsInvestmentTypes = resultSet.stream().map(strings -> strings[0]).distinct().toList();
             List<String> childInvestmentTypes = resultSet.stream().map(strings -> strings[1]).toList();
 
             Arrays.stream(InvestmentType.values()).forEach(investmentType -> {
