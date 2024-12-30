@@ -66,8 +66,6 @@ public class CreateAccountDialog implements Openable {
 
     @FXML
     protected void initialize() {
-        account = new Account();
-
         // Format input fields
         FieldFormatter.setInputOnlyDecimalNumbers(inputBalance);
         FieldFormatter.setInputFloatRange(inputInterestRate, 0f, 100f);
@@ -112,6 +110,7 @@ public class CreateAccountDialog implements Openable {
         }
 
         // If everything is valid, we can create and save the new account
+        account = new Account();
         accountService.writeInput( account, true,
                 inputDescription, inputType, inputCurrencyCode, inputBalance, inputOwner, inputPortfolio,
                 inputNotice, inputBankName, inputIban, inputKontoNumber, inputInterestRate, inputInterestDays, inputInterestInterval
