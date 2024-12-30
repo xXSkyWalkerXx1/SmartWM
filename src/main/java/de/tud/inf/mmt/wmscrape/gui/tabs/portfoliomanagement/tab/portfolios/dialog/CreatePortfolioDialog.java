@@ -44,8 +44,7 @@ public class CreatePortfolioDialog implements Openable {
 
     @FXML
     protected void initialize() {
-        portfolio = new Portfolio();
-        portfolio.getInvestmentGuideline().initializeEntries();
+        if (portfolio == null) return; // Portfolio is not set yet
 
         // Create and show tables
         commissionSchemeTablePane.getChildren().setAll(new InvestmentGuidelineTable(
@@ -64,6 +63,11 @@ public class CreatePortfolioDialog implements Openable {
 
     @Override
     public void open() {
+        // Initialize the portfolio
+        portfolio = new Portfolio();
+        portfolio.getInvestmentGuideline().initializeEntries();
+        initialize();
+
         // Initialize combo-box with all owners
         inputOwner.getItems().setAll(ownerService.getAll());
         inputOwner.getSelectionModel().selectFirst();
