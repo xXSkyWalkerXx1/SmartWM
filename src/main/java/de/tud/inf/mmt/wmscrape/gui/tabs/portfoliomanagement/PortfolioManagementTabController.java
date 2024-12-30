@@ -220,22 +220,12 @@ public class PortfolioManagementTabController {
                 "Struktur",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioStruktur.fxml", portfolioStrukturController)
         );
-        portfolioDepotsTab = createSubTab(
-                "Depots",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioDepots.fxml", portfolioDepotsController)
-        );
-        portfolioKontosTab = createSubTab(
-                "Kontos",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioKontos.fxml", portfolioKontosController)
-        );
 
         portfoliosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioListController);
         portfolioOverviewTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioOverviewController);
         portfolioAnalyseTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioAnalyseController);
         portfolioBenchmarkTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioBenchmarkController);
         portfolioStrukturTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioStrukturController);
-        portfolioDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioDepotsController);
-        portfolioKontosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioKontosController);
 
         //
         Parent parent;
@@ -332,8 +322,7 @@ public class PortfolioManagementTabController {
         inhaberDepotsTab.getProperties().put(TAB_PROPERTY_CONTROLLER, ownerDepotsController);
 
         // Init tab-lists
-        portfolioTabs = List.of(portfolioOverviewTab, portfolioDepotsTab, portfolioStrukturTab, portfolioKontosTab, portfolioAnalyseTab, portfolioBenchmarkTab);
-        kontoTabs = List.of();
+        portfolioTabs = List.of(portfolioOverviewTab, portfolioStrukturTab, portfolioAnalyseTab, portfolioBenchmarkTab);
         kontoTabs = List.of(kontoÜbersichtTab, kontoTransaktionenTab);
         ownerTabs = List.of(inhaberÜbersichtTab, inhaberVermögenTab, inhaberPortfoliosTab, inhaberDepotsTab, inhaberKontosTab);
 
