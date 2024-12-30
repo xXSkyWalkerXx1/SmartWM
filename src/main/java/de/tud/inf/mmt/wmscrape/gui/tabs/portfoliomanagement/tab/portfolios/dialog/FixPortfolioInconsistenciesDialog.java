@@ -2,14 +2,19 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dial
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.ComboBoxValidator;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextInputControl;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 @Controller
 public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
@@ -66,9 +71,28 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
             inputDeactivatedAt.getEditor().setText(inputDeactivatedAt.getValue().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
         }
 
+        // Highlight fields that are invalid
+        areTextFieldsValid();
+        areComboboxInputsValid();
+
     }
 
     public void setPortfolio(Portfolio portfolio) {
         this.portfolio = portfolio;
+    }
+
+    private boolean areTextFieldsValid() {
+        inputCreatedAt.getEditor().tooltipProperty().unbind();
+        inputDeactivatedAt.getEditor().tooltipProperty().unbind();
+
+        List<TextInputControl> inputs = new ArrayList<>(List.of(inputPortfolioName, inputCreatedAt.getEditor(), inputCreatedAt.getEditor()));
+        if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) {
+            inputs.add(inputDeactivatedAt.getEditor());
+        }
+        return !FieldValidator.isInputEmpty(inputs.toArray(new TextInputControl[0]));
+    }
+
+    private boolean areComboboxInputsValid() {
+        return ComboBoxValidator.areComboboxInputsValid(List.of(inputState, inputOwner));
     }
 }
