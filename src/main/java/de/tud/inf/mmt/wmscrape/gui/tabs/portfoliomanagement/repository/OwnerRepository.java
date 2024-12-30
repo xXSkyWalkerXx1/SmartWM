@@ -24,6 +24,8 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     @Query(value = "SELECT o.id FROM inhaber o", nativeQuery = true)
     List<Long> getAllIds();
 
+    // ToDo: implement find all by deactivated_at is null and state is deactivated for owner, account, portfolio
+
     /**
      * @return all owners as fake owners. A fake owner is an owner with only the id, forename and aftername set (if available).
      */
@@ -45,6 +47,20 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
     // region Queries to check for inconsistencies
     /**
+     * Fast way to check if any inconsistency in owners exists.
+     * @return true if any inconsistency in owners exists, otherwise false.
+     */
+    @Transactional
+    default boolean inconsistentOwnerExists() {
+        return !findAllByAddressOrTaxInformationIsInvalid().isEmpty()
+                || !findAllByForenameIsNullOrAfternameIsNullOrCreatedAtIsNull().isEmpty()
+                || !findAllByAddressContainingNullValues().isEmpty()
+                || !findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()).isEmpty()
+                || !findAllByStateIsNotIn(State.getValuesAsString()).isEmpty()
+                || !findAllByStateIsDeactivatedButDeactivatedAtIsNull().isEmpty();
+    }
+
+    /**
      * @return all owners where the address or the tax information is null or invalid.
      */
     @Query(value = "SELECT o.id " +
@@ -63,6 +79,11 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
             "FROM inhaber o " +
             "WHERE o.state IS NULL OR o.state NOT IN :states", nativeQuery = true)
     List<Long> findAllByStateIsNotIn(@Param("states") Collection<String> states);
+
+    @Query(value = "SELECT o.id " +
+            "FROM inhaber o " +
+            "WHERE o.state = 'DEACTIVATED' AND o.deactivated_at IS NULL", nativeQuery = true)
+    List<Long> findAllByStateIsDeactivatedButDeactivatedAtIsNull();
 
     /**
      * @return all owners where the forename, aftername or the created_at date is null.
@@ -102,19 +123,6 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
             "OR t.solidarity_surcharge_tax_rate IS NULL OR t.solidarity_surcharge_tax_rate NOT BETWEEN 0 AND 100 " +
             "OR t.tax_rate IS NULL OR t.tax_rate NOT BETWEEN 0 AND 100", nativeQuery = true)
     List<Long> findAllByTaxInformationContainingNullOrInvalidValues(@Param("maritalStates") Collection<String> maritalStates);
-
-    /**
-     * Fast way to check if any inconsistency in owners exists.
-     * @return true if any inconsistency in owners exists, otherwise false.
-     */
-    @Transactional
-    default boolean inconsistentOwnerExists() {
-        return !findAllByAddressOrTaxInformationIsInvalid().isEmpty()
-                || !findAllByForenameIsNullOrAfternameIsNullOrCreatedAtIsNull().isEmpty()
-                || !findAllByAddressContainingNullValues().isEmpty()
-                || !findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()).isEmpty()
-                || !findAllByStateIsNotIn(State.getValuesAsString()).isEmpty();
-    }
     // endregion
 
     // region Transaction to reconstruct an owner
