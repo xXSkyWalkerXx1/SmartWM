@@ -21,8 +21,6 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     @Query(value = "SELECT o.id FROM inhaber o", nativeQuery = true)
     List<Long> getAllIds();
 
-    // ToDo: implement find all by deactivated_at is null and state is deactivated for owner, account, portfolio
-
     /**
      * @return all owners as fake owners. A fake owner is an owner with only the id, forename and aftername set (if available).
      */
