@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.InvestmentGuideline;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InvestmentType;
@@ -12,6 +13,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -175,18 +177,16 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
         return new ArrayList<>(new HashSet<>(invalidEntryIds));
     }
 
+    // If any value is null, the sum is null too.
     @Query(value = "SELECT p.id " +
             "FROM portfolio p " +
             "JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
             "JOIN anlagen_richtlinie_unterteilung_ort gl ON gl.id = g.division_by_location_id " +
             "GROUP BY p.id " +
-            "HAVING SUM(COALESCE(gl.asia_without_china, 0)) + " + // if the value of the column is null, set it to 0
-            "SUM(COALESCE(gl.china, 0)) + " +
-            "SUM(COALESCE(gl.emergine_markets, 0)) + " +
-            "SUM(COALESCE(gl.europe_without_brd, 0)) + " +
-            "SUM(COALESCE(gl.germany, 0)) + " +
-            "SUM(COALESCE(gl.japan, 0)) + " +
-            "SUM(COALESCE(gl.northamerica_with_usa, 0)) != 100",
+            "HAVING SUM(gl.asia_without_china) + SUM(gl.china) + SUM(gl.emergine_markets) + SUM(gl.europe_without_brd) + " +
+            "SUM(gl.germany) + SUM(gl.japan) + SUM(gl.northamerica_with_usa) IS NULL " +
+            "OR SUM(gl.asia_without_china) + SUM(gl.china) + SUM(gl.emergine_markets) + SUM(gl.europe_without_brd) + " +
+            "SUM(gl.germany) + SUM(gl.japan) + SUM(gl.northamerica_with_usa) != 100",
             nativeQuery = true)
     List<Long> findAllBySumOfDivisionByLocationIsNot100();
 
@@ -195,13 +195,8 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
             "JOIN anlagen_richtlinie_unterteilung_währung gc ON gc.id = g.division_by_currency_id " +
             "GROUP BY p.id " +
-            "HAVING SUM(COALESCE(gc.asia_currencies, 0)) + " +
-            "SUM(COALESCE(gc.chf, 0)) + " +
-            "SUM(COALESCE(gc.euro, 0)) + " +
-            "SUM(COALESCE(gc.gbp, 0)) + " +
-            "SUM(COALESCE(gc.others, 0)) + " +
-            "SUM(COALESCE(gc.usd, 0)) + " +
-            "SUM(COALESCE(gc.yen, 0)) != 100",
+            "HAVING SUM(gc.asia_currencies) + SUM(gc.chf) + SUM(gc.euro) + SUM(gc.gbp) + SUM(gc.others) + SUM(gc.usd) + SUM(gc.yen) IS NULL " +
+            "OR SUM(gc.asia_currencies) + SUM(gc.chf) + SUM(gc.euro) + SUM(gc.gbp) + SUM(gc.others) + SUM(gc.usd) + SUM(gc.yen) != 100",
             nativeQuery = true)
     List<Long> findAllBySumOfDivisionByCurrencyIsNot100();
     // endregion
@@ -242,7 +237,37 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
         findInvestmentGuidelineBy(id).ifPresent(investmentGuidelineId -> {
             reconstructedPortfolio.getInvestmentGuideline().setId(investmentGuidelineId);
 
-            // ToDo: load investment-guideline here
+            // ToDo: load investment-guideline-entries here
+
+            // Load division-by-location here
+            findDivisionByLocationBy(investmentGuidelineId).ifPresent(divisionByLocationId -> {
+                reconstructedPortfolio.getInvestmentGuideline().getDivisionByLocation().setId(divisionByLocationId);
+                findDivisionByLocationValuesBy(divisionByLocationId).ifPresent(bigDecimals -> {
+                    InvestmentGuideline.DivisionByLocation divisionByLocation = reconstructedPortfolio.getInvestmentGuideline().getDivisionByLocation();
+                    if (bigDecimals[0] != null) divisionByLocation.setAsia_without_china(bigDecimals[0].floatValue());
+                    if (bigDecimals[1] != null) divisionByLocation.setChina(bigDecimals[1].floatValue());
+                    if (bigDecimals[2] != null) divisionByLocation.setEmergine_markets(bigDecimals[2].floatValue());
+                    if (bigDecimals[3] != null) divisionByLocation.setEurope_without_brd(bigDecimals[3].floatValue());
+                    if (bigDecimals[4] != null) divisionByLocation.setGermany(bigDecimals[4].floatValue());
+                    if (bigDecimals[5] != null) divisionByLocation.setJapan(bigDecimals[5].floatValue());
+                    if (bigDecimals[6] != null) divisionByLocation.setNorthamerica_with_usa(bigDecimals[6].floatValue());
+                });
+            });
+
+            // Load division-by-currency here
+            findDivisionByCurrencyBy(investmentGuidelineId).ifPresent(divisionByCurrencyId -> {
+                reconstructedPortfolio.getInvestmentGuideline().getDivisionByCurrency().setId(divisionByCurrencyId);
+                findDivisionByCurrencyValuesBy(divisionByCurrencyId).ifPresent(bigDecimals -> {
+                    InvestmentGuideline.DivisionByCurrency divisionByCurrency = reconstructedPortfolio.getInvestmentGuideline().getDivisionByCurrency();
+                    if (bigDecimals[0] != null) divisionByCurrency.setAsia_currencies(bigDecimals[0].floatValue());
+                    if (bigDecimals[1] != null) divisionByCurrency.setChf(bigDecimals[1].floatValue());
+                    if (bigDecimals[2] != null) divisionByCurrency.setEuro(bigDecimals[2].floatValue());
+                    if (bigDecimals[3] != null) divisionByCurrency.setGbp(bigDecimals[3].floatValue());
+                    if (bigDecimals[4] != null) divisionByCurrency.setOthers(bigDecimals[4].floatValue());
+                    if (bigDecimals[5] != null) divisionByCurrency.setUsd(bigDecimals[5].floatValue());
+                    if (bigDecimals[6] != null) divisionByCurrency.setYen(bigDecimals[6].floatValue());
+                });
+            });
         });
 
         return reconstructedPortfolio;
@@ -264,6 +289,18 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     Optional<Timestamp> findDeactivatedAtBy(Long id);
     @Query(value = "SELECT p.investment_guideline_id FROM portfolio p WHERE p.id = :id", nativeQuery = true)
     Optional<Long> findInvestmentGuidelineBy(Long id);
+    @Query(value = "SELECT g.division_by_location_id FROM anlagen_richtlinie g WHERE g.id = :id", nativeQuery = true)
+    Optional<Long> findDivisionByLocationBy(@Param("id") Long investmentGuidelineId);
+    @Query(value = "SELECT gl.asia_without_china, gl.china, gl.emergine_markets, gl.europe_without_brd, gl.germany, gl.japan, gl.northamerica_with_usa " +
+            "FROM anlagen_richtlinie_unterteilung_ort gl " +
+            "WHERE gl.id = :id", nativeQuery = true)
+    Optional<BigDecimal[]> findDivisionByLocationValuesBy(@Param("id") Long divisionByLocationId);
+    @Query(value = "SELECT g.division_by_currency_id FROM anlagen_richtlinie g WHERE g.id = :id", nativeQuery = true)
+    Optional<Long> findDivisionByCurrencyBy(@Param("id") Long investmentGuidelineId);
+    @Query(value = "SELECT gc.asia_currencies, gc.chf, gc.euro, gc.gbp, gc.others, gc.usd, gc.yen " +
+            "FROM anlagen_richtlinie_unterteilung_währung gc " +
+            "WHERE gc.id = :id", nativeQuery = true)
+    Optional<BigDecimal[]> findDivisionByCurrencyValuesBy(@Param("id") Long divisionByCurrencyId);
     // endregion
 
     // region Transaction to delete portfolio natively
