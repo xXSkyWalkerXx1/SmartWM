@@ -54,6 +54,21 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     }
 
     /**
+     * @return all portfolios ids where inconsistencies exist.
+     */
+    default Set<Long> getInconsistentPortfolioIds() {
+        Set<Long> inconsistentPortfolioIds = new HashSet<>();
+        inconsistentPortfolioIds.addAll(findAllByNameIsNullOrCreatedAtIsNull());
+        inconsistentPortfolioIds.addAll(findAllByOwnerOrInvestmentguidelineIsInvalid());
+        inconsistentPortfolioIds.addAll(findAllByStateNotIn(State.getValuesAsString()));
+        inconsistentPortfolioIds.addAll(findAllByStateIsDeactivatedButDeactivatedAtIsNull());
+        inconsistentPortfolioIds.addAll(findAllByInvalidInvestmentGuidelineEntries());
+        inconsistentPortfolioIds.addAll(findAllBySumOfDivisionByLocationIsNot100());
+        inconsistentPortfolioIds.addAll(findAllBySumOfDivisionByCurrencyIsNot100());
+        return inconsistentPortfolioIds;
+    }
+
+    /**
      * @return all portfolios where the name is null or empty.
      */
     @Query(value = "SELECT p.id " +
@@ -84,6 +99,11 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "FROM Portfolio p " +
             "WHERE p.state IS NULL OR p.state NOT IN :states", nativeQuery = true)
     List<Long> findAllByStateNotIn(List<String> states);
+
+    @Query(value = "SELECT p.id " +
+            "FROM portfolio p " +
+            "WHERE p.state = 'DEACTIVATED' AND p.deactivated_at IS NULL", nativeQuery = true)
+    List<Long> findAllByStateIsDeactivatedButDeactivatedAtIsNull();
 
     /**
      * @return all portfolios where value-ranges are not valid (f.e. asset_allocation is 300%).
