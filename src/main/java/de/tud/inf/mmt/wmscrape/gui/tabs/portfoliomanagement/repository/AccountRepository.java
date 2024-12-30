@@ -16,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Currency;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository("pAccountRepository")
@@ -46,6 +43,25 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
                 .map(Currency::getCurrencyCode)
                 .collect(Collectors.toList()))
                 .isEmpty();
+    }
+
+    /**
+     * @return all account ids where inconsistencies exist.
+     */
+    default Set<Long> getInconsistentAccountIds() {
+        Set<Long> inconsistentAccountIds = new HashSet<>();
+        inconsistentAccountIds.addAll(findAllByOwnerAndPortfolioIsInvalid());
+        inconsistentAccountIds.addAll(findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull());
+        inconsistentAccountIds.addAll(findByStateNotInOrTypeNotInOrInterestIntervalNotIn(
+                State.getValuesAsString(), AccountType.getValuesAsString(), InterestInterval.getValuesAsString())
+        );
+        inconsistentAccountIds.addAll(findAllByStateIsDeactivatedButDeactivatedAtIsNull());
+        inconsistentAccountIds.addAll(findByInterestRateIsNotBetween0And100());
+        inconsistentAccountIds.addAll(findByInterestDaysIsNotBetween0And366());
+        inconsistentAccountIds.addAll(findByCurrencyIsNotIn(
+                Currency.getAvailableCurrencies().stream().map(Currency::getCurrencyCode).collect(Collectors.toList()))
+        );
+        return inconsistentAccountIds;
     }
 
     /**
@@ -86,6 +102,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Long> findByStateNotInOrTypeNotInOrInterestIntervalNotIn(Collection<String> state,
                                                                   Collection<String> type,
                                                                   Collection<String> interestInterval);
+
+    @Query(value = "SELECT a.id " +
+            "FROM pkonto a " +
+            "WHERE a.state = 'DEACTIVATED' AND a.deactivated_at IS NULL", nativeQuery = true)
+    List<Long> findAllByStateIsDeactivatedButDeactivatedAtIsNull();
 
     /**
      * @return all accounts where the interest rate is null or not between 0 and 100.
