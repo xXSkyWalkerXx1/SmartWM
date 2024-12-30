@@ -44,7 +44,7 @@ public class CreatePortfolioDialog implements Openable {
 
     @FXML
     protected void initialize() {
-        if (portfolio == null) return; // Portfolio is not set yet
+        if (portfolio == null) portfolio = new Portfolio();
 
         // Create and show tables
         commissionSchemeTablePane.getChildren().setAll(new InvestmentGuidelineTable(
