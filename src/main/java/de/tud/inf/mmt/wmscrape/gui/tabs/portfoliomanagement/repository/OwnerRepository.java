@@ -13,10 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public interface OwnerRepository extends JpaRepository<Owner, Long> {
@@ -50,7 +47,6 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
      * Fast way to check if any inconsistency in owners exists.
      * @return true if any inconsistency in owners exists, otherwise false.
      */
-    @Transactional
     default boolean inconsistentOwnerExists() {
         return !findAllByAddressOrTaxInformationIsInvalid().isEmpty()
                 || !findAllByForenameIsNullOrAfternameIsNullOrCreatedAtIsNull().isEmpty()
@@ -58,6 +54,20 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
                 || !findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()).isEmpty()
                 || !findAllByStateIsNotIn(State.getValuesAsString()).isEmpty()
                 || !findAllByStateIsDeactivatedButDeactivatedAtIsNull().isEmpty();
+    }
+
+    /**
+     * @return all owner ids where inconsistencies exist.
+     */
+    default Set<Long> getInconsistentOwnerIds() {
+        Set<Long> inconsistentOwnerIds = new HashSet<>();
+        inconsistentOwnerIds.addAll(findAllByAddressOrTaxInformationIsInvalid());
+        inconsistentOwnerIds.addAll(findAllByForenameIsNullOrAfternameIsNullOrCreatedAtIsNull());
+        inconsistentOwnerIds.addAll(findAllByAddressContainingNullValues());
+        inconsistentOwnerIds.addAll(findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()));
+        inconsistentOwnerIds.addAll(findAllByStateIsNotIn(State.getValuesAsString()));
+        inconsistentOwnerIds.addAll(findAllByStateIsDeactivatedButDeactivatedAtIsNull());
+        return inconsistentOwnerIds;
     }
 
     /**
