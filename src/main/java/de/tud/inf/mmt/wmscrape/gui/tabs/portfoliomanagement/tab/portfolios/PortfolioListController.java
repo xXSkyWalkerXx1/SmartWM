@@ -78,7 +78,7 @@ public class PortfolioListController implements Openable {
                 createPortfolioDialog,
                 false
         );
-        createPortfolioDialog.initialize();
+        createPortfolioDialog.open();
     }
 
     public void setAccountTable(TableView<Account> table){

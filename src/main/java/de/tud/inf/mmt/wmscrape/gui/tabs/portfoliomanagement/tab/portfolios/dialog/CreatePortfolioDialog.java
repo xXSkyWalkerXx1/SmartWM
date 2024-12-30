@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.InvestmentGuidelineTable;
@@ -15,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class CreatePortfolioDialog {
+public class CreatePortfolioDialog implements Openable {
 
     Portfolio portfolio;
 
@@ -42,13 +43,9 @@ public class CreatePortfolioDialog {
     AnchorPane commissionSchemeCurrencyTablePane;
 
     @FXML
-    public void initialize() {
+    protected void initialize() {
         portfolio = new Portfolio();
         portfolio.getInvestmentGuideline().initializeEntries();
-
-        // Initialize combo-box with all owners
-        inputOwner.getItems().setAll(ownerService.getAll());
-        inputOwner.getSelectionModel().selectFirst();
 
         // Create and show tables
         commissionSchemeTablePane.getChildren().setAll(new InvestmentGuidelineTable(
@@ -65,14 +62,21 @@ public class CreatePortfolioDialog {
         ));
     }
 
+    @Override
+    public void open() {
+        // Initialize combo-box with all owners
+        inputOwner.getItems().setAll(ownerService.getAll());
+        inputOwner.getSelectionModel().selectFirst();
+    }
+
     @FXML
-    private void onCancel() {
+    protected void onCancel() {
         portfolioManagementTabManager.getPortfolioController().getPortfolioListController().open();
         inputPortfolioName.getScene().getWindow().hide();
     }
 
     @FXML
-    private void onSave() {
+    protected void onSave() {
         // Validate first
         if (portfolioService.isInputInvalid(
                 inputPortfolioName, portfolio,
