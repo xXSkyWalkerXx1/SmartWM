@@ -313,21 +313,6 @@ public class Owner {
     public Set<Depot> getDepots() {
         return depots;
     }
-
-    /*
-    ToDo:
-     Remove!
-     Be aware! This setters are only used to create a dummy-owner.
-     */
-    public void setPortfolios(Set<Portfolio> portfolios) {
-        this.portfolios = portfolios;
-    }
-    public void setAccounts(Set<Account> accounts) {
-        this.accounts = accounts;
-    }
-    public void setDepots(Set<Depot> depots) {
-        this.depots = depots;
-    }
     // endregion
 
 
