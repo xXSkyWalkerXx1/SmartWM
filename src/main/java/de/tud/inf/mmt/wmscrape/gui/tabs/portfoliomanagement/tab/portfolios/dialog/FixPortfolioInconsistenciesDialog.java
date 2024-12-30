@@ -115,8 +115,8 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(
-                "Konto aktualisiert",
-                "Das Konto wurde erfolgreich aktualisiert.",
+                "Portfolio aktualisiert",
+                "Das Portfolio wurde erfolgreich aktualisiert.",
                 inputState
         );
     }
