@@ -5,7 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -16,58 +16,54 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="650.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.dialog.FixOwnerInconsistenciesDialog">
+<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.dialog.FixOwnerInconsistenciesDialog">
     <children>
-        <SplitPane dividerPositions="0.30317460317460315, 0.5333333333333333" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+                <AnchorPane>
                     <children>
-                        <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <GridPane vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="244.0" />
                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="397.0" minWidth="10.0" prefWidth="336.0" />
                             </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                            </rowConstraints>
                             <children>
                                 <Label text="Vorname" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
                                 <Label text="Nachname" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                                 <TextField fx:id="inputForename" maxWidth="200.0" GridPane.columnIndex="1" />
                                 <TextField fx:id="inputAftername" maxWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 <Label text="Anmerkungen" GridPane.rowIndex="2" />
-                                <TextArea fx:id="inputNotice" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <TextArea fx:id="inputNotice" prefHeight="50.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                 <Label text="Erstellt am" GridPane.rowIndex="4" />
                                 <Label text="Deaktiviert am" GridPane.rowIndex="5" />
                                 <Label text="Status" GridPane.rowIndex="3" />
-                                <ComboBox fx:id="inputState" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                <ComboBox fx:id="inputState" prefWidth="125.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                 <DatePicker fx:id="inputCreatedAt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                 <DatePicker fx:id="inputDeactivatedAt" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                             </children>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
                         </GridPane>
                     </children>
-                    <padding>
-                        <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
-                    </padding>
                 </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+            <Separator prefWidth="200.0">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </Separator>
+                <AnchorPane>
                     <children>
-                        <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <GridPane vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="244.0" />
                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="397.0" minWidth="10.0" prefWidth="336.0" />
                             </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            </rowConstraints>
                             <children>
                                 <Label text="Adresse:">
                                     <font>
@@ -82,13 +78,13 @@
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="156.0" minWidth="10.0" prefWidth="126.0" />
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="195.0" />
                                     </columnConstraints>
-                                    <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    </rowConstraints>
                                     <children>
                                         <TextField fx:id="inputPlz" />
                                         <TextField fx:id="inputLocation" GridPane.columnIndex="1" />
                                     </children>
+                           <rowConstraints>
+                              <RowConstraints />
+                           </rowConstraints>
                                 </GridPane>
                                 <Label text="Straße | Nr." GridPane.rowIndex="3" />
                                 <GridPane hgap="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
@@ -96,45 +92,41 @@
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="249.0" minWidth="10.0" prefWidth="233.0" />
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="78.0" />
                                     </columnConstraints>
-                                    <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    </rowConstraints>
                                     <children>
                                         <TextField fx:id="inputStreet" />
                                         <TextField fx:id="inputStreetNumber" GridPane.columnIndex="1" />
                                     </children>
+                           <rowConstraints>
+                              <RowConstraints />
+                           </rowConstraints>
                                 </GridPane>
                             </children>
                             <opaqueInsets>
                                 <Insets />
                             </opaqueInsets>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
                         </GridPane>
                     </children>
-                    <padding>
-                        <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
-                    </padding>
                 </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                    <padding>
-                        <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
-                    </padding>
+            <Separator prefWidth="200.0">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </Separator>
+                <AnchorPane>
                     <children>
-                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
-                                <GridPane VBox.vgrow="ALWAYS">
+                                <GridPane vgap="10.0" VBox.vgrow="ALWAYS">
                                     <columnConstraints>
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="244.0" />
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="397.0" minWidth="10.0" prefWidth="336.0" />
                                     </columnConstraints>
-                                    <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    </rowConstraints>
                                     <children>
                                         <Label text="Steuerinformationen:">
                                             <font>
@@ -154,8 +146,17 @@
                                         <TextField fx:id="inputSolidaritySurchargeTaxRate" maxWidth="75.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                         <ComboBox fx:id="inputMaritalState" prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     </children>
+                           <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                           </rowConstraints>
                                 </GridPane>
-                                <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" spacing="15.0">
+                                <HBox nodeOrientation="RIGHT_TO_LEFT" spacing="15.0">
                                     <children>
                                         <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
                                         <Button mnemonicParsing="false" onAction="#onDelete" text="Inhaber löschen" />
@@ -168,10 +169,10 @@
                         </VBox>
                     </children>
                 </AnchorPane>
-            </items>
-            <padding>
-                <Insets bottom="10.0" top="10.0" />
-            </padding>
-        </SplitPane>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+         </padding>
+      </VBox>
     </children>
 </AnchorPane>
