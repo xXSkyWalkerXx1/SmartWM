@@ -28,8 +28,9 @@
                           <children>
                                 <ButtonBar prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <buttons>
-                                        <Button mnemonicParsing="false" onAction="#onReset" text="Zurücksetzen" />
-                                        <Button mnemonicParsing="false" onAction="#onSave" text="Änderungen speichern" />
+                              <Button mnemonicParsing="false" onAction="#onRemove" text="Löschen" />
+                                        <Button mnemonicParsing="false" onAction="#onReset" text="Änderungen verwerfen" />
+                                        <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
                                     </buttons>
                                 </ButtonBar>
                           </children>

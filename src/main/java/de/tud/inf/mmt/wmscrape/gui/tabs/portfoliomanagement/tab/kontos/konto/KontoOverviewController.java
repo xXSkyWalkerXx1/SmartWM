@@ -107,12 +107,20 @@ public class KontoOverviewController implements Openable {
         loadAccountData();
     }
 
-    public void onReset() {
+    @FXML
+    private void onReset() {
         account = accountService.getAccountById(account.getId());
         loadAccountData();
     }
 
-    public void onSave() {
+    @FXML
+    private void onRemove() {
+        accountService.delete(account, null);
+        portfolioManagementTabManager.getPortfolioController().navigateBackAfterDeletion(account);
+    }
+
+    @FXML
+    private void onSave() {
         // Validate first
         if (FieldValidator.isInputEmpty(
                 inputDescription, inputBalance, inputBankName, inputIban,
