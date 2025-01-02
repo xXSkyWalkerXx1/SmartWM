@@ -154,7 +154,7 @@ public class AccountService {
                 null,
                 () -> {
                     accountRepository.delete(account);
-                    if (controller == null) controller.open();
+                    if (controller != null) controller.open();
                 }
         );
     }
