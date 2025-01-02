@@ -39,17 +39,17 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
         public String toString() {
             if (isRoot) return asset.toString();
             if (asset instanceof Portfolio) return String.format(
-                    "%s\t(%s €)",
+                    "%s (%s €)",
                     asset,
                     FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
             );
             if (asset instanceof Account) return String.format(
-                    "Konto: %s\t(%s €)",
+                    "Konto: %s (%s €)",
                     asset,
                     FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
             );
             if (asset instanceof Depot) return String.format(
-                    "Depot: %s\t(%s €)",
+                    "Depot: %s (%s €)",
                     asset,
                     FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
             );
@@ -121,25 +121,14 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
             if (selectedItem == null || selectedItem.equals(rootTreeItem)) return;
 
             FinancialAsset selectedAsset = selectedItem.getValue().asset;
-            String assetType;
 
             // Handle navigation
             if (selectedAsset instanceof Portfolio) {
-                Navigator.navigateToPortfolio(portfolioManagementManager, (Portfolio) selectedAsset);
-                assetType = "portfolio";
+                Navigator.navigateToPortfolio(portfolioManagementManager, (Portfolio) selectedAsset, isOneMainMenu);
             } else if (selectedAsset instanceof Account) {
-                Navigator.navigateToAccount(portfolioManagementManager, (Account) selectedAsset);
-                assetType = "konto";
+                Navigator.navigateToAccount(portfolioManagementManager, (Account) selectedAsset, isOneMainMenu);
             } else { // Otherwise, it has to be an instance of 'Depot'
-                Navigator.navigateToDepot(portfolioManagementManager, (Depot) selectedAsset);
-                assetType = "depot";
-            }
-
-            // Handle breadcrumbs
-            if (isOneMainMenu) {
-                portfolioManagementManager.setCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), assetType));
-            } else {
-                portfolioManagementManager.addCurrentlyDisplayedElement(new BreadcrumbElement(selectedAsset.toString(), assetType));
+                Navigator.navigateToDepot(portfolioManagementManager, (Depot) selectedAsset, isOneMainMenu);
             }
         }
     };

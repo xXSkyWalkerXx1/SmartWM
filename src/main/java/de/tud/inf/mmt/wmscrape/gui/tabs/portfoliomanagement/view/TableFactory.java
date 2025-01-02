@@ -63,13 +63,11 @@ public class TableFactory {
             @NonNull OwnerService ownerService){
 
         TableBuilder<Owner> tableBuilder = new TableBuilder<>(parent, tableItems);
-        Consumer<Owner> openOwnerOverviewAction = owner -> {
-            Navigator.navigateToOwner(ownerController.getPortfolioManagementTabManager(), owner);
-
-            ownerController
-                    .getPortfolioManagementTabManager()
-                    .setCurrentlyDisplayedElement(new BreadcrumbElement(owner.toString(), "owner"));
-        };
+        Consumer<Owner> openOwnerOverviewAction = owner -> Navigator.navigateToOwner(
+                ownerController.getPortfolioManagementTabManager(),
+                owner,
+                true
+        );
 
         tableBuilder.addColumn(
                 "Vorname",
@@ -137,10 +135,11 @@ public class TableFactory {
                                                                   @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
 
         TableBuilder<Portfolio> tableBuilder = new TableBuilder<>(parentPortfolioTable, tableItems);
-        Consumer<Portfolio> openPortfolioOverviewAction = portfolio -> {
-            Navigator.navigateToPortfolio(portfolioManagementTabManager, portfolio);
-            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(portfolio.toString(), "portfolio"));
-        };
+        Consumer<Portfolio> openPortfolioOverviewAction = portfolio -> Navigator.navigateToPortfolio(
+                portfolioManagementTabManager,
+                portfolio,
+                false
+        );
 
         tableBuilder.addColumn(
                 "Portfolio-Name",
@@ -199,10 +198,11 @@ public class TableFactory {
                                                                       @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
-        Consumer<Account> openAccountOverviewAction = account -> {
-            Navigator.navigateToAccount(portfolioManagementTabManager, account);
-            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "owner"));
-        };
+        Consumer<Account> openAccountOverviewAction = account -> Navigator.navigateToAccount(
+                portfolioManagementTabManager,
+                account,
+                false
+        );
 
         tableBuilder.addColumn(
                 "Konto-Bezeichnung",
@@ -259,10 +259,11 @@ public class TableFactory {
                                                                   @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
 
         TableBuilder<Depot> tableBuilder = new TableBuilder<>(parent, tableItems);
-        Consumer<Depot> openDepotOverviewAction = depot -> {
-            Navigator.navigateToDepot(portfolioManagementTabManager, depot);
-            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(depot.toString(), "depot"));
-        };
+        Consumer<Depot> openDepotOverviewAction = depot -> Navigator.navigateToDepot(
+                portfolioManagementTabManager,
+                depot,
+                false
+        );
 
         tableBuilder.addColumn(
                 "Depot-Name",
@@ -314,13 +315,11 @@ public class TableFactory {
                                                           @NonNull OwnerDepotsController ownerDepotsController) {
 
         TableBuilder<Depot> tableBuilder = new TableBuilder<>(parentDepotsTable, tableItems);
-        Consumer<Depot> openDepotOverviewAction = depot -> {
-            Navigator.navigateToDepot(ownerDepotsController.getPortfolioManagementManager(), depot);
-
-            ownerDepotsController
-                    .getPortfolioManagementManager()
-                    .addCurrentlyDisplayedElement(new BreadcrumbElement(depot.toString(), "depot"));
-        };
+        Consumer<Depot> openDepotOverviewAction = depot -> Navigator.navigateToDepot(
+                ownerDepotsController.getPortfolioManagementManager(),
+                depot,
+                false
+        );
 
         tableBuilder.addColumn(
                 "Depot-Name",
@@ -363,13 +362,11 @@ public class TableFactory {
         tableBuilder.setActionOnDoubleClickRow(openDepotOverviewAction);
 
         tableBuilder.addRowContextMenuItem("Details anzeigen", openDepotOverviewAction);
-        tableBuilder.addRowContextMenuItem("Portfolio anzeigen", depot -> {
-            Navigator.navigateToPortfolio(ownerDepotsController.getPortfolioManagementManager(), depot.getPortfolio());
-
-            ownerDepotsController
-                    .getPortfolioManagementManager()
-                    .addCurrentlyDisplayedElement(new BreadcrumbElement(depot.getPortfolio().toString(), "portfolio"));
-        });
+        tableBuilder.addRowContextMenuItem("Portfolio anzeigen", depot -> Navigator.navigateToPortfolio(
+                ownerDepotsController.getPortfolioManagementManager(),
+                depot.getPortfolio(),
+                false
+        ));
 
         return tableBuilder.getResult();
     }
@@ -384,8 +381,7 @@ public class TableFactory {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Account> openAccountOverviewAction = account -> {
-            Navigator.navigateToAccount(portfolioManagementTabManager, account);
-            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
+            Navigator.navigateToAccount(portfolioManagementTabManager, account, false);
         };
 
         tableBuilder.addColumn(
@@ -438,8 +434,7 @@ public class TableFactory {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Account> openAccountOverviewAction = account -> {
-            Navigator.navigateToAccount(portfolioManagementTabManager, account);
-            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
+            Navigator.navigateToAccount(portfolioManagementTabManager, account, false);
         };
 
         tableBuilder.addColumn(
@@ -511,13 +506,11 @@ public class TableFactory {
                                                             @NonNull PortfolioService portfolioService) {
 
         TableBuilder<Portfolio> tableBuilder = new TableBuilder<>(parentPortfolioTable, tableItems);
-        Consumer<Portfolio> openPortfolioOverviewAction = portfolio -> {
-            Navigator.navigateToPortfolio(portfolioListController.getPortfolioManagementManager(), portfolio);
-
-            portfolioListController
-                    .getPortfolioManagementManager()
-                    .setCurrentlyDisplayedElement(new BreadcrumbElement(portfolio.toString(), "portfolio"));
-        };
+        Consumer<Portfolio> openPortfolioOverviewAction = portfolio -> Navigator.navigateToPortfolio(
+                portfolioListController.getPortfolioManagementManager(),
+                portfolio,
+                true
+        );
 
         tableBuilder.addColumn(
                 "Portfolio-Name",
@@ -971,10 +964,11 @@ public class TableFactory {
                                                          @NonNull AccountService accountService) {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parentAccountTable, tableItems);
-        Consumer<Account> openAccountOverviewAction = account -> {
-            Navigator.navigateToAccount(portfolioManagementTabManager, account);
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
-        };
+        Consumer<Account> openAccountOverviewAction = account -> Navigator.navigateToAccount(
+                portfolioManagementTabManager,
+                account,
+                true
+        );
 
         tableBuilder.addColumn(
                 "Konto-Bezeichnung",
@@ -1085,10 +1079,11 @@ public class TableFactory {
                                                             @NonNull List<Depot> tableItems,
                                                             @NonNull PortfolioManagementTabManager portfolioManagementTabManager) {
         TableBuilder<Depot> tableBuilder = new TableBuilder<>(parent, tableItems);
-        Consumer<Depot> openDepotOverviewAction = depot -> {
-            Navigator.navigateToDepot(portfolioManagementTabManager, depot);
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(depot.toString(), "depot"));
-        };
+        Consumer<Depot> openDepotOverviewAction = depot -> Navigator.navigateToDepot(
+                portfolioManagementTabManager,
+                depot,
+                false
+        );
 
         tableBuilder.addColumn(
                 "Depot-Name",
