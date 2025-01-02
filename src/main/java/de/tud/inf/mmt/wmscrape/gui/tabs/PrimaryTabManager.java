@@ -165,17 +165,16 @@ public class PrimaryTabManager {
     }
 
     /**
-     * Shows an dialog of the given alert-type with an "OK"-button.
+     * Shows a dialog of the given alert-type with a cancel- and ok-button.
      * @param region Some element inside the controller class used as a reference to get the stage/scene.
      * @param onButtonOkClickAction The action to be executed when the "OK"-button is clicked.
-     * @ImplNote The value of the consumer is always null.
      */
-    public static void showDialogWithAction(Alert.AlertType alertType, String title, String content, @Nullable Region region, Consumer<?> onButtonOkClickAction) {
-        Alert alert = new Alert(alertType, content, ButtonType.OK);
+    public static void showDialogWithAction(Alert.AlertType alertType, String title, String content, @Nullable Region region, Runnable onButtonOkClickAction) {
+        Alert alert = new Alert(alertType, content, ButtonType.CANCEL, ButtonType.OK);
         alert.setTitle(title);
         if (region != null) PrimaryTabManager.setAlertPosition(alert, region);
         alert.showAndWait().ifPresent(buttonType -> {
-            if (buttonType == ButtonType.OK) onButtonOkClickAction.accept(null);
+            if (buttonType == ButtonType.OK) onButtonOkClickAction.run();
         });
     }
 

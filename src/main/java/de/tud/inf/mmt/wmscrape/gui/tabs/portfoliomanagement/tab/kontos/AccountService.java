@@ -140,7 +140,7 @@ public class AccountService {
     }
 
     /**
-     * @param controller to refresh the view after deletion.
+     * @param controller to refresh the view after deletion. If null, no view will be refreshed.
      */
     public void delete(Account account, @NonNull Openable controller) {
         PrimaryTabManager.showDialogWithAction(
@@ -150,7 +150,7 @@ public class AccountService {
                         "Etwaige Beziehungen zu Transaktionen werden dabei nicht berücksichtigt und kann zu einem" +
                         " fehlerhaften Verhalten der Anwendung führen!;",
                 null,
-                o -> {
+                () -> {
                     accountRepository.delete(account);
                     controller.open();
                 }

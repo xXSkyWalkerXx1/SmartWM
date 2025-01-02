@@ -86,7 +86,7 @@ public class OwnerService {
                         "Etwaige Beziehungen zu Konten oder Depots werden dabei nicht berücksichtigt und kann zu einem" +
                         " fehlerhaften Verhalten der Anwendung führen!",
                 null,
-                o -> {
+                () -> {
                     ownerRepository.delete(owner);
                     if (controller != null) controller.open();
                 }

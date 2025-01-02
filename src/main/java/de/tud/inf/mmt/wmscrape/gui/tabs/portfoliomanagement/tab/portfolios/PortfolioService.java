@@ -86,7 +86,7 @@ public class PortfolioService {
     }
 
     /**
-     * @param controller to refresh the view after deletion.
+     * @param controller to refresh the view after deletion. If null, no view will be refreshed.
      */
     public void delete(Portfolio portfolio, @Nullable Openable controller) {
         PrimaryTabManager.showDialogWithAction(
@@ -96,7 +96,7 @@ public class PortfolioService {
                         "Etwaige Beziehungen zu Konten und Depots werden dabei nicht berücksichtigt und kann zu einem" +
                         " fehlerhaften Verhalten der Anwendung führen!;",
                 null,
-                o -> {
+                () -> {
                     portfolioRepository.delete(portfolio);
                     if (controller != null) controller.open();
                 }
