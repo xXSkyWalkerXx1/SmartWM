@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,7 +144,7 @@ public class AccountService {
      * Shows a dialog to confirm the deletion of the account and if confirmed, deletes it.
      * @param controller to refresh the view after deletion. If null, no view will be refreshed.
      */
-    public void delete(Account account, @NonNull Openable controller) {
+    public void delete(Account account, @Nullable Openable controller) {
         PrimaryTabManager.showDialogWithAction(
                 Alert.AlertType.WARNING,
                 "Konto löschen",
@@ -153,7 +154,7 @@ public class AccountService {
                 null,
                 () -> {
                     accountRepository.delete(account);
-                    controller.open();
+                    if (controller == null) controller.open();
                 }
         );
     }
