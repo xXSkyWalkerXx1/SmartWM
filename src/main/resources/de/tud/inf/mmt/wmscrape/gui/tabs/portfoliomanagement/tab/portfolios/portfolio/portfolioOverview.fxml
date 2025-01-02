@@ -117,17 +117,18 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0" GridPane.halignment="LEFT">
+                        <ButtonBar nodeOrientation="RIGHT_TO_LEFT" GridPane.halignment="LEFT">
                           <buttons>
                               <Button mnemonicParsing="false" text="Mit Snaptshot vergleichen" />
                             <Button mnemonicParsing="false" text="Vermögensverlauf anzeigen" />
                           </buttons>
                         </ButtonBar>
-                        <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1">
+                        <ButtonBar buttonMinWidth="0.0" GridPane.columnIndex="1">
                           <buttons>
-                            <Button mnemonicParsing="false" onAction="#onReset" text="Zurücksetzen" />
-                              <Button mnemonicParsing="false" text="Snapshot verwalten" />
-                              <Button mnemonicParsing="false" onAction="#onSave" text="Änderungen speichern" />
+                              <Button mnemonicParsing="false" text="Snapshots verwalten" />
+                              <Button mnemonicParsing="false" onAction="#onRemove" text="Löschen" />
+                            <Button mnemonicParsing="false" onAction="#onReset" text="Änderungen verwerfen" />
+                              <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
                           </buttons>
                         </ButtonBar>
                      </children>
