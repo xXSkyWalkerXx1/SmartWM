@@ -152,6 +152,12 @@ public class OwnerOverviewController implements Openable {
     }
 
     @FXML
+    private void onRemove() {
+        ownerService.delete(owner, null);
+        portfolioManagementManager.getPortfolioController().navigateBackAfterDeletion(owner);
+    }
+
+    @FXML
     private void onSave() {
         // Validate first
         if (FieldValidator.isInputEmpty(

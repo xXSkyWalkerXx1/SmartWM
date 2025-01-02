@@ -28,8 +28,9 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" nodeOrientation="RIGHT_TO_LEFT" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#onSave" text="Änderungen speichern" />
-                              <Button mnemonicParsing="false" onAction="#onReset" text="Zurücksetzen" />
+                              <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
+                              <Button mnemonicParsing="false" onAction="#onReset" text="Änderungen verwerfen" />
+                              <Button mnemonicParsing="false" onAction="#onRemove" text="Löschen" />
                            </children>
                         </HBox>
                      </children>
