@@ -3,12 +3,9 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.dialog.InconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.AccountRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.OwnerRepository;
@@ -23,9 +20,11 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog.Fi
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoOverviewController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoTransactionsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.dialog.FixOwnerInconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.FixPortfolioInconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.*;
 import javafx.fxml.FXML;
@@ -38,7 +37,6 @@ import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
 
@@ -160,6 +158,10 @@ public class PortfolioManagementTabController {
     private List<Tab> portfolioTabs;
     private List<Tab> kontoTabs;
     private List<Tab> ownerTabs;
+    @Autowired
+    private PortfolioService portfolioService;
+    @Autowired
+    private OwnerService ownerService;
 
     public class ContexMenuItem {
         private String label;
@@ -452,6 +454,29 @@ public class PortfolioManagementTabController {
         portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
+    /**
+     * Navigates back to the predefined tab after deletion of an entity.
+     * If portfolio it navigates back to the portfolio management tabs.
+     * If owner it navigates back to the portfolio management tabs and selects the owner tab.
+     * If account it navigates back to the portfolio of the account.
+     * If depot it navigates back to the portfolio of the depot.
+     * @param fromEntity The entity that was deleted.
+     */
+    public void navigateBackAfterDeletion(@NonNull Object fromEntity) {
+        if (fromEntity instanceof Portfolio) {
+            showPortfolioManagementTabs();
+        } else if (fromEntity instanceof Owner) {
+            showPortfolioManagementTabs();
+            portfolioManagementTabPane.getSelectionModel().select(inhaberTab);
+        } else if (fromEntity instanceof Account) {
+            Navigator.navigateToPortfolio(portfolioManagementTabManager, ((Account) fromEntity).getPortfolio(), true);
+        } else if (fromEntity instanceof Depot) {
+            Navigator.navigateToPortfolio(portfolioManagementTabManager, ((Depot) fromEntity).getPortfolio(), true);
+        } else {
+            throw new IllegalArgumentException("Unknown entity type: " + fromEntity.getClass().getName());
+        }
+    }
+
     public void showDepotPlanungTabs() {
         removeBreadcrumbs();
         hideAllTabs();
@@ -470,11 +495,8 @@ public class PortfolioManagementTabController {
             } else {
                 tab.getProperties().replace(TAB_PROPERTY_ENTITY, account);
             }
+            addTab(tab);
         });
-
-        addTab(kontoÜbersichtTab);
-        addTab(kontoTransaktionenTab);
-
         portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
@@ -495,7 +517,6 @@ public class PortfolioManagementTabController {
 
     public void createBreadcrumbInstance(String label, List<ContexMenuItem> captions, Runnable onLabelClick, String type) {
         Label label1 = new Label(label);
-
         ContextMenu contextMenu = new ContextMenu();
 
         for (ContexMenuItem caption : captions) {
@@ -523,13 +544,13 @@ public class PortfolioManagementTabController {
 
     public void changeBreadcrumbs(List<BreadcrumbElement> elements) {
         removeBreadcrumbs();
+
         for (BreadcrumbElement element : elements) {
             switch (element.type) {
-                case "depot" -> addDepotBreadcrumbs(element.element, portfolioManagementTabManager.depotList);
-                case "portfolio" ->
-                        addPortfolioBreadcrumbs(element.element, portfolioManagementTabManager.portfolioList);
-                case "owner" -> addOwnerBreadcrumbs(element.element, portfolioManagementTabManager.ownerList);
-                case "konto" -> addKontoBreadcrumbs(element.element, portfolioManagementTabManager.kontoList);
+                case "depot" -> addDepotBreadcrumbs((Depot) element.element);
+                case "portfolio" -> addPortfolioBreadcrumbs((Portfolio) element.element);
+                case "owner" -> addOwnerBreadcrumbs((Owner) element.element);
+                case "konto" -> addKontoBreadcrumbs((Account) element.element);
             }
         }
     }
@@ -546,101 +567,161 @@ public class PortfolioManagementTabController {
         return containsType;
     }
 
-    public void addDepotBreadcrumbs(String chosenDepot, String[] otherDepots) {
+    public void addDepotBreadcrumbs(Depot chosenDepot) {
         List<ContexMenuItem> contextMenuList = new ArrayList<>();
 
         //if user is in portfolio view
         if (breadcrumbsContainType("portfolio")) {
             //set up context menu items
-            for (String depotName : portfolioManagementTabManager.depotsOfPortfolio1List) {
-                ContexMenuItem newItem = new ContexMenuItem(depotName, () -> {
-                    portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
-                    portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(depotName, "depot"));
-                });
+            for (Depot depot : chosenDepot.getPortfolio().getDepots()) {
+                ContexMenuItem newItem = new ContexMenuItem(
+                        depot.toString(),
+                        () -> {
+                            portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
+                            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(depot, "depot"));
+                        });
                 contextMenuList.add(newItem);
             }
             //create Breadcrumb for "/ Depots"
-            createBreadcrumbInstance("/ Depots / ", emptyContextMenuItemList, () -> {
-                showPortfolioTabs(null);
-                portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
-                changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-            }, "depot");
+            createBreadcrumbInstance(
+                    "/ Depots / ",
+                    emptyContextMenuItemList,
+                    () -> {
+                        showPortfolioTabs(chosenDepot.getPortfolio());
+                        portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
+                        changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
+                        },
+                    "depot"
+            );
             //create Breadcrumb for specific depot
-            createBreadcrumbInstance(chosenDepot, contextMenuList, () -> {
-                showDepotTabs();
-                changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-            }, "depot");
-        } else {
-            for (String depotName : otherDepots) {
-                ContexMenuItem newItem = new ContexMenuItem(depotName, () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(depotName, "depot")));
-                contextMenuList.add(newItem);
-            }
-            createBreadcrumbInstance("Depots / ", emptyContextMenuItemList, this::showPortfolioManagementTabs, "depot");
-            createBreadcrumbInstance(chosenDepot, contextMenuList, () -> {
-                showDepotTabs();
-                addDepotBreadcrumbs(chosenDepot, otherDepots);
-            }, "depot");
+            createBreadcrumbInstance(
+                    chosenDepot.toString(),
+                    contextMenuList,
+                    () -> {
+                        showDepotTabs();
+                        changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
+                        },
+                    "depot"
+            );
         }
-
-
     }
 
-    public void addPortfolioBreadcrumbs(String chosenPortfolio, String[] otherPortfolios) {
+    public void addPortfolioBreadcrumbs(Portfolio chosenPortfolio) {
         List<ContexMenuItem> contextMenuList = new ArrayList<>();
-        for (String portfolioName : otherPortfolios) {
-            ContexMenuItem newItem = new ContexMenuItem(portfolioName, () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(portfolioName, "portfolio")));
+
+        // Setup context menu items
+        for (Portfolio portfolio : portfolioService.getAll()) {
+            ContexMenuItem newItem = new ContexMenuItem(
+                    portfolio.toString(),
+                    () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(portfolio, "portfolio"))
+            );
             contextMenuList.add(newItem);
         }
-        createBreadcrumbInstance("Portfolios / ", emptyContextMenuItemList, this::showPortfolioManagementTabs, "portfolio");
-        createBreadcrumbInstance(chosenPortfolio, contextMenuList, () -> {
-            showPortfolioTabs(null);
-            addPortfolioBreadcrumbs(chosenPortfolio, otherPortfolios);
-        }, "portfolio");
+
+        // Create breadcrumb
+        createBreadcrumbInstance(
+                "Portfolios / ",
+                emptyContextMenuItemList,
+                this::showPortfolioManagementTabs,
+                "portfolio"
+        );
+        createBreadcrumbInstance(
+                chosenPortfolio.toString(),
+                contextMenuList, () -> {
+                    showPortfolioTabs(chosenPortfolio);
+                    addPortfolioBreadcrumbs(chosenPortfolio);
+                    },
+                "portfolio"
+        );
     }
 
-    public void addOwnerBreadcrumbs(String chosenOwner, String[] otherOwners) {
+    public void addOwnerBreadcrumbs(Owner chosenOwner) {
         List<ContexMenuItem> contextMenuList = new ArrayList<>();
-        for (String ownerName : otherOwners) {
-            ContexMenuItem newItem = new ContexMenuItem(ownerName, () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(ownerName, "portfolio")));
+
+        // Setup context menu items
+        for (Owner owner : ownerService.getAll()) {
+            ContexMenuItem newItem = new ContexMenuItem(
+                    owner.toString(),
+                    () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(owner, "portfolio")));
             contextMenuList.add(newItem);
         }
-        createBreadcrumbInstance("Inhaber / ", emptyContextMenuItemList, this::showPortfolioManagementTabs, "owner");
-        createBreadcrumbInstance(chosenOwner, contextMenuList, () -> {
-            showInhaberTabs(null);
-            addOwnerBreadcrumbs(chosenOwner, otherOwners);
-        }, "owner");
+
+        // Create breadcrumb
+        createBreadcrumbInstance(
+                "Inhaber / ",
+                emptyContextMenuItemList,
+                this::showPortfolioManagementTabs,
+                "owner"
+        );
+        createBreadcrumbInstance(
+                chosenOwner.toString(),
+                contextMenuList,
+                () -> {
+                    showInhaberTabs(chosenOwner);
+                    addOwnerBreadcrumbs(chosenOwner);
+                    },
+                "owner"
+        );
     }
 
-    public void addKontoBreadcrumbs(String chosenKonto, String[] otherKontos) {
+    public void addKontoBreadcrumbs(Account chosenKonto) {
         List<ContexMenuItem> contextMenuList = new ArrayList<>();
 
+        // If user is in portfolio view
         if (breadcrumbsContainType("portfolio")) {
-            for (String kontoName : portfolioManagementTabManager.kontosOfPortfolio1List) {
-                ContexMenuItem newItem = new ContexMenuItem(kontoName, () -> {
-                    portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
-                    portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(kontoName, "konto"));
-                });
+            // Setup context menu items
+            for (Account account : chosenKonto.getPortfolio().getAccounts()) {
+                ContexMenuItem newItem = new ContexMenuItem(
+                        account.toString(),
+                        () -> {
+                            portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
+                            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(account, "konto"));
+                        });
                 contextMenuList.add(newItem);
             }
-            createBreadcrumbInstance("/ Konten / ", emptyContextMenuItemList, () -> {
-                showPortfolioTabs(null);
-                portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
-                changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-            }, "konto");
-            createBreadcrumbInstance(chosenKonto, contextMenuList, () -> {
-                showPortfolioTabs(null);
-                changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-            }, "depot");
+
+            // Create breadcrumbs
+            createBreadcrumbInstance(
+                    "/ Konten / ",
+                    emptyContextMenuItemList, () -> {
+                        showPortfolioTabs(chosenKonto.getPortfolio());
+                        portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
+                        changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
+                        },
+                    "konto"
+            );
+            createBreadcrumbInstance(
+                    chosenKonto.toString(),
+                    contextMenuList, () -> {
+                        showPortfolioTabs(chosenKonto.getPortfolio());
+                        changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
+                        },
+                    "depot"
+            );
         } else {
-            for (String kontoName : otherKontos) {
-                ContexMenuItem newItem = new ContexMenuItem(kontoName, () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(kontoName, "portfolio")));
+            // Setup context menu items
+            for (Account account : accountService.getAll()) {
+                ContexMenuItem newItem = new ContexMenuItem(
+                        account.toString(),
+                        () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account, "portfolio"))
+                );
                 contextMenuList.add(newItem);
             }
-            createBreadcrumbInstance("Konten / ", emptyContextMenuItemList, this::showPortfolioManagementTabs, "konto");
-            createBreadcrumbInstance(chosenKonto, contextMenuList, () -> {
-                showKontoTabs(null);
-                addKontoBreadcrumbs(chosenKonto, otherKontos);
-            }, "konto");
+            createBreadcrumbInstance(
+                    "Konten / ",
+                    emptyContextMenuItemList,
+                    this::showPortfolioManagementTabs,
+                    "konto"
+            );
+            createBreadcrumbInstance(
+                    chosenKonto.toString(),
+                    contextMenuList,
+                    () -> {
+                        showKontoTabs(chosenKonto);
+                        addKontoBreadcrumbs(chosenKonto);
+                        },
+                    "konto"
+            );
         }
 
     }
