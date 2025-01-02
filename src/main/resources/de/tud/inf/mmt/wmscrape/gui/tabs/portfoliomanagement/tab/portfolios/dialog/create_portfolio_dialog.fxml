@@ -47,7 +47,10 @@
                   </AnchorPane>
                </center>
                <bottom>
-                  <Separator prefWidth="200.0" BorderPane.alignment="CENTER" />
+                  <Separator prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </BorderPane.margin></Separator>
                </bottom>
             </BorderPane>
          </top>
@@ -90,7 +93,10 @@
                   </AnchorPane>
                </center>
                <bottom>
-                  <Separator prefWidth="200.0" BorderPane.alignment="CENTER" />
+                  <Separator prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </BorderPane.margin></Separator>
                </bottom>
             </BorderPane>
          </center>

@@ -60,7 +60,7 @@
                                  </AnchorPane>
                                  <Separator>
                                     <VBox.margin>
-                                       <Insets bottom="10.0" top="10.0" />
+                                       <Insets bottom="25.0" top="25.0" />
                                     </VBox.margin>
                                  </Separator>
                                  <VBox fx:id="commissionSchemeViewBox" spacing="10.0">

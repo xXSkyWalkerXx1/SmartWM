@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerOverviewController">
+<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerOverviewController">
    <children>
       <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -47,7 +47,7 @@
          <center>
             <SplitPane dividerPositions="0.7573033707865169" BorderPane.alignment="CENTER">
               <items>
-                  <ScrollPane minHeight="0.0" minWidth="0.0">
+                  <ScrollPane fitToWidth="true" minHeight="0.0" minWidth="0.0">
                      <content>
                         <AnchorPane>
                            <children>
@@ -87,7 +87,7 @@
                                         </AnchorPane>
                                     <Separator prefWidth="200.0">
                                        <VBox.margin>
-                                          <Insets bottom="10.0" top="10.0" />
+                                          <Insets bottom="25.0" top="25.0" />
                                        </VBox.margin>
                                     </Separator>
                                         <AnchorPane>
@@ -148,7 +148,7 @@
                                         </AnchorPane>
                                     <Separator prefWidth="200.0">
                                        <VBox.margin>
-                                          <Insets bottom="10.0" top="10.0" />
+                                          <Insets bottom="25.0" top="25.0" />
                                        </VBox.margin>
                                     </Separator>
                                             <GridPane vgap="5.0">

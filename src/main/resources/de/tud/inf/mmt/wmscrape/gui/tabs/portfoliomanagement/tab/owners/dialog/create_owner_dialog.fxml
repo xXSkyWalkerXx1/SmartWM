@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
@@ -35,12 +34,17 @@
                                 <Label text="Anmerkungen" GridPane.rowIndex="2" />
                                 <TextArea fx:id="inputNotice" prefHeight="50.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                             </children>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
                         </GridPane>
                     </children>
                 </AnchorPane>
                 <Separator prefWidth="200.0">
                     <VBox.margin>
-                        <Insets bottom="10.0" top="10.0" />
+                        <Insets bottom="20.0" top="20.0" />
                     </VBox.margin>
                 </Separator>
                 <AnchorPane>
@@ -101,7 +105,7 @@
                 </AnchorPane>
                 <Separator prefWidth="200.0">
                     <VBox.margin>
-                        <Insets bottom="10.0" top="10.0" />
+                        <Insets bottom="20.0" top="20.0" />
                     </VBox.margin>
                 </Separator>
                 <AnchorPane>
@@ -142,13 +146,18 @@
                                         <RowConstraints />
                                     </rowConstraints>
                                 </GridPane>
+                        <Separator prefWidth="200.0">
+                           <VBox.margin>
+                              <Insets bottom="20.0" top="20.0" />
+                           </VBox.margin>
+                        </Separator>
                                 <HBox nodeOrientation="RIGHT_TO_LEFT" spacing="15.0">
                                     <children>
                                         <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
                                         <Button mnemonicParsing="false" onAction="#onCancel" text="Abbrechen" />
                                     </children>
                                     <VBox.margin>
-                                        <Insets top="35.0" />
+                                        <Insets />
                                     </VBox.margin>
                                 </HBox>
                             </children>

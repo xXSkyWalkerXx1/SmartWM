@@ -68,7 +68,7 @@
                 </AnchorPane>
                 <Separator prefWidth="200.0">
                     <VBox.margin>
-                        <Insets bottom="10.0" top="10.0" />
+                        <Insets bottom="20.0" top="20.0" />
                     </VBox.margin>
                 </Separator>
                 <AnchorPane>
@@ -99,7 +99,7 @@
                 </AnchorPane>
                 <Separator prefWidth="200.0">
                     <VBox.margin>
-                        <Insets bottom="10.0" top="10.0" />
+                        <Insets bottom="20.0" top="20.0" />
                     </VBox.margin>
                 </Separator>
                 <AnchorPane>
@@ -131,13 +131,18 @@
                                         <RowConstraints />
                                     </rowConstraints>
                                 </GridPane>
+                        <Separator prefWidth="200.0">
+                           <VBox.margin>
+                              <Insets bottom="20.0" top="20.0" />
+                           </VBox.margin>
+                        </Separator>
                                 <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" spacing="15.0">
                                     <children>
                                         <Button mnemonicParsing="false" onAction="#onSave" text="Speichern" />
                                         <Button mnemonicParsing="false" onAction="#onCancel" text="Abbrechen" />
                                     </children>
                                     <VBox.margin>
-                                        <Insets top="35.0" />
+                                        <Insets />
                                     </VBox.margin>
                                 </HBox>
                             </children>

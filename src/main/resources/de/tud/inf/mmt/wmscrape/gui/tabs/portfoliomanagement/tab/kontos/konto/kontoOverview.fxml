@@ -46,7 +46,7 @@
                     <children>
                         <SplitPane dividerPositions="0.7" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <items>
-                        <ScrollPane minHeight="0.0" minWidth="0.0">
+                        <ScrollPane fitToWidth="true" minHeight="0.0" minWidth="0.0">
                            <padding>
                               <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
                            </padding>
@@ -110,7 +110,7 @@
                                                       </AnchorPane>
                                                       <Separator prefWidth="200.0">
                                                           <VBox.margin>
-                                                              <Insets bottom="10.0" top="10.0" />
+                                                              <Insets bottom="25.0" top="25.0" />
                                                           </VBox.margin>
                                                       </Separator>
                                                       <AnchorPane>
@@ -141,7 +141,7 @@
                                                       </AnchorPane>
                                                       <Separator prefWidth="200.0">
                                                           <VBox.margin>
-                                                              <Insets bottom="10.0" top="10.0" />
+                                                              <Insets bottom="25.0" top="25.0" />
                                                           </VBox.margin>
                                                       </Separator>
                                                       <AnchorPane>
