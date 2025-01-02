@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.input.MouseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -78,6 +79,13 @@ public class PrimaryTabController {
             if (nv.equals(importTab)) importTabController.refreshCorrelationTables();
             if (nv.equals(visualizeTab)) visualizationTabController.fillSelectionTables();
             if (nv.equals(managementTab)) portfolioManagementTabController.showPortfolioManagementTabs();
+        });
+
+        primaryTabPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            Tab selectedItem = primaryTabPane.getSelectionModel().getSelectedItem();
+            if (managementTab.equals(selectedItem)) {
+                portfolioManagementTabController.showPortfolioManagementTabs();
+            }
         });
 
         primaryTabPane.setStyle("-fx-tab-min-height: 30px;" + "-fx-tab-max-height: 30px;" + "-fx-tab-min-width: 150px;" + "-fx-tab-max-width: 150px;" + "-fx-alignment: CENTER;");
