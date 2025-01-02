@@ -76,6 +76,7 @@ public class OwnerService {
     }
 
     /**
+     * Shows a dialog to confirm the deletion of the owner and if confirmed, deletes it.
      * @param controller to refresh the view after deletion. If null, no view will be refreshed.
      */
     public void delete(Owner owner, @Nullable Openable controller) {

@@ -140,6 +140,7 @@ public class AccountService {
     }
 
     /**
+     * Shows a dialog to confirm the deletion of the account and if confirmed, deletes it.
      * @param controller to refresh the view after deletion. If null, no view will be refreshed.
      */
     public void delete(Account account, @NonNull Openable controller) {

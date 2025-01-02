@@ -86,6 +86,7 @@ public class PortfolioService {
     }
 
     /**
+     * Shows a dialog to confirm the deletion of the portfolio and if confirmed, deletes it.
      * @param controller to refresh the view after deletion. If null, no view will be refreshed.
      */
     public void delete(Portfolio portfolio, @Nullable Openable controller) {
