@@ -20,7 +20,6 @@ import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.Calendar;
 import java.util.List;
 
 @Controller
@@ -69,6 +68,12 @@ public class PortfolioOverviewController implements Openable {
     private void onReset() {
         portfolio = portfolioService.findById(portfolio.getId());
         loadPortfolioData();
+    }
+
+    @FXML
+    private void onRemove() {
+        portfolioService.delete(portfolio, null);
+        portfolioManagementManager.getPortfolioController().navigateBackAfterDeletion(portfolio);
     }
 
     @FXML
