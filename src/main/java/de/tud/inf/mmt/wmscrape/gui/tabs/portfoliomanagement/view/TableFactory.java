@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
@@ -181,7 +182,7 @@ public class TableFactory {
                 "Vermögen anzeigen",
                 portfolio -> {
                     Navigator.navigateToOwnerAssets(portfolioManagementTabManager, portfolio.getOwner());
-                    portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(portfolio.getOwner().toString(), "owner"));
+                    portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(portfolio.getOwner(), BreadcrumbElementType.OWNER));
                     // ^ just a little workaround, not nice, but reduces code
                 }
         );
@@ -559,7 +560,7 @@ public class TableFactory {
                 portfolio -> {
                     Navigator.navigateToOwnerAssets(portfolioListController.getPortfolioManagementManager(), portfolio.getOwner());
                     portfolioListController.getPortfolioManagementManager().addCurrentlyDisplayedElement(
-                            new BreadcrumbElement(portfolio.getOwner().toString(), "owner")
+                            new BreadcrumbElement(portfolio.getOwner(), BreadcrumbElementType.OWNER)
                     );
                 }
         );
@@ -1053,7 +1054,7 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
         tableBuilder.addRowContextMenuItem("Transaktionen anzeigen", account -> {
             Navigator.navigateToAccountTransactions(portfolioManagementTabManager, account);
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account.toString(), "konto"));
+            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account, BreadcrumbElementType.ACCOUNT));
         });
         tableBuilder.addRowContextMenuItem(
                 "Status umschalten",
