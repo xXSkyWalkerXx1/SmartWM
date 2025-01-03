@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
 import org.springframework.lang.NonNull;
 
 public class Navigator {
@@ -16,7 +17,7 @@ public class Navigator {
                                        @NonNull Owner owner,
                                        boolean isFirstBreadcrumb) {
         portfolioManagementTabManager.showInhaberTabs(owner);
-        setOrAddBreadcrumb(portfolioManagementTabManager, isFirstBreadcrumb, owner, "owner");
+        setOrAddBreadcrumb(portfolioManagementTabManager, isFirstBreadcrumb, owner, BreadcrumbElementType.OWNER);
     }
 
     /**
@@ -41,7 +42,7 @@ public class Navigator {
                                            @NonNull Portfolio portfolio,
                                            @NonNull boolean isFirstBreadcrumb) {
         portfolioManagementTabManager.showPortfolioTabs(portfolio);
-        setOrAddBreadcrumb(portfolioManagementTabManager, isFirstBreadcrumb, portfolio, "portfolio");
+        setOrAddBreadcrumb(portfolioManagementTabManager, isFirstBreadcrumb, portfolio, BreadcrumbElementType.PORTFOLIO);
     }
 
     /**
@@ -52,7 +53,7 @@ public class Navigator {
                                          @NonNull Account account,
                                          boolean isFirstBreadcrumb) {
         portfolioManagementTabManager.showKontoTabs(account);
-        setOrAddBreadcrumb(portfolioManagementTabManager, isFirstBreadcrumb, account, "konto");
+        setOrAddBreadcrumb(portfolioManagementTabManager, isFirstBreadcrumb, account, BreadcrumbElementType.ACCOUNT);
     }
 
     /**
@@ -77,7 +78,7 @@ public class Navigator {
                                        @NonNull Depot depot,
                                        boolean isFirstBreadcrumb) {
         portfolioManagementTabManager.showDepotTabs();
-        setOrAddBreadcrumb(portfolioManagementTabManager, isFirstBreadcrumb, depot, "depot");
+        setOrAddBreadcrumb(portfolioManagementTabManager, isFirstBreadcrumb, depot, BreadcrumbElementType.DEPOT);
     }
 
     /**
@@ -88,7 +89,7 @@ public class Navigator {
     private static void setOrAddBreadcrumb(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
                                     boolean isFirstBreadcrumb,
                                     @NonNull Object breadcrumbElement,
-                                    @NonNull String type) {
+                                    @NonNull BreadcrumbElementType type) {
         if (isFirstBreadcrumb) {
             portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(breadcrumbElement, type));
         } else {
