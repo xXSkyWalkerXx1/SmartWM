@@ -98,6 +98,11 @@
             <artifactId>selenium-remote-driver</artifactId>
             <version>4.19.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>11.2.1</version>
+        </dependency>
 
     </dependencies>
 
