@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.AccountRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.OwnerRepository;
@@ -27,31 +28,38 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.Portf
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.FixPortfolioInconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.*;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.BreadCrumbBar;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
+import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
 
 @Controller
 public class PortfolioManagementTabController {
 
-    public ToolBar breadcrumbContainer;
+    @Autowired
+    private PortfolioManagementTabManager portfolioManagementTabManager;
 
-    @FXML
-    private Button switchSceneButton;
+    // flag to check if this controller is initialized
+    public boolean isInitialized = false;
+
+    // Views of this management
     @FXML
     private TabPane portfolioManagementTabPane;
     @FXML
-    private Label currentUserLabel;
+    private VBox breadCrumbToolbar;
+    private final BreadCrumbBar breadCrumbBar = new BreadCrumbBar();
 
+    // Controllers of some dialogs for inconsistencies
     @Autowired
     private InconsistenciesDialog inconsistenciesDialogController;
     @Autowired
@@ -61,17 +69,23 @@ public class PortfolioManagementTabController {
     @Autowired
     private FixPortfolioInconsistenciesDialog fixPortfolioInconsistenciesDialog;
 
+    // Repositories
     @Autowired
     OwnerRepository ownerRepository;
     @Autowired
     PortfolioRepository portfolioRepository;
     @Autowired
     AccountRepository accountRepository;
+
+    // Services
+    @Autowired
+    private PortfolioService portfolioService;
+    @Autowired
+    private OwnerService ownerService;
     @Autowired
     AccountService accountService;
 
-    @Autowired
-    private PortfolioManagementTabManager portfolioManagementTabManager;
+    // Controllers of all main-menus
     @Autowired
     private PortfolioListController portfolioListController;
     @Autowired
@@ -81,6 +95,7 @@ public class PortfolioManagementTabController {
     @Autowired
     private OwnerController ownerController;
 
+    // Controllers of all sub-menus
     @Autowired
     private PortfolioOverviewController portfolioOverviewController;
     @Autowired
@@ -89,10 +104,6 @@ public class PortfolioManagementTabController {
     private PortfolioAnalyseController portfolioAnalyseController;
     @Autowired
     private PortfolioBenchmarkController portfolioBenchmarkController;
-    @Autowired
-    private PortfolioDepotsController portfolioDepotsController;
-    @Autowired
-    private PortfolioKontosController portfolioKontosController;
 
     @Autowired
     private DepotPlanungController depotPlanungController;
@@ -125,14 +136,12 @@ public class PortfolioManagementTabController {
     @Autowired
     private OwnerPortfoliosController ownerPortfoliosController;
 
-
+    // All tabs
     private Tab portfoliosTab;
     private Tab portfolioOverviewTab;
     private Tab portfolioAnalyseTab;
     private Tab portfolioBenchmarkTab;
     private Tab portfolioStrukturTab;
-    private Tab portfolioDepotsTab;
-    private Tab portfolioKontosTab;
 
     private Tab depotTab;
     private Tab depotWertpapierTab;
@@ -158,41 +167,10 @@ public class PortfolioManagementTabController {
     private List<Tab> portfolioTabs;
     private List<Tab> kontoTabs;
     private List<Tab> ownerTabs;
-    @Autowired
-    private PortfolioService portfolioService;
-    @Autowired
-    private OwnerService ownerService;
 
-    public class ContexMenuItem {
-        private String label;
-        private Runnable action;
-
-        public ContexMenuItem(String label, Runnable action) {
-            this.label = label;
-            this.action = action;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public Runnable getAction() {
-            return action;
-        }
-
-        public void performAction() {
-            if (action != null) {
-                action.run();
-            }
-        }
-    }
-
-    public ContexMenuItem emptyContexMenuItem = new ContexMenuItem("", null);
-    public List<ContexMenuItem> emptyContextMenuItemList = new ArrayList<>();
-
+    // Properties for tabs
     public static final String TAB_PROPERTY_CONTROLLER = "controller";
     public static final String TAB_PROPERTY_ENTITY = "entity";
-    public boolean isInitialized = false;
 
     /**
      * called when loading the fxml file
@@ -200,6 +178,7 @@ public class PortfolioManagementTabController {
     @FXML
     private void initialize() throws IOException {
         portfolioManagementTabManager.setPortfolioController(this);
+        breadCrumbToolbar.getChildren().add(breadCrumbBar);
 
         // Portfolio-Management
         portfoliosTab = createSubTab(
@@ -232,42 +211,34 @@ public class PortfolioManagementTabController {
         //
         Parent parent;
 
-        depotListController = new DepotListController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depots.fxml", depotListController);
         depotTab = createSubTab("Depots", parent);
         portfolioManagementTabPane.getTabs().add(depotTab);
 
-        depotWertpapierController = new DepotWertpapierController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depot/depotWertpapier.fxml", depotWertpapierController);
         depotWertpapierTab = createSubTab("Wertpapiere", parent);
         portfolioManagementTabPane.getTabs().add(depotWertpapierTab);
 
-        depotStrukturController = new DepotStrukturController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depot/depotStruktur.fxml", depotStrukturController);
         depotStrukturTab = createSubTab("Struktur", parent);
         portfolioManagementTabPane.getTabs().add(depotStrukturTab);
 
-        depotPlanungController = new DepotPlanungController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depot/depotPlanung.fxml", depotPlanungController);
         depotPlanungTab = createSubTab("Planung", parent);
         portfolioManagementTabPane.getTabs().add(depotPlanungTab);
 
-        depotPlanungWertpapiervergleichController = new DepotPlanungWertpapiervergleichController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depot/planung/depotPlanungWertpapierVergleich.fxml", depotPlanungWertpapiervergleichController);
         depotPlanungVergleichTab = createSubTab("Wertpapiervergleich", parent);
         portfolioManagementTabPane.getTabs().add(depotPlanungVergleichTab);
 
-        depotPlanungOrderController = new DepotPlanungOrderController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depot/planung/depotPlanungOrders.fxml", depotPlanungOrderController);
         depotPlanungOrdersTab = createSubTab("Orders", parent);
         portfolioManagementTabPane.getTabs().add(depotPlanungOrdersTab);
 
-        depotTransaktionenController = new DepotTransaktionenController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depot/depotTransaktionen.fxml", depotTransaktionenController);
         depotTransaktionenTab = createSubTab("Transaktionen", parent);
         portfolioManagementTabPane.getTabs().add(depotTransaktionenTab);
 
-        depotAnlagestrategieController = new DepotAnlagestrategieController(portfolioManagementTabManager);
         parent = PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/depots/depot/depotAnlagestrategie.fxml", depotAnlagestrategieController);
         depotAnlageStrategieTab = createSubTab("Anlagestrategie", parent);
         portfolioManagementTabPane.getTabs().add(depotAnlageStrategieTab);
@@ -327,6 +298,7 @@ public class PortfolioManagementTabController {
         portfolioTabs = List.of(portfolioOverviewTab, portfolioStrukturTab, portfolioAnalyseTab, portfolioBenchmarkTab);
         kontoTabs = List.of(kontoÜbersichtTab, kontoTransaktionenTab);
         ownerTabs = List.of(inhaberÜbersichtTab, inhaberVermögenTab, inhaberPortfoliosTab, inhaberDepotsTab, inhaberKontosTab);
+        depotTabs = Set.of(depotWertpapierTab, depotStrukturTab, depotPlanungTab, depotTransaktionenTab, depotAnlageStrategieTab);
 
         // Init and show default tabs
         portfolioManagementTabPane.setStyle(
@@ -338,13 +310,6 @@ public class PortfolioManagementTabController {
         );
         portfolioManagementTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
             if (newTab == null) return;
-
-            // idk why?
-            if (newTab == depotPlanungTab) {
-                showDepotPlanungTabs();
-                changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-                addDepotPlanungBreadcrumbs();
-            }
 
             // for the following part there must exist a controller in tab properties
             if (!newTab.getProperties().containsKey(TAB_PROPERTY_CONTROLLER)) return;
@@ -410,50 +375,6 @@ public class PortfolioManagementTabController {
         return false;
     }
 
-    private void hideAllTabs() {
-        portfolioManagementTabPane.getTabs().clear();
-    }
-
-    private void addTab(Tab tab) {
-        portfolioManagementTabPane.getTabs().add(tab);
-    }
-
-    public void showDepotTabs() {
-        removeBreadcrumbs();
-        hideAllTabs();
-        addTab(depotWertpapierTab);
-        addTab(depotStrukturTab);
-        addTab(depotPlanungTab);
-        addTab(depotTransaktionenTab);
-        addTab(depotAnlageStrategieTab);
-        portfolioManagementTabPane.getSelectionModel().select(depotWertpapierTab);
-    }
-
-    public void showPortfolioManagementTabs() {
-        removeBreadcrumbs();
-        hideAllTabs();
-        addTab(portfoliosTab);
-        addTab(depotTab);
-        addTab(kontoTab);
-        addTab(inhaberTab);
-        portfolioManagementTabPane.getSelectionModel().selectFirst();
-    }
-
-    public void showPortfolioTabs(Portfolio portfolio) {
-        removeBreadcrumbs();
-        hideAllTabs();
-
-        portfolioTabs.forEach(tab -> {
-            if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
-                tab.getProperties().put(TAB_PROPERTY_ENTITY, portfolio);
-            } else {
-                tab.getProperties().replace(TAB_PROPERTY_ENTITY, portfolio);
-            }
-            addTab(tab);
-        });
-        portfolioManagementTabPane.getSelectionModel().selectFirst();
-    }
-
     /**
      * Navigates back to the predefined tab after deletion of an entity.
      * If portfolio it navigates back to the portfolio management tabs.
@@ -477,17 +398,42 @@ public class PortfolioManagementTabController {
         }
     }
 
-    public void showDepotPlanungTabs() {
-        removeBreadcrumbs();
-        hideAllTabs();
-        addTab(depotPlanungVergleichTab);
-        addTab(depotPlanungOrdersTab);
-        portfolioManagementTabPane.getSelectionModel().select(depotPlanungVergleichTab);
+    public void showPortfolioManagementTabs() {
+        breadCrumbBar.clearBreadcrumbs();
+        portfolioManagementTabPane.getTabs().clear();
+        portfolioManagementTabPane.getTabs().addAll(portfoliosTab, depotTab, kontoTab, inhaberTab);
+        portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
+    // region Show specific entity tabs
+    public void showDepotTabs() {
+        portfolioManagementTabPane.getTabs().clear();
+        portfolioManagementTabPane.getTabs().addAll(depotTabs);
+        portfolioManagementTabPane.getSelectionModel().select(depotWertpapierTab);
+    }
+
+    /**
+     * @param portfolio The portfolio to show the tabs for.
+     */
+    public void showPortfolioTabs(Portfolio portfolio) {
+        portfolioManagementTabPane.getTabs().clear();
+
+        portfolioTabs.forEach(tab -> {
+            if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
+                tab.getProperties().put(TAB_PROPERTY_ENTITY, portfolio);
+            } else {
+                tab.getProperties().replace(TAB_PROPERTY_ENTITY, portfolio);
+            }
+            portfolioManagementTabPane.getTabs().add(tab);
+        });
+        portfolioManagementTabPane.getSelectionModel().selectFirst();
+    }
+
+    /**
+     * @param account The account to show the tabs for.
+     */
     public void showKontoTabs(Account account) {
-        removeBreadcrumbs();
-        hideAllTabs();
+        portfolioManagementTabPane.getTabs().clear();
 
         kontoTabs.forEach(tab -> {
             if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
@@ -495,14 +441,16 @@ public class PortfolioManagementTabController {
             } else {
                 tab.getProperties().replace(TAB_PROPERTY_ENTITY, account);
             }
-            addTab(tab);
+            portfolioManagementTabPane.getTabs().add(tab);
         });
         portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
+    /**
+     * @param owner The owner to show the tabs for.
+     */
     public void showInhaberTabs(Owner owner) {
-        removeBreadcrumbs();
-        hideAllTabs();
+        portfolioManagementTabPane.getTabs().clear();
 
         ownerTabs.forEach(tab -> {
             if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
@@ -510,226 +458,140 @@ public class PortfolioManagementTabController {
             } else {
                 tab.getProperties().replace(TAB_PROPERTY_ENTITY, owner);
             }
-            addTab(tab);
+            portfolioManagementTabPane.getTabs().add(tab);
         });
         portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
+    // endregion
 
-    public void createBreadcrumbInstance(String label, List<ContexMenuItem> captions, Runnable onLabelClick, String type) {
-        Label label1 = new Label(label);
-        ContextMenu contextMenu = new ContextMenu();
-
-        for (ContexMenuItem caption : captions) {
-            MenuItem menuItem = new MenuItem(caption.label);
-            contextMenu.getItems().add(menuItem);
-            contextMenu.setOnAction(event -> {
-                removeBreadcrumbs();
-                caption.performAction();
-            });
+    public <T> void createBreadcrumbInstance(@NonNull String label, @NonNull List<T> contextMenuItems,
+                                             @NonNull Consumer<T> contextMenuItemAction, @NonNull Runnable onLabelClick,
+                                             @NonNull BreadcrumbElementType type) {
+        // add root crumb if no root crumb is present
+        if (!breadCrumbBar.hasRootCrumble()) {
+            switch (type) {
+                case OWNER -> breadCrumbBar.addRootCrumb(
+                        "Inhaber-Verwaltung",
+                        () -> {
+                            showPortfolioManagementTabs();
+                            portfolioManagementTabPane.getSelectionModel().select(inhaberTab);
+                        });
+                case PORTFOLIO -> breadCrumbBar.addRootCrumb(
+                        "Portfolio-Verwaltung",
+                        () -> {
+                            showPortfolioManagementTabs();
+                            portfolioManagementTabPane.getSelectionModel().select(portfoliosTab);
+                        });
+                case ACCOUNT -> breadCrumbBar.addRootCrumb(
+                        "Konto-Verwaltung",
+                        () -> {
+                            showPortfolioManagementTabs();
+                            portfolioManagementTabPane.getSelectionModel().select(kontoTab);
+                        });
+                case DEPOT -> breadCrumbBar.addRootCrumb(
+                        "Depot-Verwaltung",
+                        () -> {
+                            showPortfolioManagementTabs();
+                            portfolioManagementTabPane.getSelectionModel().select(depotTab);
+                        });
+            }
         }
 
-        // setContextMenu to label
-        label1.setContextMenu(contextMenu);
-        label1.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
-                onLabelClick.run();
-            }
-        });
-        breadcrumbContainer.getItems().add(label1);
-    }
-
-    public void removeBreadcrumbs() {
-        breadcrumbContainer.getItems().removeIf(item -> item instanceof Label);
+        // create and add crumb
+        breadCrumbBar.addCrumb(label, type, contextMenuItems, contextMenuItemAction, onLabelClick);
     }
 
     public void changeBreadcrumbs(List<BreadcrumbElement> elements) {
-        removeBreadcrumbs();
+        breadCrumbBar.clearBreadcrumbs();
 
         for (BreadcrumbElement element : elements) {
             switch (element.type) {
-                case "depot" -> addDepotBreadcrumbs((Depot) element.element);
-                case "portfolio" -> addPortfolioBreadcrumbs((Portfolio) element.element);
-                case "owner" -> addOwnerBreadcrumbs((Owner) element.element);
-                case "konto" -> addKontoBreadcrumbs((Account) element.element);
+                case DEPOT -> addDepotBreadcrumbs((Depot) element.element);
+                case PORTFOLIO -> addPortfolioBreadcrumbs((Portfolio) element.element);
+                case OWNER -> addOwnerBreadcrumbs((Owner) element.element);
+                case ACCOUNT -> addKontoBreadcrumbs((Account) element.element);
             }
         }
     }
 
-    //checks if breadcrumbs contain certain type
-    public boolean breadcrumbsContainType(String type) {
-        boolean containsType = false;
-        for (BreadcrumbElement element : portfolioManagementTabManager.getCurrentlyDisplayedElements()) {
-            if (element.type.equals(type)) {
-                containsType = true;
-                break; // Sobald ein passendes Objekt gefunden wurde, die Schleife beenden
-            }
-        }
-        return containsType;
-    }
+    // region Add breadcrumbs
+    public void addDepotBreadcrumbs(@NonNull Depot chosenDepot) {
+        List<Depot> contextMenuItems;
 
-    public void addDepotBreadcrumbs(Depot chosenDepot) {
-        List<ContexMenuItem> contextMenuList = new ArrayList<>();
-
-        //if user is in portfolio view
-        if (breadcrumbsContainType("portfolio")) {
-            //set up context menu items
-            for (Depot depot : chosenDepot.getPortfolio().getDepots()) {
-                ContexMenuItem newItem = new ContexMenuItem(
-                        depot.toString(),
-                        () -> {
-                            portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
-                            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(depot, "depot"));
-                        });
-                contextMenuList.add(newItem);
-            }
-            //create Breadcrumb for "/ Depots"
-            createBreadcrumbInstance(
-                    "/ Depots / ",
-                    emptyContextMenuItemList,
-                    () -> {
-                        showPortfolioTabs(chosenDepot.getPortfolio());
-                        portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
-                        changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-                        },
-                    "depot"
-            );
-            //create Breadcrumb for specific depot
-            createBreadcrumbInstance(
-                    chosenDepot.toString(),
-                    contextMenuList,
-                    () -> {
-                        showDepotTabs();
-                        changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-                        },
-                    "depot"
-            );
-        }
-    }
-
-    public void addPortfolioBreadcrumbs(Portfolio chosenPortfolio) {
-        List<ContexMenuItem> contextMenuList = new ArrayList<>();
-
-        // Setup context menu items
-        for (Portfolio portfolio : portfolioService.getAll()) {
-            ContexMenuItem newItem = new ContexMenuItem(
-                    portfolio.toString(),
-                    () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(portfolio, "portfolio"))
-            );
-            contextMenuList.add(newItem);
+        // ToDo: implement later!
+        // check if the breadcrumb already contains a portfolio, so we can filter the accounts by the portfolio
+        if (breadCrumbBar.containsType(BreadcrumbElementType.PORTFOLIO)) {
+            contextMenuItems = chosenDepot.getPortfolio().getDepots();
+        } else {
+            contextMenuItems = new ArrayList<>();
         }
 
-        // Create breadcrumb
+        // ToDo: implement later!
         createBreadcrumbInstance(
-                "Portfolios / ",
-                emptyContextMenuItemList,
-                this::showPortfolioManagementTabs,
-                "portfolio"
+                chosenDepot.toString(),
+                contextMenuItems,
+                depot -> showDepotTabs(),
+                this::showDepotTabs,
+                BreadcrumbElementType.DEPOT
         );
+    }
+
+    public void addPortfolioBreadcrumbs(@NonNull Portfolio chosenPortfolio) {
+        List<Portfolio> contextMenuItems;
+
+        // check if the breadcrumb already contains an owner, so we can filter the accounts by the owner
+        if (breadCrumbBar.containsType(BreadcrumbElementType.OWNER)) {
+            // reload the account from the database to get his portfolio
+            contextMenuItems = portfolioService.findById(chosenPortfolio.getId())
+                    .getOwner()
+                    .getPortfolios()
+                    .stream().toList();
+        } else {
+            contextMenuItems = portfolioService.getAll();
+        }
+
         createBreadcrumbInstance(
                 chosenPortfolio.toString(),
-                contextMenuList, () -> {
-                    showPortfolioTabs(chosenPortfolio);
-                    addPortfolioBreadcrumbs(chosenPortfolio);
-                    },
-                "portfolio"
+                contextMenuItems,
+                this::showPortfolioTabs,
+                () -> showPortfolioTabs(chosenPortfolio),
+                BreadcrumbElementType.PORTFOLIO
         );
     }
 
-    public void addOwnerBreadcrumbs(Owner chosenOwner) {
-        List<ContexMenuItem> contextMenuList = new ArrayList<>();
-
-        // Setup context menu items
-        for (Owner owner : ownerService.getAll()) {
-            ContexMenuItem newItem = new ContexMenuItem(
-                    owner.toString(),
-                    () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(owner, "portfolio")));
-            contextMenuList.add(newItem);
-        }
-
-        // Create breadcrumb
-        createBreadcrumbInstance(
-                "Inhaber / ",
-                emptyContextMenuItemList,
-                this::showPortfolioManagementTabs,
-                "owner"
-        );
+    public void addOwnerBreadcrumbs(@NonNull Owner chosenOwner) {
         createBreadcrumbInstance(
                 chosenOwner.toString(),
-                contextMenuList,
-                () -> {
-                    showInhaberTabs(chosenOwner);
-                    addOwnerBreadcrumbs(chosenOwner);
-                    },
-                "owner"
+                ownerService.getAll(),
+                this::showInhaberTabs,
+                () -> showInhaberTabs(chosenOwner),
+                BreadcrumbElementType.OWNER
         );
     }
 
-    public void addKontoBreadcrumbs(Account chosenKonto) {
-        List<ContexMenuItem> contextMenuList = new ArrayList<>();
+    public void addKontoBreadcrumbs(@NonNull Account chosenKonto) {
+        List<Account> contextMenuItems;
 
-        // If user is in portfolio view
-        if (breadcrumbsContainType("portfolio")) {
-            // Setup context menu items
-            for (Account account : chosenKonto.getPortfolio().getAccounts()) {
-                ContexMenuItem newItem = new ContexMenuItem(
-                        account.toString(),
-                        () -> {
-                            portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
-                            portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(account, "konto"));
-                        });
-                contextMenuList.add(newItem);
-            }
-
-            // Create breadcrumbs
-            createBreadcrumbInstance(
-                    "/ Konten / ",
-                    emptyContextMenuItemList, () -> {
-                        showPortfolioTabs(chosenKonto.getPortfolio());
-                        portfolioManagementTabManager.removeLastCurrentlyDisplayedElement();
-                        changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-                        },
-                    "konto"
-            );
-            createBreadcrumbInstance(
-                    chosenKonto.toString(),
-                    contextMenuList, () -> {
-                        showPortfolioTabs(chosenKonto.getPortfolio());
-                        changeBreadcrumbs(portfolioManagementTabManager.getCurrentlyDisplayedElements());
-                        },
-                    "depot"
-            );
+        // check if the breadcrumb already contains a portfolio, so we can filter the accounts by the portfolio
+        if (breadCrumbBar.containsType(BreadcrumbElementType.PORTFOLIO)) {
+            // reload the account from the database to get the accounts of the portfolio
+            contextMenuItems = accountService.getAccountById(chosenKonto.getId())
+                    .getPortfolio()
+                    .getAccounts()
+                    .stream().toList();
         } else {
-            // Setup context menu items
-            for (Account account : accountService.getAll()) {
-                ContexMenuItem newItem = new ContexMenuItem(
-                        account.toString(),
-                        () -> portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account, "portfolio"))
-                );
-                contextMenuList.add(newItem);
-            }
-            createBreadcrumbInstance(
-                    "Konten / ",
-                    emptyContextMenuItemList,
-                    this::showPortfolioManagementTabs,
-                    "konto"
-            );
-            createBreadcrumbInstance(
-                    chosenKonto.toString(),
-                    contextMenuList,
-                    () -> {
-                        showKontoTabs(chosenKonto);
-                        addKontoBreadcrumbs(chosenKonto);
-                        },
-                    "konto"
-            );
+            contextMenuItems = accountService.getAll();
         }
 
+        createBreadcrumbInstance(
+                chosenKonto.toString(),
+                contextMenuItems,
+                this::showKontoTabs,
+                () -> showKontoTabs(chosenKonto),
+                BreadcrumbElementType.ACCOUNT
+        );
     }
-
-    public void addDepotPlanungBreadcrumbs() {
-        createBreadcrumbInstance(" / Planung", emptyContextMenuItemList, () -> {
-        }, "");
-    }
+    // endregion
 
     // region Getters
     public OwnerController getOwnerController() {
@@ -744,136 +606,8 @@ public class PortfolioManagementTabController {
         return portfolioListController;
     }
 
-    public PortfolioStrukturController getPortfolioStrukturController() {
-        return portfolioStrukturController;
-    }
-
-    public PortfolioAnalyseController getPortfolioAnalyseController() {
-        return portfolioAnalyseController;
-    }
-
-    public PortfolioBenchmarkController getPortfolioBenchmarkController() {
-        return portfolioBenchmarkController;
-    }
-
-    public PortfolioDepotsController getPortfolioDepotsController() {
-        return portfolioDepotsController;
-    }
-
-    public PortfolioKontosController getPortfolioKontosController() {
-        return portfolioKontosController;
-    }
-
-    public DepotPlanungController getDepotPlanungController() {
-        return depotPlanungController;
-    }
-
-    public DepotWertpapierController getDepotWertpapierController() {
-        return depotWertpapierController;
-    }
-
-    public DepotStrukturController getDepotStrukturController() {
-        return depotStrukturController;
-    }
-
-    public DepotTransaktionenController getDepotTransaktionenController() {
-        return depotTransaktionenController;
-    }
-
-    public DepotAnlagestrategieController getDepotAnlagestrategieController() {
-        return depotAnlagestrategieController;
-    }
-
-    public DepotPlanungWertpapiervergleichController getDepotPlanungWertpapiervergleichController() {
-        return depotPlanungWertpapiervergleichController;
-    }
-
-    public DepotPlanungOrderController getDepotPlanungOrderController() {
-        return depotPlanungOrderController;
-    }
-
-    public KontoOverviewController getKontoOverviewController() {
-        return kontoOverviewController;
-    }
-
-    public KontoTransactionsController getKontoTransactionsController() {
-        return kontoTransactionsController;
-    }
-
-    public OwnerOverviewController getOwnerOverviewController() {
-        return ownerOverviewController;
-    }
-
-    public OwnerVermögenController getOwnerVermögenController() {
-        return ownerVermögenController;
-    }
-
-    public OwnerDepotsController getOwnerDepotsController() {
-        return ownerDepotsController;
-    }
-
-    public OwnerKontosController getOwnerKontosController() {
-        return ownerKontosController;
-    }
-
-    public OwnerPortfoliosController getOwnerPortfoliosController() {
-        return ownerPortfoliosController;
-    }
-
     public Tab getPortfolioOverviewTab() {
         return portfolioOverviewTab;
-    }
-
-    public Tab getPortfolioAnalyseTab() {
-        return portfolioAnalyseTab;
-    }
-
-    public Tab getPortfolioBenchmarkTab() {
-        return portfolioBenchmarkTab;
-    }
-
-    public Tab getPortfolioStrukturTab() {
-        return portfolioStrukturTab;
-    }
-
-    public Tab getPortfolioDepotsTab() {
-        return portfolioDepotsTab;
-    }
-
-    public Tab getPortfolioKontosTab() {
-        return portfolioKontosTab;
-    }
-
-    public Tab getDepotWertpapierTab() {
-        return depotWertpapierTab;
-    }
-
-    public Tab getDepotStrukturTab() {
-        return depotStrukturTab;
-    }
-
-    public Tab getDepotPlanungTab() {
-        return depotPlanungTab;
-    }
-
-    public Tab getDepotPlanungVergleichTab() {
-        return depotPlanungVergleichTab;
-    }
-
-    public Tab getDepotPlanungOrdersTab() {
-        return depotPlanungOrdersTab;
-    }
-
-    public Tab getDepotTransaktionenTab() {
-        return depotTransaktionenTab;
-    }
-
-    public Tab getDepotAnlageStrategieTab() {
-        return depotAnlageStrategieTab;
-    }
-
-    public Tab getKontoÜbersichtTab() {
-        return kontoÜbersichtTab;
     }
 
     public Tab getKontoTransaktionenTab() {
