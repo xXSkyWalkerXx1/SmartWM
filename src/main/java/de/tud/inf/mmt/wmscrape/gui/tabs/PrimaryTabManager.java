@@ -1,7 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs;
 
 import de.tud.inf.mmt.wmscrape.WMScrape;
-import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,11 +8,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 @Service
 public class PrimaryTabManager {
@@ -175,6 +174,26 @@ public class PrimaryTabManager {
         if (region != null) PrimaryTabManager.setAlertPosition(alert, region);
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.OK) onButtonOkClickAction.run();
+        });
+    }
+
+    public static void showNotificationEntityChanged(@NonNull Runnable onButtonCancelClickAction,
+                                                     @NonNull Runnable onButtonYesClickAction,
+                                                     @NonNull Runnable onButtonNoClickAction) {
+        Alert alert = new Alert(
+                Alert.AlertType.WARNING,
+                "Es wurden Änderungen getätigt, die nicht gespeichert wurden.\nMöchten Sie diese jetzt speichern?",
+                ButtonType.CANCEL, ButtonType.NO, ButtonType.YES
+        );
+        alert.setTitle("Änderungen nicht gespeichert");
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType.equals(ButtonType.CANCEL)) {
+                onButtonCancelClickAction.run();
+            } else if (buttonType.equals(ButtonType.YES)) {
+                onButtonYesClickAction.run();
+            } else if (buttonType.equals(ButtonType.NO)) {
+                onButtonNoClickAction.run();
+            }
         });
     }
 
