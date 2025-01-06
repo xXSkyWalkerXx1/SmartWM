@@ -135,4 +135,8 @@ public class PrimaryTabController {
     public ConfigurableApplicationContext getApplicationContext() {
         return applicationContext;
     }
+
+    public TabPane getPrimaryTabPane() {
+        return primaryTabPane;
+    }
 }
