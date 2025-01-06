@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.dialog.InconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
@@ -48,6 +49,8 @@ public class PortfolioManagementTabController {
 
     @Autowired
     private PortfolioManagementTabManager portfolioManagementTabManager;
+    @Autowired
+    private PrimaryTabController primaryTabController;
 
     // flag to check if this controller is initialized
     public boolean isInitialized = false;
@@ -57,7 +60,7 @@ public class PortfolioManagementTabController {
     private TabPane portfolioManagementTabPane;
     @FXML
     private VBox breadCrumbToolbar;
-    private final BreadCrumbBar breadCrumbBar = new BreadCrumbBar();
+    public final BreadCrumbBar breadCrumbBar = new BreadCrumbBar();
 
     // Controllers of some dialogs for inconsistencies
     @Autowired
@@ -400,15 +403,13 @@ public class PortfolioManagementTabController {
 
     public void showPortfolioManagementTabs() {
         breadCrumbBar.clearBreadcrumbs();
-        portfolioManagementTabPane.getTabs().clear();
-        portfolioManagementTabPane.getTabs().addAll(portfoliosTab, depotTab, kontoTab, inhaberTab);
+        portfolioManagementTabPane.getTabs().setAll(portfoliosTab, depotTab, kontoTab, inhaberTab);
         portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
     // region Show specific entity tabs
     public void showDepotTabs() {
-        portfolioManagementTabPane.getTabs().clear();
-        portfolioManagementTabPane.getTabs().addAll(depotTabs);
+        portfolioManagementTabPane.getTabs().setAll(depotTabs);
         portfolioManagementTabPane.getSelectionModel().select(depotWertpapierTab);
     }
 
@@ -416,16 +417,14 @@ public class PortfolioManagementTabController {
      * @param portfolio The portfolio to show the tabs for.
      */
     public void showPortfolioTabs(Portfolio portfolio) {
-        portfolioManagementTabPane.getTabs().clear();
-
         portfolioTabs.forEach(tab -> {
             if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
                 tab.getProperties().put(TAB_PROPERTY_ENTITY, portfolio);
             } else {
                 tab.getProperties().replace(TAB_PROPERTY_ENTITY, portfolio);
             }
-            portfolioManagementTabPane.getTabs().add(tab);
         });
+        portfolioManagementTabPane.getTabs().setAll(portfolioTabs);
         portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
@@ -433,16 +432,15 @@ public class PortfolioManagementTabController {
      * @param account The account to show the tabs for.
      */
     public void showKontoTabs(Account account) {
-        portfolioManagementTabPane.getTabs().clear();
-
         kontoTabs.forEach(tab -> {
             if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
                 tab.getProperties().put(TAB_PROPERTY_ENTITY, account);
             } else {
                 tab.getProperties().replace(TAB_PROPERTY_ENTITY, account);
             }
-            portfolioManagementTabPane.getTabs().add(tab);
+
         });
+        portfolioManagementTabPane.getTabs().setAll(kontoTabs);
         portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
 
@@ -450,16 +448,14 @@ public class PortfolioManagementTabController {
      * @param owner The owner to show the tabs for.
      */
     public void showInhaberTabs(Owner owner) {
-        portfolioManagementTabPane.getTabs().clear();
-
         ownerTabs.forEach(tab -> {
             if (!tab.getProperties().containsKey(TAB_PROPERTY_ENTITY)) {
                 tab.getProperties().put(TAB_PROPERTY_ENTITY, owner);
             } else {
                 tab.getProperties().replace(TAB_PROPERTY_ENTITY, owner);
             }
-            portfolioManagementTabPane.getTabs().add(tab);
         });
+        portfolioManagementTabPane.getTabs().setAll(ownerTabs);
         portfolioManagementTabPane.getSelectionModel().selectFirst();
     }
     // endregion
@@ -594,6 +590,10 @@ public class PortfolioManagementTabController {
     // endregion
 
     // region Getters
+    public PrimaryTabController getPrimaryTabController() {
+        return primaryTabController;
+    }
+
     public OwnerController getOwnerController() {
         return ownerController;
     }
