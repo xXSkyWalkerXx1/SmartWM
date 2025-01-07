@@ -1,17 +1,15 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.FinancialAsset;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
-import javafx.event.EventHandler;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import org.springframework.lang.NonNull;
 
@@ -87,7 +85,7 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
         prefHeightProperty().bind(parent.heightProperty());
 
         // Add listener to handle clicks
-        addEventHandler(MouseEvent.MOUSE_CLICKED, onClickAction);
+        getSelectionModel().selectedItemProperty().addListener(onClickListener);
     }
 
     private void setItems(@NonNull List<Portfolio> portfolios){
@@ -114,13 +112,12 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
         }
     }
 
-    private final EventHandler<MouseEvent> onClickAction = new EventHandler<>() {
+    private final ChangeListener<TreeItem<Item>> onClickListener = new ChangeListener<>() {
         @Override
-        public void handle(MouseEvent mouseEvent) {
-            TreeItem<Item> selectedItem = getSelectionModel().getSelectedItem();
-            if (selectedItem == null || selectedItem.equals(rootTreeItem)) return;
+        public void changed(ObservableValue<? extends TreeItem<Item>> observableValue, TreeItem<Item> itemTreeItem, TreeItem<Item> t1) {
+            if (t1 == null || t1.equals(rootTreeItem)) return;
 
-            FinancialAsset selectedAsset = selectedItem.getValue().asset;
+            FinancialAsset selectedAsset = t1.getValue().asset;
 
             // Handle navigation
             if (selectedAsset instanceof Portfolio) {
