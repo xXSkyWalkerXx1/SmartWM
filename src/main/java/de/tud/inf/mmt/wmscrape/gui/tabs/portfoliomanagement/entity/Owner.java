@@ -2,6 +2,8 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Changable;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -10,12 +12,15 @@ import java.util.*;
 
 @Entity
 @Table(name = "inhaber")
-public class Owner {
+public class Owner implements Changable {
 
     // region Entities as inner-classes
     @Entity
     @Table(name = "inhaber_adresse")
-    public static class Address {
+    public static class Address implements Changable {
+
+        @Transient
+        private boolean isChanged = false;
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +41,23 @@ public class Owner {
         @Column(name = "street_number", nullable = false)
         private String streetNumber;
 
+        @Override
+        public boolean isChanged() {
+            return isChanged;
+        }
+
+        @Override
+        public void setChanged(boolean changed) {
+            isChanged = changed;
+        }
+
         public Long getId() {
             return id;
         }
 
         public void setId(Long id) {
             this.id = id;
+            isChanged = true;
         }
 
         public String getCountry() {
@@ -50,6 +66,7 @@ public class Owner {
 
         public void setCountry(String country) {
             this.country = country;
+            isChanged = true;
         }
 
         public String getPlz() {
@@ -58,6 +75,7 @@ public class Owner {
 
         public void setPlz(String plz) {
             this.plz = plz;
+            isChanged = true;
         }
 
         public String getLocation() {
@@ -66,6 +84,7 @@ public class Owner {
 
         public void setLocation(String location) {
             this.location = location;
+            isChanged = true;
         }
 
         public String getStreet() {
@@ -74,6 +93,7 @@ public class Owner {
 
         public void setStreet(String street) {
             this.street = street;
+            isChanged = true;
         }
 
         public String getStreetNumber() {
@@ -82,12 +102,17 @@ public class Owner {
 
         public void setStreetNumber(String streetNumber) {
             this.streetNumber = streetNumber;
+            isChanged = true;
         }
     }
 
     @Entity
     @Table(name = "inhaber_steuer_informationen")
-    public static class TaxInformation {
+    public static class TaxInformation implements Changable {
+
+        @Transient
+        private boolean isChanged = false;
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -111,12 +136,23 @@ public class Owner {
         @Column(name = "solidarity_surcharge_tax_rate", nullable = false)
         private BigDecimal solidaritySurchargeTaxRate = BigDecimal.valueOf(0);
 
+        @Override
+        public boolean isChanged() {
+            return isChanged;
+        }
+
+        @Override
+        public void setChanged(boolean changed) {
+            isChanged = changed;
+        }
+
         public Long getId() {
             return id;
         }
 
         public void setId(Long id) {
             this.id = id;
+            isChanged = true;
         }
 
         public String getTaxNumber() {
@@ -125,6 +161,7 @@ public class Owner {
 
         public void setTaxNumber(String taxNumber) {
             this.taxNumber = taxNumber;
+            isChanged = true;
         }
 
         public MaritalState getMaritalState() {
@@ -133,6 +170,7 @@ public class Owner {
 
         public void setMaritalState(MaritalState maritalState) {
             this.maritalState = maritalState;
+            isChanged = true;
         }
 
         public double getTaxRate() {
@@ -141,6 +179,7 @@ public class Owner {
 
         public void setTaxRate(double taxRate) {
             this.taxRate = BigDecimal.valueOf(taxRate).setScale(2, RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public double getChurchTaxRate() {
@@ -149,6 +188,7 @@ public class Owner {
 
         public void setChurchTaxRate(double churchTaxRate) {
             this.churchTaxRate = BigDecimal.valueOf(churchTaxRate).setScale(2, RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public double getCapitalGainsTaxRate() {
@@ -156,7 +196,8 @@ public class Owner {
         }
 
         public void setCapitalGainsTaxRate(double capitalGainsTaxRate) {
-            this.capitalGainsTaxRate = BigDecimal.valueOf(capitalGainsTaxRate).setScale(2, RoundingMode.HALF_DOWN);;
+            this.capitalGainsTaxRate = BigDecimal.valueOf(capitalGainsTaxRate).setScale(2, RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public double getSolidaritySurchargeTaxRate() {
@@ -164,7 +205,8 @@ public class Owner {
         }
 
         public void setSolidaritySurchargeTaxRate(double solidaritySurchargeTaxRate) {
-            this.solidaritySurchargeTaxRate = BigDecimal.valueOf(solidaritySurchargeTaxRate).setScale(2, RoundingMode.HALF_DOWN);;
+            this.solidaritySurchargeTaxRate = BigDecimal.valueOf(solidaritySurchargeTaxRate).setScale(2, RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public BigDecimal getTaxRateBigDecimal() {
@@ -184,6 +226,9 @@ public class Owner {
         }
     }
     // endregion
+
+    @Transient
+    private boolean isChanged = false;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -227,9 +272,36 @@ public class Owner {
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
+    //@PostLoad
+    @PostPersist
+    @PostUpdate
+    private void onSaveOrLoad() {
+        setChanged(false);
+    }
+
+    @Override
+    public boolean isChanged() {
+        return isChanged || address.isChanged() || taxInformation.isChanged();
+    }
+
+    @Override
+    public void setChanged(boolean changed) {
+        address.setChanged(changed);
+        taxInformation.setChanged(changed);
+        isChanged = changed;
+    }
+
     @Override
     public String toString() {
         return String.format("%s %s (Steuer-Nr.: %s)", forename, aftername, taxInformation.taxNumber);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Owner owner = (Owner) obj;
+        return Objects.equals(id, owner.id);
     }
 
     // region Getters & Setters
@@ -239,6 +311,7 @@ public class Owner {
 
     public void setId(Long id) {
         this.id = id;
+        isChanged = true;
     }
 
     public State getState() {
@@ -247,11 +320,14 @@ public class Owner {
 
     public void setState(State state) {
         this.state = state;
+
         if (State.ACTIVATED.equals(state)) {
             setDeactivatedAt(null);
         } else if (State.DEACTIVATED.equals(state)) {
             setDeactivatedAt(Calendar.getInstance().getTime());
         }
+
+        isChanged = true;
     }
 
     public String getForename() {
@@ -260,6 +336,7 @@ public class Owner {
 
     public void setForename(String forename) {
         this.forename = forename;
+        isChanged = true;
     }
 
     public String getAftername() {
@@ -268,6 +345,7 @@ public class Owner {
 
     public void setAftername(String aftername) {
         this.aftername = aftername;
+        isChanged = true;
     }
 
     public String getNotice() {
@@ -276,6 +354,7 @@ public class Owner {
 
     public void setNotice(String notice) {
         this.notice = notice;
+        isChanged = true;
     }
 
     public Date getCreatedAt() {
@@ -284,6 +363,7 @@ public class Owner {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+        isChanged = true;
     }
 
     public Date getDeactivatedAt() {
@@ -292,6 +372,7 @@ public class Owner {
 
     public void setDeactivatedAt(Date deactivatedAt) {
         this.deactivatedAt = deactivatedAt;
+        isChanged = true;
     }
 
     public Address getAddress() {
@@ -314,13 +395,4 @@ public class Owner {
         return depots;
     }
     // endregion
-
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Owner owner = (Owner) obj;
-        return Objects.equals(id, owner.id);
-    }
 }
