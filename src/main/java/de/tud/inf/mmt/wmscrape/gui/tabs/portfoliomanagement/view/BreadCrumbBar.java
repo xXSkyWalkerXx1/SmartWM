@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToolBar;
@@ -21,6 +22,11 @@ public class BreadCrumbBar extends ToolBar {
         setStyle("-fx-spacing: 0px;"); // reduces the spacing between the buttons
     }
 
+    /**
+     * Adds a root crumb (looks different to the normal one) to the bread crumb bar
+     * @param label the label of the crumb
+     * @param onClick the action to be executed when the crumb is clicked
+     */
     public void addRootCrumb(@NonNull String label, @NonNull Runnable onClick) {
         if (hasRootCrumble) throw new IllegalStateException("Root crumb already added");
 
@@ -32,6 +38,15 @@ public class BreadCrumbBar extends ToolBar {
         hasRootCrumble = true;
     }
 
+    /**
+     * Adds a crumb to the bread crumb bar
+     * @param label the label of the crumb
+     * @param type the type of the crumb
+     * @param contextMenuItems the items to be displayed in the context menu
+     * @param contextMenuItemAction the action to be executed when a context menu item is clicked
+     * @param onClick the action to be executed when the crumb is clicked
+     * @param <T> the type of the context menu items
+     */
     public <T> void addCrumb(@NonNull String label, @NonNull BreadcrumbElementType type, @NonNull List<T> contextMenuItems,
                              @NonNull Consumer<T> contextMenuItemAction, @NonNull Runnable onClick) {
         if (!hasRootCrumble) throw new IllegalStateException("Root crumb not added yet");
@@ -75,21 +90,46 @@ public class BreadCrumbBar extends ToolBar {
         return crumb;
     }
 
+    /**
+     * Clears all breadcrumbs
+     */
     public void clearBreadcrumbs() {
         getItems().clear();
         hasRootCrumble = false;
     }
 
+    /**
+     * Removes all breadcrumbs after the given crumb
+     */
     private void removeCrumbsAfter(@NonNull org.controlsfx.control.BreadCrumbBar.BreadCrumbButton crumb) {
         int index = getItems().indexOf(crumb);
         if (index != -1) getItems().remove(index + 1, getItems().size());
     }
 
+    /**
+     * Removes all breadcrumbs after the last occurrence of the given type
+     */
+    public void removeCrumbsAfterLast(@NonNull BreadcrumbElementType lastType) {
+        int lastIndex = -1;
+
+        for (Node crumb : getItems()) {
+            if (lastType.equals(crumb.getUserData())) lastIndex = getItems().indexOf(crumb);
+        }
+
+        if (lastIndex != -1) getItems().remove(lastIndex + 1, getItems().size());
+    }
+
+    /**
+     * Trims the text to a maximum of 50 characters
+     */
     @NonNull
     private String trimText(@NonNull String text) {
         return text.length() > 50 ? text.substring(0, 50) + "..." : text;
     }
 
+    /**
+     * @return true if the bread crumb bar has a root crumb
+     */
     public boolean hasRootCrumble() {
         return hasRootCrumble;
     }
