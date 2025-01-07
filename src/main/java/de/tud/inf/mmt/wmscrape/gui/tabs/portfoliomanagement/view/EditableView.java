@@ -29,7 +29,13 @@ public abstract class EditableView {
             clearListeners(portfolioManagementTabController);
             if (!changableEntity.isChanged()) return;
             PrimaryTabManager.showNotificationEntityChanged(
-                    onButtonCancelClickAction,
+                    () -> {
+                        portfolioManagementTabController.getPrimaryTabController()
+                                .getPrimaryTabPane()
+                                .getSelectionModel()
+                                .selectLast();
+                        onButtonCancelClickAction.run();
+                    },
                     onButtonYesClickAction,
                     onButtonNoClickAction
             );
