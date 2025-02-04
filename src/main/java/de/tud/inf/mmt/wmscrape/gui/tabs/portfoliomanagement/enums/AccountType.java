@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum AccountType {
-    CLEARING_ACCOUNT("Verrechnungskonto"),
     CHECKING_ACCOUNT("Girokonto"),
-    FIXED_TERM_DEPOSIT_ACCOUNT("Festgeldkonto");
+    SAVINGS_ACCOUNT("Sparkonto"),
+    FIXED_TERM_DEPOSIT_ACCOUNT("Festgeldkonto"),
+    DAILY_MONEY_ACCOUNT("Tagesgeldkonto"),
+    CREDIT_ACCOUNT("Darlehenskonto"),
+    CLEARING_ACCOUNT("Verrechnungskonto");
 
     private final String displayText;
 
