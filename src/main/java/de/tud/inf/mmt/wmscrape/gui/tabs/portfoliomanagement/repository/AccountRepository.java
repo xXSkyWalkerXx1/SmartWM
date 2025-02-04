@@ -31,19 +31,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      * @return true if any inconsistency in accounts exists, otherwise false.
      */
     default boolean inconsistentAccountsExists() {
-        return !findAllByOwnerAndPortfolioIsInvalid().isEmpty()
-                || !findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull().isEmpty()
-                || !findByStateNotInOrTypeNotInOrInterestIntervalNotIn(
-                        State.getValuesAsString(),
-                        AccountType.getValuesAsString(),
-                        InterestInterval.getValuesAsString()).isEmpty()
-                || !findAllByStateIsDeactivatedButDeactivatedAtIsNull().isEmpty()
-                || !findByInterestRateIsNotBetween0And100().isEmpty()
-                || !findByInterestDaysIsNotBetween0And366().isEmpty()
-                || !findByCurrencyIsNotIn(Currency.getAvailableCurrencies().stream()
-                .map(Currency::getCurrencyCode)
-                .collect(Collectors.toList()))
-                .isEmpty();
+        return !getInconsistentAccountIds().isEmpty();
     }
 
     /**

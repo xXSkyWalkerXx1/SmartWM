@@ -45,13 +45,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
      * @return true if any inconsistent portfolios exists, otherwise false.
      */
     default boolean inconsistentPortfoliosExists() {
-        return !findAllByNameIsNullOrCreatedAtIsNull().isEmpty()
-                || !findAllByOwnerOrInvestmentguidelineIsInvalid().isEmpty()
-                || !findAllByStateNotIn(State.getValuesAsString()).isEmpty()
-                || !findAllByStateIsDeactivatedButDeactivatedAtIsNull().isEmpty()
-                || !findAllByInvalidInvestmentGuidelineEntries().isEmpty()
-                || !findAllBySumOfDivisionByLocationIsNot100().isEmpty()
-                || !findAllBySumOfDivisionByCurrencyIsNot100().isEmpty();
+        return !getInconsistentPortfolioIds().isEmpty();
     }
 
     /**
@@ -214,7 +208,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             }
         }
         // return without duplicates
-        return new ArrayList<>(new HashSet<>(invalidEntryIds));
+        return invalidEntryIds.stream().distinct().toList();
     }
 
     // If any value is null, the sum is null too.

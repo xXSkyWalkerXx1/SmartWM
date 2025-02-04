@@ -46,12 +46,7 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
      * @return true if any inconsistency in owners exists, otherwise false.
      */
     default boolean inconsistentOwnerExists() {
-        return !findAllByAddressOrTaxInformationIsInvalid().isEmpty()
-                || !findAllByForenameIsNullOrAfternameIsNullOrCreatedAtIsNull().isEmpty()
-                || !findAllByAddressContainingNullValues().isEmpty()
-                || !findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()).isEmpty()
-                || !findAllByStateIsNotIn(State.getValuesAsString()).isEmpty()
-                || !findAllByStateIsDeactivatedButDeactivatedAtIsNull().isEmpty();
+        return !getInconsistentOwnerIds().isEmpty();
     }
 
     /**
@@ -259,7 +254,7 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
     @Transactional
     @Modifying
-    default void deleteById(@NonNull @Param("id") Long id) {
+    default void deleteById(@NonNull Long id) {
         disableForeignKeyChecks();
         deleteOwner(id);
         enableForeignKeyChecks();
