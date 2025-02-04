@@ -84,9 +84,7 @@ public class Account extends FinancialAsset {
 
     @Override
     public BigDecimal getValue(@NonNull AccountService accountService) throws DataAccessException {
-        if (Currency.getInstance("EUR").equals(getValueCurrency())) {
-            return balance;
-        }
+        if (Currency.getInstance("EUR").equals(getValueCurrency())) return balance;
         Double latestExchangeCourse = accountService.getLatestExchangeCourse(getValueCurrency());
         return balance.divide(BigDecimal.valueOf(latestExchangeCourse), BigDecimal.ROUND_HALF_DOWN);
     }
