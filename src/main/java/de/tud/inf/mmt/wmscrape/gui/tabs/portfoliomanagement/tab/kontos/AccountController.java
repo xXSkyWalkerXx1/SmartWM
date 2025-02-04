@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 
 @Controller
-public class AccountMenuController implements Openable {
+public class AccountController implements Openable {
 
     @Autowired
     AccountService accountService;

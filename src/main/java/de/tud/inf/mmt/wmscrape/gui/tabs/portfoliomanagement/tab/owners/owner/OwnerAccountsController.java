@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class OwnerKontosController implements Openable {
+public class OwnerAccountsController implements Openable {
 
     Owner owner;
 

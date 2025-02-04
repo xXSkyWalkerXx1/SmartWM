@@ -18,7 +18,7 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 
 @Controller
-public class PortfolioListController implements Openable {
+public class PortfolioController implements Openable {
 
     @Autowired
     private PortfolioService portfolioService;
