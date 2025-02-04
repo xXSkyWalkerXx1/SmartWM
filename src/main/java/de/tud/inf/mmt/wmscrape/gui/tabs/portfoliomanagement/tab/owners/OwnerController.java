@@ -8,6 +8,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeVi
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -41,7 +42,12 @@ public class OwnerController implements Openable {
                 ownerService
         ));
 
-        setOwnerTreeView(new PortfolioTreeView(ownerTreeViewPane, new ArrayList<>(), portfolioManagementTabManager, true));
+        setOwnerTreeView(new PortfolioTreeView(
+                ownerTreeViewPane,
+                new ArrayList<>(),
+                portfolioManagementTabManager,
+                true
+        ));
     }
 
     @FXML
@@ -57,6 +63,7 @@ public class OwnerController implements Openable {
     }
 
     public void setOwnerTreeView(@NonNull PortfolioTreeView portfolioTreeView){
+        portfolioTreeView.setTooltip(new Tooltip("Auflistung der dem Inhaber zugeordneten Portfolios, Konten und Depots."));
         ownerTreeViewPane.getChildren().setAll(portfolioTreeView);
     }
 
