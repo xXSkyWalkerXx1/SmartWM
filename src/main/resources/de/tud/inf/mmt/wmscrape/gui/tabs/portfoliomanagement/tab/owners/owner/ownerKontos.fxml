@@ -2,4 +2,4 @@
 
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="accountsTablePane" prefHeight="756.0" prefWidth="1337.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerKontosController" />
+<AnchorPane fx:id="accountsTablePane" prefHeight="756.0" prefWidth="1337.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerAccountsController" />
