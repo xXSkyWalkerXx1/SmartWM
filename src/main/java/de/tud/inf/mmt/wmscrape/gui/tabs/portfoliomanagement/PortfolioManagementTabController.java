@@ -503,16 +503,12 @@ public class PortfolioManagementTabController {
         breadCrumbBar.addCrumb(label, type, contextMenuItems, contextMenuItemAction, onLabelClick);
     }
 
-    public void changeBreadcrumbs(List<BreadcrumbElement> elements) {
-        breadCrumbBar.clearBreadcrumbs();
-
-        for (BreadcrumbElement element : elements) {
-            switch (element.type) {
-                case DEPOT -> addDepotBreadcrumbs((Depot) element.element);
-                case PORTFOLIO -> addPortfolioBreadcrumbs((Portfolio) element.element);
-                case OWNER -> addOwnerBreadcrumbs((Owner) element.element);
-                case ACCOUNT -> addKontoBreadcrumbs((Account) element.element);
-            }
+    public void addBreadcrumb(BreadcrumbElement element) {
+        switch (element.type) {
+            case DEPOT -> addDepotBreadcrumbs((Depot) element.element);
+            case PORTFOLIO -> addPortfolioBreadcrumbs((Portfolio) element.element);
+            case OWNER -> addOwnerBreadcrumbs((Owner) element.element);
+            case ACCOUNT -> addKontoBreadcrumbs((Account) element.element);
         }
     }
 
