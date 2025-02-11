@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Changable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
@@ -11,7 +12,10 @@ import java.util.*;
 
 @Entity
 @Table(name = "portfolio")
-public class Portfolio extends FinancialAsset {
+public class Portfolio extends FinancialAsset implements Changable {
+
+    @Transient
+    private boolean isChanged = false;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,9 +51,23 @@ public class Portfolio extends FinancialAsset {
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
+    @PostPersist
+    @PostUpdate
+    private void onSaveOrLoad() {
+        setChanged(false);
+    }
+
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Portfolio that = (Portfolio) obj;
+        return Objects.equals(id, that.id);
     }
 
     // region Getters & Setters
@@ -69,12 +87,24 @@ public class Portfolio extends FinancialAsset {
     }
 
     @Override
+    public boolean isChanged() {
+        return isChanged || investmentGuideline.isChanged();
+    }
+
+    @Override
+    public void setChanged(boolean changed) {
+        investmentGuideline.setChanged(changed);
+        isChanged = changed;
+    }
+
+    @Override
     public Currency getValueCurrency() {
         return Currency.getInstance("EUR");
     }
 
     public void setId(Long id) {
         this.id = id;
+        isChanged = true;
     }
 
     public Long getId() {
@@ -87,6 +117,7 @@ public class Portfolio extends FinancialAsset {
 
     public void setName(String name) {
         this.name = name;
+        isChanged = true;
     }
 
     public Owner getOwner() {
@@ -95,6 +126,7 @@ public class Portfolio extends FinancialAsset {
 
     public void setOwner(Owner owner) {
         this.owner = owner;
+        isChanged = true;
     }
 
     public State getState() {
@@ -109,14 +141,11 @@ public class Portfolio extends FinancialAsset {
         } else if (State.DEACTIVATED.equals(state)) {
             setDeactivatedAt(Calendar.getInstance().getTime());
         }
+        isChanged = true;
     }
 
     public InvestmentGuideline getInvestmentGuideline() {
         return investmentGuideline;
-    }
-
-    public void setInvestmentGuideline(InvestmentGuideline investmentGuideline) {
-        this.investmentGuideline = investmentGuideline;
     }
 
     public List<Depot> getDepots() {
@@ -125,6 +154,7 @@ public class Portfolio extends FinancialAsset {
 
     public void setDepots(List<Depot> depots) {
         this.depots = new HashSet<>(depots);
+        isChanged = true;
     }
 
     public List<Account> getAccounts() {
@@ -133,6 +163,7 @@ public class Portfolio extends FinancialAsset {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = new HashSet<>(accounts);
+        isChanged = true;
     }
 
     public Date getCreatedAt() {
@@ -141,6 +172,7 @@ public class Portfolio extends FinancialAsset {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+        isChanged = true;
     }
 
     public Date getDeactivatedAt() {
@@ -149,14 +181,7 @@ public class Portfolio extends FinancialAsset {
 
     public void setDeactivatedAt(Date deactivatedAt) {
         this.deactivatedAt = deactivatedAt;
+        isChanged = true;
     }
     // endregion
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Portfolio that = (Portfolio) obj;
-        return Objects.equals(id, that.id);
-    }
 }
