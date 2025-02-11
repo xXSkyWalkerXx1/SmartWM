@@ -27,18 +27,6 @@ public class DepotListController {
 
     @FXML
     private void initialize() {
-        switchToDepot1Button.setOnAction(actionEvent -> {
-            portfolioManagementTabManager.showDepotTabs();
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement("Depot 1", BreadcrumbElementType.DEPOT));
-        });
-        switchToDepot2Button.setOnAction(actionEvent -> {
-            portfolioManagementTabManager.showDepotTabs();
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement("Depot 2", BreadcrumbElementType.DEPOT));
-        });
-        switchToDepot3Button.setOnAction(actionEvent -> {
-            portfolioManagementTabManager.showDepotTabs();
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement("Depot 3", BreadcrumbElementType.DEPOT));
-        });
     }
 
 }
