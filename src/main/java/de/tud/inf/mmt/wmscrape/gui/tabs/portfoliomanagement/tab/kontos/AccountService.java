@@ -67,15 +67,19 @@ public class AccountService {
     }
 
     /**
-     * @param fromCurrency f.e. USD to get exchange-course from USD to EUR.
+     * @param toCurrency f.e. USD to get exchange-course from EUR to USD.
      * @return the latest exchange course from EUR to the given currency.
      * @throws DataAccessException if the exchange course could not be retrieved.
      */
-    public Double getLatestExchangeCourse(Currency fromCurrency) throws DataAccessException {
-        String currency = fromCurrency.toString().toLowerCase();
+    public Double getLatestExchangeCourse(Currency toCurrency) throws DataAccessException {
+        String currency = toCurrency.toString().toLowerCase();
         if ("eur".equals(currency)) return 1.0;
         return jdbcTemplate.queryForObject(String.format(
-                "SELECT wk.eur_%s FROM wechselkurse wk WHERE wk.eur_%s IS NOT NULL ORDER BY wk.datum DESC LIMIT 1",
+                "SELECT wk.eur_%s " +
+                        "FROM wechselkurse wk " +
+                        "WHERE wk.eur_%s IS NOT NULL " +
+                        "ORDER BY wk.datum DESC " +
+                        "LIMIT 1",
                         currency,
                         currency
                 ),
