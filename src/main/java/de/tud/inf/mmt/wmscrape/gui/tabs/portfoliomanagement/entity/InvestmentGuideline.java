@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InvestmentType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Changable;
 import org.checkerframework.common.value.qual.IntRange;
 
 import javax.persistence.*;
@@ -13,12 +14,16 @@ import java.util.*;
  */
 @Entity
 @Table(name = "anlagen_richtlinie")
-public class InvestmentGuideline {
+public class InvestmentGuideline implements Changable {
 
     // region Entities as inner-classes
     @Entity
     @Table(name = "anlagen_richtlinie_eintrag")
-    public static class Entry {
+    public static class Entry implements Changable {
+
+        @Transient
+        private boolean isChanged = false;
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -55,6 +60,17 @@ public class InvestmentGuideline {
             return type.toString();
         }
 
+        @Override
+        public void setChanged(boolean changed) {
+            childEntries.forEach(entry -> entry.setChanged(changed));
+            isChanged = changed;
+        }
+
+        @Override
+        public boolean isChanged() {
+            return isChanged || childEntries.stream().anyMatch(Changable::isChanged);
+        }
+
         // region Getters & Setters
         public Long getId() {
             return id;
@@ -62,6 +78,7 @@ public class InvestmentGuideline {
 
         public void setId(Long id) {
             this.id = id;
+            isChanged = true;
         }
 
         public InvestmentType getType() {
@@ -70,6 +87,7 @@ public class InvestmentGuideline {
 
         public void setType(InvestmentType type) {
             this.type = type;
+            isChanged = true;
         }
 
         public float getAssetAllocation() {
@@ -79,6 +97,7 @@ public class InvestmentGuideline {
         public void setAssetAllocation(float assetAllocation) {
             this.assetAllocation = BigDecimal.valueOf(assetAllocation).setScale(2,RoundingMode.HALF_DOWN);
             childEntries.forEach(entry -> entry.setAssetAllocation(assetAllocation));
+            isChanged = true;
         }
 
         public Integer getMaxRiskclass() {
@@ -88,6 +107,7 @@ public class InvestmentGuideline {
         public void setMaxRiskclass(Integer maxRiskclass) {
             this.maxRiskclass = maxRiskclass;
             childEntries.forEach(entry -> entry.setMaxRiskclass(maxRiskclass));
+            isChanged = true;
         }
 
         public float getMaxVolatility() {
@@ -97,6 +117,7 @@ public class InvestmentGuideline {
         public void setMaxVolatility(float maxVolatility) {
             this.maxVolatility = BigDecimal.valueOf(maxVolatility).setScale(2,RoundingMode.HALF_DOWN);
             childEntries.forEach(entry -> entry.setMaxVolatility(maxVolatility));
+            isChanged = true;
         }
 
         public float getPerformance() {
@@ -106,6 +127,7 @@ public class InvestmentGuideline {
         public void setPerformance(float performance) {
             this.performance = BigDecimal.valueOf(performance).setScale(2,RoundingMode.HALF_DOWN);
             childEntries.forEach(entry -> entry.setPerformance(performance));
+            isChanged = true;
         }
 
         public float getRendite() {
@@ -115,6 +137,7 @@ public class InvestmentGuideline {
         public void setRendite(float rendite) {
             this.rendite = BigDecimal.valueOf(rendite).setScale(2,RoundingMode.HALF_DOWN);
             childEntries.forEach(entry -> entry.setRendite(rendite));
+            isChanged = true;
         }
 
         public float getChanceRiskNumber() {
@@ -124,6 +147,7 @@ public class InvestmentGuideline {
         public void setChanceRiskNumber(float chanceRiskNumber) {
             this.chanceRiskNumber = BigDecimal.valueOf(chanceRiskNumber).setScale(2,RoundingMode.HALF_DOWN);
             childEntries.forEach(entry -> entry.setChanceRiskNumber(chanceRiskNumber));
+            isChanged = true;
         }
 
         public List<Entry> getChildEntries() {
@@ -132,13 +156,18 @@ public class InvestmentGuideline {
 
         public void addChildEntry(Entry childEntry) {
             this.childEntries.add(childEntry);
+            isChanged = true;
         }
         // endregion
     }
 
     @Entity
     @Table(name = "anlagen_richtlinie_unterteilung_ort")
-    public static class DivisionByLocation {
+    public static class DivisionByLocation implements Changable {
+
+        @Transient
+        private boolean isChanged = false;
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -151,12 +180,23 @@ public class InvestmentGuideline {
         private BigDecimal japan = BigDecimal.valueOf(0);
         private BigDecimal emergine_markets = BigDecimal.valueOf(0);
 
+        @Override
+        public void setChanged(boolean changed) {
+            isChanged = changed;
+        }
+
+        @Override
+        public boolean isChanged() {
+            return isChanged;
+        }
+
         public Long getId() {
             return id;
         }
 
         public void setId(Long id) {
             this.id = id;
+            isChanged = true;
         }
 
         public float getGermany() {
@@ -165,6 +205,7 @@ public class InvestmentGuideline {
 
         public void setGermany(float germany) {
             this.germany = BigDecimal.valueOf(germany).setScale(2,RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public float getEurope_without_brd() {
@@ -173,6 +214,7 @@ public class InvestmentGuideline {
 
         public void setEurope_without_brd(float europe_without_brd) {
             this.europe_without_brd = BigDecimal.valueOf(europe_without_brd).setScale(2,RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public float getNorthamerica_with_usa() {
@@ -181,6 +223,7 @@ public class InvestmentGuideline {
 
         public void setNorthamerica_with_usa(float northamerica_with_usa) {
             this.northamerica_with_usa = BigDecimal.valueOf(northamerica_with_usa).setScale(2,RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public float getAsia_without_china() {
@@ -189,6 +232,7 @@ public class InvestmentGuideline {
 
         public void setAsia_without_china(float asia_without_china) {
             this.asia_without_china = BigDecimal.valueOf(asia_without_china).setScale(2,RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public float getChina() {
@@ -197,6 +241,7 @@ public class InvestmentGuideline {
 
         public void setChina(float china) {
             this.china = BigDecimal.valueOf(china).setScale(2,RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public float getJapan() {
@@ -205,6 +250,7 @@ public class InvestmentGuideline {
 
         public void setJapan(float japan) {
             this.japan = BigDecimal.valueOf(japan).setScale(2,RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public float getEmergine_markets() {
@@ -213,6 +259,7 @@ public class InvestmentGuideline {
 
         public void setEmergine_markets(float emergine_markets) {
             this.emergine_markets = BigDecimal.valueOf(emergine_markets).setScale(2,RoundingMode.HALF_DOWN);
+            isChanged = true;
         }
 
         public float getSum() {
@@ -229,7 +276,11 @@ public class InvestmentGuideline {
 
     @Entity
     @Table(name = "anlagen_richtlinie_unterteilung_währung")
-    public static class DivisionByCurrency {
+    public static class DivisionByCurrency implements Changable {
+
+        @Transient
+        private boolean isChanged = false;
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -242,12 +293,23 @@ public class InvestmentGuideline {
         private BigDecimal asia_currencies = BigDecimal.valueOf(0);
         private BigDecimal others = BigDecimal.valueOf(0);
 
+        @Override
+        public void setChanged(boolean changed) {
+            isChanged = changed;
+        }
+
+        @Override
+        public boolean isChanged() {
+            return isChanged;
+        }
+
         public Long getId() {
             return id;
         }
 
         public void setId(Long id) {
             this.id = id;
+            isChanged = true;
         }
 
         public float getEuro() {
@@ -256,7 +318,7 @@ public class InvestmentGuideline {
 
         public void setEuro(float euro) {
             this.euro = BigDecimal.valueOf(euro).setScale(2, RoundingMode.HALF_DOWN);
-            ;
+            isChanged = true;
         }
 
         public float getUsd() {
@@ -265,7 +327,7 @@ public class InvestmentGuideline {
 
         public void setUsd(float usd) {
             this.usd = BigDecimal.valueOf(usd).setScale(2, RoundingMode.HALF_DOWN);
-            ;
+            isChanged = true;
         }
 
         public float getChf() {
@@ -274,7 +336,7 @@ public class InvestmentGuideline {
 
         public void setChf(float chf) {
             this.chf = BigDecimal.valueOf(chf).setScale(2, RoundingMode.HALF_DOWN);
-            ;
+            isChanged = true;
         }
 
         public float getGbp() {
@@ -283,7 +345,7 @@ public class InvestmentGuideline {
 
         public void setGbp(float gbp) {
             this.gbp = BigDecimal.valueOf(gbp).setScale(2, RoundingMode.HALF_DOWN);
-            ;
+            isChanged = true;
         }
 
         public float getYen() {
@@ -292,7 +354,7 @@ public class InvestmentGuideline {
 
         public void setYen(float yen) {
             this.yen = BigDecimal.valueOf(yen).setScale(2, RoundingMode.HALF_DOWN);
-            ;
+            isChanged = true;
         }
 
         public float getAsiaCurrencies() {
@@ -301,7 +363,7 @@ public class InvestmentGuideline {
 
         public void setAsia_currencies(float asia_currencies) {
             this.asia_currencies = BigDecimal.valueOf(asia_currencies).setScale(2, RoundingMode.HALF_DOWN);
-            ;
+            isChanged = true;
         }
 
         public float getOthers() {
@@ -310,7 +372,7 @@ public class InvestmentGuideline {
 
         public void setOthers(float others) {
             this.others = BigDecimal.valueOf(others).setScale(2, RoundingMode.HALF_DOWN);
-            ;
+            isChanged = true;
         }
 
         public float getSum() {
@@ -325,6 +387,9 @@ public class InvestmentGuideline {
         }
     }
     // endregion
+
+    @Transient
+    private boolean isChanged = false;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -341,6 +406,22 @@ public class InvestmentGuideline {
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "division_by_currency_id")
     private DivisionByCurrency divisionByCurrency = new DivisionByCurrency();
+
+    @Override
+    public void setChanged(boolean changed) {
+        entries.forEach(entry -> entry.setChanged(changed));
+        divisionByLocation.setChanged(changed);
+        divisionByCurrency.setChanged(changed);
+        isChanged = changed;
+    }
+
+    @Override
+    public boolean isChanged() {
+        return isChanged
+                || entries.stream().anyMatch(Changable::isChanged)
+                || divisionByLocation.isChanged()
+                || divisionByCurrency.isChanged();
+    }
 
     /**
      * Creates initial entries for the investment guideline.
