@@ -53,7 +53,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                 col -> new SimpleStringProperty(col.getValue().getValue().getType().toString())
         ));
         getColumns().add(createDynamicColumn(
-                "Aufteilung Gesamtvermögen (%)",
+                "\tAufteilung\nGesamtvermögen (%)",
                 null,
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getAssetAllocation())),
                 col -> {
@@ -71,7 +71,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                     if (col.getRowValue().getValue().getType().isChild()) { // it's a child
                         // Only allow editing of child-entries if the parent is not the root-item and the asset allocation is set
                         if (parentRow.getValue().getAssetAllocation() == 0) return;
-                        // if the sum of the parents children is not greater than 100
+                        // if the sum of the parents children is greater than 100
                         if (getChildAllocSum(parentRow) - curr + input > 100) {
                             showErrorChildDialog.accept(parentRow.getValue().getType(), input, getChildAllocSum(parentRow) - curr);
                             return;
@@ -99,7 +99,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                 false
         ));
         getColumns().add(createDynamicColumn(
-                "Maximale Risikoklasse (1-12)",
+                "\tMaximale\nRisikoklasse (1-12)",
                 "Die Risikoklasse gibt an, wie risikoreich die Anlage ist.\n" +
                         "Die Skala reicht von 1 (niedriges Risiko) bis 12 (hohes Risiko).",
                 entry -> new SimpleStringProperty(String.valueOf(entry.getMaxRiskclass())),
@@ -109,7 +109,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
         getColumns().add(createDynamicColumn(
-                "Max. Volatilität innerhalb 1 Jahr (%)",
+                "Maximale Volatilität\ninnerhalb 1 Jahr (%)",
                 "Die maximale Volatilität (0-100) gibt an, wie stark der Wert der Anlage innerhalb eines Jahres " +
                         "schwanken (insbesondere fallen) kann.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getMaxVolatility())),
@@ -171,8 +171,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         ));
 
         getColumns().add(createDynamicColumn(
-                "Minimale Chancen-Risiko-Zahl (%)",
-                "Beschreibt, um wie viel besser oder maximal schlechter eine Anlage zum Benchmark ist.",
+                "\t   Minimale\nChancen-Risiko-Zahl (%)",
+                "Beschreibt das Verhältnis einer Anlage zum Benchmark.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getChanceRiskNumber())),
                 col -> {
                     // Try to parse input
@@ -217,7 +217,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
      * @param onCommit Defines what will be updated on commit.
      * @param inputFormatter Defines how the input should be formatted, f.e. numbers between 0 and 100.
      // @param onInputAction Defines how the input is parsed, f.e. as float ({@link Float#parseFloat(String)}.
-     * @param isOnlyParentEditable Defines if only the parent-entries should be editable and show his values.
+     * @param showOnlyParent Defines if only the parent-entries should be editable and show his values.
      */
     private TreeTableColumn<InvestmentGuideline.Entry, String> createDynamicColumn(@NonNull String columnName,
                                                                                    @Nullable String columnDescr,
@@ -225,8 +225,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                                                                                    @Nullable EventHandler<TreeTableColumn.CellEditEvent<InvestmentGuideline.Entry, String>> onCommit,
                                                                                    @NonNull Consumer<TextField> inputFormatter,
                                                                                    //@NonNull Callback<String, String> onInputAction,
-                                                                                   boolean isOnlyParentEditable) {
-        return createDynamicColumn(columnName, columnDescr, cellValueFactory, onCommit, inputFormatter, isOnlyParentEditable, null);
+                                                                                   boolean showOnlyParent) {
+        return createDynamicColumn(columnName, columnDescr, cellValueFactory, onCommit, inputFormatter, showOnlyParent, null);
     }
 
     /**
@@ -234,8 +234,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
      * @param onCommit Defines what will be updated on commit.
      * @param inputFormatter Defines how the input should be formatted, f.e. numbers between 0 and 100.
      // @param onInputAction Defines how the input is parsed, f.e. as float ({@link Float#parseFloat(String)}.
-     * @param isOnlyParentEditable Defines if only the parent-entries should be editable and show his values.
-     * @param isEditable Defines if the cell is editable. Use to constrain specific cells in a row for a specific column.
+     * @param showOnlyParent Defines if only the parent-entries should be editable and show his values.
+     * @param showOnlyIfTrue Defines if the cell is editable. Use to constrain specific cells in a row for a specific column.
      */
     private TreeTableColumn<InvestmentGuideline.Entry, String> createDynamicColumn(@NonNull String columnName,
                                                                                    @Nullable String columnDescr,
@@ -243,8 +243,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                                                                                    @Nullable EventHandler<TreeTableColumn.CellEditEvent<InvestmentGuideline.Entry, String>> onCommit,
                                                                                    @NonNull Consumer<TextField> inputFormatter,
                                                                                    //@NonNull Callback<String, String> onInputAction,
-                                                                                   boolean isOnlyParentEditable,
-                                                                                   @Nullable Predicate<InvestmentType> isEditable) {
+                                                                                   boolean showOnlyParent,
+                                                                                   @Nullable Predicate<InvestmentType> showOnlyIfTrue) {
         Callback<TreeTableColumn<InvestmentGuideline.Entry, String>, TreeTableCell<InvestmentGuideline.Entry, String>> cellFactory = new Callback<>() {
             @Override
             public TreeTableCell<InvestmentGuideline.Entry, String> call(TreeTableColumn<InvestmentGuideline.Entry, String> column) {
@@ -260,8 +260,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                     @Override
                     public void startEdit() {
                         super.startEdit();
-                        if (isOnlyParentEditable && getTableRow().getItem().getType().isChild()) return;
-                        if (isEditable != null && !isEditable.test(getTableRow().getItem().getType())) return;
+                        if (showOnlyParent && getTableRow().getItem().getType().isChild()) return;
+                        if (showOnlyIfTrue != null && !showOnlyIfTrue.test(getTableRow().getItem().getType())) return;
 
                         graphicProperty().setValue(inputField);
                         setText(null);
@@ -316,9 +316,9 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
         if (cellValueFactory != null) newColumn.setCellValueFactory(cell -> {
             InvestmentGuideline.Entry entry = cell.getValue().getValue();
-            if (isOnlyParentEditable && entry.getType().isChild()) return null;
-            if (isEditable != null && !isEditable.test(entry.getType())) return null;
-            return cellValueFactory.call(cell.getValue().getValue());
+            if (showOnlyParent && entry.getType().isChild()) return null;
+            if (showOnlyIfTrue != null && !showOnlyIfTrue.test(entry.getType())) return null;
+            return cellValueFactory.call(entry);
         });
         if (onCommit != null) newColumn.setOnEditCommit(onCommit);
 
