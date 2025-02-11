@@ -24,16 +24,5 @@ public class PortfolioDepotsController {
 
     @FXML
     private void initialize() {
-        //init depots
-        for(int i = 0; i < portfolioManagementTabManager.depotsOfPortfolio1List.length; i++) {
-            String depot = portfolioManagementTabManager.depotsOfPortfolio1List[i];
-            Button button = new Button(depot);
-            button.setOnAction(actionEvent -> {
-                portfolioManagementTabManager.showDepotTabs();
-                portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(depot, BreadcrumbElementType.DEPOT));
-            });
-
-            depotListContainer.getChildren().add(button);
-        }
     }
 }

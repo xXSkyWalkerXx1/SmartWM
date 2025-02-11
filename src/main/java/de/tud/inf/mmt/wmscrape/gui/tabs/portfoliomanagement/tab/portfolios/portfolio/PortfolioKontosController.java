@@ -23,16 +23,5 @@ public class PortfolioKontosController {
 
     @FXML
     private void initialize() {
-        //init depots
-        for(int i = 0; i < portfolioManagementTabManager.kontosOfPortfolio1List.length; i++) {
-            String konto = portfolioManagementTabManager.kontosOfPortfolio1List[i];
-            Button button = new Button(konto);
-            button.setOnAction(actionEvent -> {
-                portfolioManagementTabManager.showKontoTabs(null);
-                portfolioManagementTabManager.addCurrentlyDisplayedElement(new BreadcrumbElement(konto, BreadcrumbElementType.ACCOUNT));
-            });
-
-            kontoListContainer.getChildren().add(button);
-        }
     }
 }
