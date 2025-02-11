@@ -65,8 +65,7 @@ public class CreateOwnerDialog {
                         FormatUtils.parseFloat(change.getControlNewText()),
                         FormatUtils.parseFloat(inputChurchTaxRate.getText())
                                 + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText())
-                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                        inputMaritalState
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText())
                 );
             } catch (ParseException e) {
                 return false;
@@ -78,8 +77,7 @@ public class CreateOwnerDialog {
                         FormatUtils.parseFloat(change.getControlNewText()),
                         FormatUtils.parseFloat(inputTaxRate.getText())
                                 + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText())
-                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                        inputMaritalState
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText())
                 );
             } catch (ParseException e) {
                 return false;
@@ -91,8 +89,7 @@ public class CreateOwnerDialog {
                         FormatUtils.parseFloat(change.getControlNewText()),
                         FormatUtils.parseFloat(inputTaxRate.getText())
                                 + FormatUtils.parseFloat(inputChurchTaxRate.getText())
-                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                        inputMaritalState
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText())
                 );
             } catch (ParseException e) {
                 return false;
@@ -104,8 +101,7 @@ public class CreateOwnerDialog {
                         FormatUtils.parseFloat(change.getControlNewText()),
                         FormatUtils.parseFloat(inputTaxRate.getText())
                                 + FormatUtils.parseFloat(inputChurchTaxRate.getText())
-                                + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText()),
-                        inputMaritalState
+                                + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText())
                 );
             } catch (ParseException e) {
                 return false;
