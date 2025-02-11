@@ -3,6 +3,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterval;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Changable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
@@ -18,7 +19,10 @@ import java.util.*;
  */
 @Entity(name = "pAccount")
 @Table(name = "pkonto")
-public class Account extends FinancialAsset {
+public class Account extends FinancialAsset implements Changable {
+
+    @Transient
+    private boolean isChanged = false;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,9 +103,28 @@ public class Account extends FinancialAsset {
         return iban;
     }
 
+    @Override
+    public void setChanged(boolean changed) {
+        isChanged = changed;
+    }
+
+    @Override
+    public boolean isChanged() {
+        return isChanged;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Account account = (Account) obj;
+        return Objects.equals(id, account.id);
+    }
+
     // region Getters & Setters
     public void setId(Long id) {
         this.id = id;
+        isChanged = true;
     }
 
     public Long getId() {
@@ -114,6 +137,7 @@ public class Account extends FinancialAsset {
 
     public void setDescription(String description) {
         this.description = description;
+        isChanged = true;
     }
 
     public AccountType getType() {
@@ -132,10 +156,12 @@ public class Account extends FinancialAsset {
         } else if (State.DEACTIVATED.equals(state)) {
             setDeactivatedAt(Calendar.getInstance().getTime());
         }
+        isChanged = true;
     }
 
     public void setType(AccountType type) {
         this.type = type;
+        isChanged = true;
     }
 
     public Currency getCurrency() {
@@ -145,6 +171,7 @@ public class Account extends FinancialAsset {
 
     public void setCurrencyCode(Currency currency) {
         this.currencyCode = currency.getCurrencyCode();
+        isChanged = true;
     }
 
     public double getBalance() {
@@ -157,6 +184,7 @@ public class Account extends FinancialAsset {
 
     public void setBalance(double balance) {
         this.balance = BigDecimal.valueOf(balance).setScale(2, RoundingMode.HALF_DOWN);
+        isChanged = true;
     }
 
     public Owner getOwner() {
@@ -165,6 +193,7 @@ public class Account extends FinancialAsset {
 
     public void setOwner(Owner owner) {
         this.owner = owner;
+        isChanged = true;
     }
 
     public Portfolio getPortfolio() {
@@ -173,6 +202,7 @@ public class Account extends FinancialAsset {
 
     public void setPortfolio(Portfolio portfolio) {
         this.portfolio = portfolio;
+        isChanged = true;
     }
 
     public String getNotice() {
@@ -181,6 +211,7 @@ public class Account extends FinancialAsset {
 
     public void setNotice(String notice) {
         this.notice = notice;
+        isChanged = true;
     }
 
     public String getBankName() {
@@ -189,6 +220,7 @@ public class Account extends FinancialAsset {
 
     public void setBankName(String bankName) {
         this.bankName = bankName;
+        isChanged = true;
     }
 
     public String getIban() {
@@ -197,6 +229,7 @@ public class Account extends FinancialAsset {
 
     public void setIban(String iban) {
         this.iban = iban;
+        isChanged = true;
     }
 
     public String getKontoNumber() {
@@ -205,6 +238,7 @@ public class Account extends FinancialAsset {
 
     public void setKontoNumber(String kontoNumber) {
         this.kontoNumber = kontoNumber;
+        isChanged = true;
     }
 
     public BigDecimal getInterestRateBigDecimal() {
@@ -217,6 +251,7 @@ public class Account extends FinancialAsset {
 
     public void setInterestRate(double interestRate) {
         this.interestRate = BigDecimal.valueOf(interestRate).setScale(2, RoundingMode.HALF_DOWN);
+        isChanged = true;
     }
 
     public String getInterestDays() {
@@ -225,6 +260,7 @@ public class Account extends FinancialAsset {
 
     public void setInterestDays(String interestDays) {
         this.interestDays = interestDays;
+        isChanged = true;
     }
 
     public InterestInterval getInterestInterval() {
@@ -233,6 +269,7 @@ public class Account extends FinancialAsset {
 
     public void setInterestInterval(InterestInterval interestInterval) {
         this.interestInterval = interestInterval;
+        isChanged = true;
     }
 
     public Date getCreatedAt() {
@@ -241,6 +278,7 @@ public class Account extends FinancialAsset {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+        isChanged = true;
     }
 
     public Date getDeactivatedAt() {
@@ -249,18 +287,11 @@ public class Account extends FinancialAsset {
 
     public void setDeactivatedAt(Date deactivatedAt) {
         this.deactivatedAt = deactivatedAt;
+        isChanged = true;
     }
 
     public List<Depot> getMappedDepots() {
         return mappedDepots.stream().toList();
     }
     // endregion
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Account account = (Account) obj;
-        return Objects.equals(id, account.id);
-    }
 }
