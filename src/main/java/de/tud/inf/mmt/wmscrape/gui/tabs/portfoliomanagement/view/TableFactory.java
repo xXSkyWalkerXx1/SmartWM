@@ -8,20 +8,19 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerDepotsController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.OwnerPortfoliosController;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
-import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.springframework.lang.NonNull;
 
 import java.text.ParseException;
@@ -503,7 +502,7 @@ public class TableFactory {
                                                             @NonNull Region parentAccountsTable,
                                                             @NonNull Region parentDepotsTable,
                                                             @NonNull List<Portfolio> tableItems,
-                                                            @NonNull PortfolioListController portfolioListController,
+                                                            @NonNull PortfolioController portfolioListController,
                                                             @NonNull PortfolioService portfolioService) {
 
         TableBuilder<Portfolio> tableBuilder = new TableBuilder<>(parentPortfolioTable, tableItems);
@@ -960,7 +959,7 @@ public class TableFactory {
     public static TableView<Account> createAccountsTable(@NonNull Region parentAccountTable,
                                                          @NonNull Region parentDepotTable,
                                                          @NonNull List<Account> tableItems,
-                                                         @NonNull AccountMenuController accountMenuController,
+                                                         @NonNull AccountController accountMenuController,
                                                          @NonNull PortfolioManagementTabManager portfolioManagementTabManager,
                                                          @NonNull AccountService accountService) {
 

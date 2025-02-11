@@ -16,7 +16,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.DepotList
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungOrderController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.depots.depot.planung.DepotPlanungWertpapiervergleichController;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountMenuController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog.FixAccountInconcistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoOverviewController;
@@ -25,7 +25,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerCont
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.dialog.FixOwnerInconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.owner.*;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioListController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.FixPortfolioInconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.*;
@@ -90,11 +90,11 @@ public class PortfolioManagementTabController {
 
     // Controllers of all main-menus
     @Autowired
-    private PortfolioListController portfolioListController;
+    private PortfolioController portfolioListController;
     @Autowired
     private DepotListController depotListController;
     @Autowired
-    private AccountMenuController accountMenuController;
+    private AccountController accountMenuController;
     @Autowired
     private OwnerController ownerController;
 
@@ -135,7 +135,7 @@ public class PortfolioManagementTabController {
     @Autowired
     private OwnerDepotsController ownerDepotsController;
     @Autowired
-    private OwnerKontosController ownerKontosController;
+    private OwnerAccountsController ownerKontosController;
     @Autowired
     private OwnerPortfoliosController ownerPortfoliosController;
 
@@ -282,7 +282,7 @@ public class PortfolioManagementTabController {
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerPortfolios.fxml", ownerPortfoliosController)
         );
         inhaberKontosTab = createSubTab(
-                "Kontos",
+                "Konten",
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/owners/owner/ownerKontos.fxml", ownerKontosController)
         );
         inhaberDepotsTab = createSubTab(
@@ -323,6 +323,7 @@ public class PortfolioManagementTabController {
                     tabController,
                     ownerController, accountMenuController, portfolioListController
             )) {
+                long startTime = System.nanoTime();
                 while (ownerRepository.inconsistentOwnerExists()
                         || accountRepository.inconsistentAccountsExists()
                         || portfolioRepository.inconsistentPortfoliosExists()) {
@@ -358,6 +359,10 @@ public class PortfolioManagementTabController {
                         showInconsistenciesDialog();
                     });
                 }
+                long endTime = System.nanoTime();
+
+                long elapsedTime = (endTime - startTime) / 1_000_000;
+                System.out.println("Elapsed Time: " + elapsedTime + " ms");
             }
 
             // call open method of controller to refresh data
@@ -365,6 +370,7 @@ public class PortfolioManagementTabController {
             isInitialized = true;
         });
 
+        // Show tabs of portfoliomanagement
         portfolioManagementTabPane.getTabs().addAll(portfoliosTab, depotTab, kontoTab, inhaberTab);
         showPortfolioManagementTabs();
     }
@@ -522,7 +528,6 @@ public class PortfolioManagementTabController {
             contextMenuItems = new ArrayList<>();
         }
 
-        // ToDo: implement later!
         createBreadcrumbInstance(
                 chosenDepot.toString(),
                 contextMenuItems,
@@ -598,11 +603,11 @@ public class PortfolioManagementTabController {
         return ownerController;
     }
 
-    public AccountMenuController getAccountMenuController() {
+    public AccountController getAccountMenuController() {
         return accountMenuController;
     }
 
-    public PortfolioListController getPortfolioListController() {
+    public PortfolioController getPortfolioListController() {
         return portfolioListController;
     }
 

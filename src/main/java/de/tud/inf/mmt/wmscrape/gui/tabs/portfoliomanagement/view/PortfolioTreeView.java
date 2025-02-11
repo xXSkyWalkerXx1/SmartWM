@@ -72,7 +72,7 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
         this.portfolioManagementManager = portfolioManagementManager;
 
         Portfolio root = new Portfolio();
-        root.setName("Portfolio/s");
+        root.setName(portfolios.size() == 1 ? "Portfolio" : "Portfolios");
         rootTreeItem = new TreeItem<>(new Item(root, true, portfolioManagementManager));
         rootTreeItem.setExpanded(true);
 

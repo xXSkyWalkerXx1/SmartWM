@@ -139,10 +139,9 @@ public class OwnerService {
     /**
      * @param input Input only for one of these fields.
      * @param sum Sum of the other fields.
-     * @param region some element inside the controller class used as a reference to get the stage/ scene.
      * @return true if the sum of the input and the sum is less than 100, false otherwise.
      */
-    public boolean testTaxRatesOrShowError(float input, float sum, @NonNull Region region) {
+    public boolean testTaxRatesOrShowError(float input, float sum) {
         if (input + sum > 100) {
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
@@ -152,7 +151,7 @@ public class OwnerService {
                                     "Maximal verbleibende Eingabe: %s | Eingegeben: %s",
                             100 - sum, input
                     ),
-                    region
+                    null
             );
             return false;
         }
