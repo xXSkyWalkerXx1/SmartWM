@@ -181,7 +181,10 @@ public class TableFactory {
                 "Vermögen anzeigen",
                 portfolio -> {
                     Navigator.navigateToOwnerAssets(portfolioManagementTabManager, portfolio.getOwner());
-                    portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(portfolio.getOwner(), BreadcrumbElementType.OWNER));
+                    portfolioManagementTabManager.getPortfolioController().addBreadcrumb(new BreadcrumbElement(
+                            portfolio.getOwner(),
+                            BreadcrumbElementType.OWNER
+                    ));
                     // ^ just a little workaround, not nice, but reduces code
                 }
         );
@@ -558,7 +561,7 @@ public class TableFactory {
                 "Vermögen anzeigen",
                 portfolio -> {
                     Navigator.navigateToOwnerAssets(portfolioListController.getPortfolioManagementManager(), portfolio.getOwner());
-                    portfolioListController.getPortfolioManagementManager().addCurrentlyDisplayedElement(
+                    portfolioListController.getPortfolioManagementManager().getPortfolioController().addBreadcrumb(
                             new BreadcrumbElement(portfolio.getOwner(), BreadcrumbElementType.OWNER)
                     );
                 }
@@ -1053,7 +1056,10 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
         tableBuilder.addRowContextMenuItem("Transaktionen anzeigen", account -> {
             Navigator.navigateToAccountTransactions(portfolioManagementTabManager, account);
-            portfolioManagementTabManager.setCurrentlyDisplayedElement(new BreadcrumbElement(account, BreadcrumbElementType.ACCOUNT));
+            portfolioManagementTabManager.getPortfolioController().addBreadcrumb(new BreadcrumbElement(
+                    account,
+                    BreadcrumbElementType.ACCOUNT
+            ));
         });
         tableBuilder.addRowContextMenuItem(
                 "Status umschalten",
