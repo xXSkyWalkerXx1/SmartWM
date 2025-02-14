@@ -73,7 +73,6 @@ public class PrimaryTabManager {
      * @param wait wait until the window is closed
      */
     private static void show(boolean isModal, Parent parent, Control control, String stageTitle, boolean wait) {
-        if (control.getScene() == null) return;
         Stage stage;
 
         if(isModal) {
