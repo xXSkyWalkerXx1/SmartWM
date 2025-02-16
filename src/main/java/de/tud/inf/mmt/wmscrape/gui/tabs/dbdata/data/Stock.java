@@ -1,11 +1,13 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.dbdata.data;
 
-import com.mysql.cj.conf.EnumProperty;
-import com.mysql.cj.conf.EnumPropertyDefinition;
 import de.tud.inf.mmt.wmscrape.gui.tabs.depots.data.DepotTransaction;
 import de.tud.inf.mmt.wmscrape.gui.tabs.historic.data.SecuritiesType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.scraping.data.selection.ElementSelection;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TextField;
+import org.checkerframework.common.value.qual.IntRange;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -39,6 +41,10 @@ public class Stock {
     @Column(name = "scrape_type", columnDefinition = "TEXT")
     private SecuritiesType _scrapeType;
 
+    @IntRange(from = 1, to = 12)
+    @Column(name = "risc_class")
+    private Integer _riscClass;
+
     // don't know what its exactly for butt he wants it for sorting purposes
     @Column(name = "r_par")
     private Integer _sortOrder;
@@ -51,6 +57,8 @@ public class Stock {
     private final SimpleStringProperty stockType = new SimpleStringProperty();
     @Transient
     private final SimpleStringProperty sortOrder = new SimpleStringProperty();
+    @Transient
+    private final SimpleStringProperty riscClass = new SimpleStringProperty();
 
 
     /**
@@ -65,12 +73,13 @@ public class Stock {
      * @param sortOrder optional sortOrder aka "r_par"
      * @param scrapeType abstracted stock-type, used to match stocks to their identifiers (f.e. website-configuration)
      */
-    public Stock(String isin, String wkn, String name, String stockType, Integer sortOrder, SecuritiesType scrapeType) {
+    public Stock(String isin, String wkn, String name, String stockType, Integer sortOrder, SecuritiesType scrapeType, Integer riscClass) {
         this.isin = isin;
         this._wkn = wkn;
         this._name = name;
         this._stockType = stockType;
         this._scrapeType = scrapeType;
+        this._riscClass = riscClass;
         this._sortOrder = sortOrder;
         initListener();
     }
@@ -95,6 +104,10 @@ public class Stock {
         return _scrapeType;
     }
 
+    public Integer getRiscClass() {
+        return _riscClass;
+    }
+
     public SimpleStringProperty nameProperty() {
         return name;
     }
@@ -105,6 +118,10 @@ public class Stock {
 
     public SimpleStringProperty sortOrderProperty() {
         return sortOrder;
+    }
+
+    public SimpleStringProperty riscClassProperty() {
+        return riscClass;
     }
 
     public void set_wkn(String _wkn) {
@@ -122,6 +139,11 @@ public class Stock {
     public void set_sortOrder(Integer _sortOrder) {
         this._sortOrder = _sortOrder;
     }
+
+    public void set_riscClass(Integer _riscClass) {
+        this._riscClass = _riscClass;
+    }
+
     public void set_scrapeType(SecuritiesType scrapeType) { this._scrapeType = scrapeType; }
 
     /**
@@ -149,6 +171,7 @@ public class Stock {
         wkn.set(_wkn);
         stockType.set(_stockType);
         sortOrder.set((_sortOrder == null) ? (null):(String.valueOf(_sortOrder)));
+        riscClass.set(_riscClass == null ? null : String.valueOf(_riscClass));
         initListener();
     }
 
@@ -161,7 +184,21 @@ public class Stock {
         name.addListener((o,ov,nv) -> _name = nv.trim());
         stockType.addListener((o,ov,nv) -> _stockType = nv.trim());
         sortOrder.addListener((o,ov,nv) -> cleanOrder(ov, nv));
+        riscClass.addListener((o,ov,nv) -> {
+            if(nv == null || nv.isBlank()) {
+                _riscClass = null;
+                return;
+            }
+            if(ov.equals(nv)) return;
 
+            String clean = nv.replaceAll("[^0-9]","");
+            if(clean.matches("^[0-9]+$")) {
+                riscClass.set(clean);
+                _riscClass = Integer.valueOf(clean);
+            } else {
+                riscClass.set(ov);
+            }
+        });
     }
 
     /**

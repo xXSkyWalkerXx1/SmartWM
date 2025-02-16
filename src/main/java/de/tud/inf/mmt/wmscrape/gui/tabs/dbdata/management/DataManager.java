@@ -514,17 +514,27 @@ public abstract class DataManager {
         TableColumn<Stock, String> wknCol =  new TableColumn<>("WKN");
         TableColumn<Stock, String> typCol =  new TableColumn<>("Typ");
         TableColumn<Stock, String> sortCol =  new TableColumn<>("R_Par");
+        TableColumn<Stock, String> riskClassCol =  new TableColumn<>("Risikoklasse");
 
         nameCol.setCellValueFactory(param -> param.getValue().nameProperty());
         isinCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getIsin()));
         wknCol.setCellValueFactory(param -> param.getValue().wknProperty());
         typCol.setCellValueFactory(param -> param.getValue().stockTypeProperty());
         sortCol.setCellValueFactory(param -> param.getValue().sortOrderProperty());
+        riskClassCol.setCellValueFactory(param -> {
+            Stock stock = param.getValue();
+            if (stock.getRiscClass() == null) {
+                return new SimpleStringProperty("");
+            } else {
+                return stock.riscClassProperty();
+            }
+        });
 
         nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
         wknCol.setCellFactory(TextFieldTableCell.forTableColumn());
         typCol.setCellFactory(TextFieldTableCell.forTableColumn());
         sortCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        riskClassCol.setCellFactory(TextFieldTableCell.forTableColumn());
 
         setComparator(sortCol, ColumnDatatype.INTEGER);
 
@@ -533,12 +543,14 @@ public abstract class DataManager {
         wknCol.setEditable(true);
         typCol.setEditable(true);
         sortCol.setEditable(true);
+        riskClassCol.setEditable(true);
 
         table.getColumns().add(isinCol);
         table.getColumns().add(nameCol);
         table.getColumns().add(wknCol);
         table.getColumns().add(typCol);
         table.getColumns().add(sortCol);
+        table.getColumns().add(riskClassCol);
 
         table.setEditable(true);
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -573,11 +585,11 @@ public abstract class DataManager {
         depotRepository.deleteAll(depot);
     }
 
-    public boolean createStock(String isin, String wkn, String name, String type, String sortOrder, SecuritiesType securitiesType) {
+    public boolean createStock(String isin, String wkn, String name, String type, String sortOrder, SecuritiesType securitiesType, Integer riscClass) {
         if(isin == null || isin.isBlank()) return false;
 
         if(stockRepository.findByIsin(isin).isPresent()) return false;
-        stockRepository.saveAndFlush(new Stock(isin, wkn, name, type, Integer.parseInt(sortOrder), securitiesType));
+        stockRepository.saveAndFlush(new Stock(isin, wkn, name, type, Integer.parseInt(sortOrder), securitiesType, riscClass));
         return true;
     }
 

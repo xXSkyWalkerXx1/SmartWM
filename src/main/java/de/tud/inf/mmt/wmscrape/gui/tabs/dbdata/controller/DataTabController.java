@@ -72,6 +72,7 @@ public class DataTabController {
     @FXML private TextField newTypeField;
     @FXML private TextField newSortOrderField;
     @FXML private TextField newScrapingTypeField;
+    @FXML private TextField newRiscClassField;
 
     @FXML private DatePicker startDate;
     @FXML private DatePicker endDate;
@@ -350,6 +351,11 @@ public class DataTabController {
     @FXML
     private void handleNewStockButton() {
         if(!isValidStockCreationInput()) return;
+        Integer riscClass = null;
+
+        try {
+            riscClass = Integer.parseInt(newRiscClassField.getText());
+        } catch (NumberFormatException ignore) {}
 
         boolean success = stockDataManager.createStock(
                 newIsinField.getText().trim(),
@@ -357,7 +363,8 @@ public class DataTabController {
                 newNameField.getText().trim(),
                 newTypeField.getText().trim(),
                 newSortOrderField.getText().trim(),
-                SecuritiesType.getMapped(newScrapingTypeField.getText().trim())
+                SecuritiesType.getMapped(newScrapingTypeField.getText().trim()),
+                riscClass
         );
         scrapingElementsTabController.refresh();
 

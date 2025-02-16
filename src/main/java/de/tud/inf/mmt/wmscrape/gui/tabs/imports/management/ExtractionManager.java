@@ -148,6 +148,7 @@ public class ExtractionManager {
             // Puts stype-param to use it for stock-creating, because it's not in the correlation-table.
             HashMap<String,String> newStocksData_ = potentialNewStocks.getOrDefault(isin, new HashMap<>());
             newStocksData_.put("stype", rowData.get(2));
+            newStocksData_.put("risc_class", rowData.get(33));
             potentialNewStocks.put(isin, newStocksData_);
 
             // pick one column per relation from row
@@ -407,7 +408,7 @@ public class ExtractionManager {
 
             // stocks are created beforehand
             if (!knownStockIsins.containsKey(isin)) {
-                stockRepository.saveAndFlush(new Stock(isin, null, null,null,-1, null));
+                stockRepository.saveAndFlush(new Stock(isin, null, null,null,-1, null, null));
                 importTabManager.addToLog("WARN:\tFür das Wertpapier der Transaktion aus Zeile "+(row+OFFSET)+
                         " wurden zuvor keine Stammdaten importiert. \n\t\t" +
                         "Ein neues Wertpapier mit der ISIN: '"+isin+"' wurde angelegt, um die Transaktionsdaten importieren zu können. \n\t\t" +
@@ -523,6 +524,7 @@ public class ExtractionManager {
             String typ = ks.getValue().getOrDefault("typ", null);
             Integer r = getNullInteger(ks.getValue().getOrDefault("r_par", null));
             SecuritiesType scrapeType = SecuritiesType.getMapped(ks.getValue().getOrDefault("stype", null));
+            Integer riskClass = getNullInteger(ks.getValue().getOrDefault("risc_class", null));
             Stock s;
 
             if(knownStocks.containsKey(ks.getKey())) {
@@ -533,8 +535,9 @@ public class ExtractionManager {
                 s.set_stockType(typ);
                 s.set_sortOrder(r);
                 s.set_scrapeType(scrapeType);
+                s.set_riscClass(riskClass);
             } else {
-                s = new Stock(ks.getKey(), wkn, name, typ, r, scrapeType);
+                s = new Stock(ks.getKey(), wkn, name, typ, r, scrapeType, riskClass);
             }
             stockRepository.save(s);
         }
