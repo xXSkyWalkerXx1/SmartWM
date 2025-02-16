@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -75,7 +76,6 @@
                                                                       <Label text="Anmerkungen" GridPane.rowIndex="5" />
                                                                       <TextArea fx:id="inputNotice" prefHeight="50.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                                                       <ComboBox fx:id="inputPortfolio" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                                      <ComboBox fx:id="inputOwner" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                                       <ComboBox fx:id="inputType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                                       <Label text="Status" GridPane.rowIndex="6" />
                                                                       <Label text="Erstellt am" GridPane.rowIndex="7" />
@@ -96,6 +96,12 @@
                                                                       </GridPane>
                                                                       <TextField fx:id="outputCreatedAt" disable="true" editable="false" maxWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                                                                       <TextField fx:id="outputDeactivatedAt" disable="true" editable="false" maxWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                                      <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                         <children>
+                                                                            <ComboBox fx:id="inputOwner" prefWidth="250.0" />
+                                                            <Button mnemonicParsing="false" onAction="#onOpenOwner" text="Öffnen" />
+                                                         </children>
+                                                      </HBox>
                                                                   </children>
                                                    <rowConstraints>
                                                       <RowConstraints />
