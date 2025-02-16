@@ -51,7 +51,7 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
         inputAftername.setText(owner.getAftername());
         inputNotice.setText(owner.getNotice());
         inputState.getSelectionModel().select(owner.getState());
-        inputCountry.setText(owner.getAddress().getCountry());
+        inputCountry.getSelectionModel().select(owner.getAddress().getCountry());
         inputPlz.setText(owner.getAddress().getPlz());
         inputLocation.setText(owner.getAddress().getLocation());
         inputStreet.setText(owner.getAddress().getStreet());
@@ -148,7 +148,7 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
         inputDeactivatedAt.getEditor().tooltipProperty().unbind();
 
         List<TextInputControl> inputs = new ArrayList<>(List.of(
-                inputForename, inputAftername, inputCreatedAt.getEditor(), inputCountry,
+                inputForename, inputAftername, inputCreatedAt.getEditor(), /*inputCountry,*/
                 inputPlz, inputLocation, inputStreet, inputStreetNumber, inputTaxNumber, inputTaxRate, inputCapitalGainsTaxRate,
                 inputSolidaritySurchargeTaxRate
         ));

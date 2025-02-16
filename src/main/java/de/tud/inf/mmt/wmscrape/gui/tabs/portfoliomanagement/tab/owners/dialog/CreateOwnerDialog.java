@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.text.ParseException;
+import java.util.Locale;
 
 @Controller
 public class CreateOwnerDialog {
@@ -30,7 +31,7 @@ public class CreateOwnerDialog {
     @FXML
     TextArea inputNotice;
     @FXML
-    TextField inputCountry;
+    ComboBox<String> inputCountry;
     @FXML
     TextField inputPlz;
     @FXML
@@ -54,7 +55,9 @@ public class CreateOwnerDialog {
 
     @FXML
     protected void initialize() {
-        // Set values for MaritalState and select the first one as default one
+        inputCountry.getItems().setAll(OwnerService.getLocales());
+        inputCountry.getSelectionModel().select(Locale.getDefault().getDisplayCountry());
+
         inputMaritalState.getItems().setAll(MaritalState.values());
         inputMaritalState.getSelectionModel().selectFirst();
 
@@ -119,7 +122,7 @@ public class CreateOwnerDialog {
     protected void onSave() {
         // Validate first
         if (FieldValidator.isInputEmpty(
-                inputForename, inputAftername, inputCountry, inputPlz, inputLocation, inputStreet, inputStreetNumber,
+                inputForename, inputAftername, inputPlz, inputLocation, inputStreet, inputStreetNumber,
                 inputTaxNumber, inputTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         )) return;
 
