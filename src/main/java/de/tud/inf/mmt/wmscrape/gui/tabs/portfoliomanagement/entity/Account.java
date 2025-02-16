@@ -5,12 +5,14 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InterestInterv
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Changable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
 
@@ -21,76 +23,128 @@ import java.util.*;
 @Table(name = "pkonto")
 public class Account extends FinancialAsset implements Changable {
 
-    @Transient
-    private boolean isChanged = false;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "description")
     private String description;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private AccountType type;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private State state = State.ACTIVATED;
-
     @Column(name = "currency_code", nullable = false)
     private String currencyCode;
-
     @Column(name = "balance", nullable = false)
     private BigDecimal balance = BigDecimal.valueOf(0);
-
     @Column(name = "iban", nullable = false, unique = true)
     private String iban;
-
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
-
     @ManyToOne
     @JoinColumn(name = "portfolio_id", nullable = false)
     private Portfolio portfolio;
-
     @Column(name = "notice")
     private String notice;
-
     @Column(name = "bank_name", nullable = false)
     private String bankName;
-
     @Column(name = "konto_number", nullable = false, unique = true)
     private String kontoNumber;
-
     @Column(name = "interest_rate", nullable = false)
     private BigDecimal interestRate = BigDecimal.valueOf(0); // Zinssatz
-
     @Column(name = "interest_days", nullable = false)
     private String interestDays; // Zinstage (an denen die Zinsen ausgezahlt werden)
-
     @Enumerated(EnumType.STRING)
     @Column(name = "interest_interval", nullable = false)
     private InterestInterval interestInterval;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
-
     @ManyToMany(mappedBy = "billingAccounts", fetch = FetchType.EAGER)
     private Set<Depot> mappedDepots = Collections.emptySet();
 
+    @Transient
+    private final SimpleLongProperty idProperty = new SimpleLongProperty();
+    @Transient
+    private final SimpleStringProperty descriptionProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleObjectProperty<AccountType> typeProperty = new SimpleObjectProperty<>();
+    @Transient
+    private final SimpleObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
+    @Transient
+    private final SimpleStringProperty currencyProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleObjectProperty<BigDecimal> balanceProperty = new SimpleObjectProperty<>(balance);
+    @Transient
+    private final SimpleObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>();
+    @Transient
+    private final SimpleObjectProperty<Portfolio> portfolioProperty = new SimpleObjectProperty<>();
+    @Transient
+    private final SimpleStringProperty noticeProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleStringProperty bankNameProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleStringProperty ibanProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleStringProperty kontoNumberProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleObjectProperty<BigDecimal> interestRateProperty = new SimpleObjectProperty<>(interestRate);
+    @Transient
+    private final SimpleStringProperty interestDaysProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleObjectProperty<InterestInterval> interestIntervalProperty = new SimpleObjectProperty<>();
+
+    @Override
+    @PostLoad
+    public void onPostLoadEntity() {
+        idProperty.set(id);
+        descriptionProperty.set(description);
+        typeProperty.set(type);
+        stateProperty.set(state);
+        currencyProperty.set(currencyCode);
+        balanceProperty.set(balance);
+        ownerProperty.set(owner);
+        portfolioProperty.set(portfolio);
+        noticeProperty.set(notice);
+        bankNameProperty.set(bankName);
+        ibanProperty.set(iban);
+        kontoNumberProperty.set(kontoNumber);
+        interestRateProperty.set(interestRate);
+        interestDaysProperty.set(interestDays);
+        interestIntervalProperty.set(interestInterval);
+    }
+
+    @Override
+    public void onPrePersistOrUpdateOrRemoveEntity() {
+        id = idProperty.get();
+        description = descriptionProperty.get();
+        type = typeProperty.get();
+        state = stateProperty.get();
+        currencyCode = currencyProperty.get();
+        balance = balanceProperty.get();
+        owner = ownerProperty.get();
+        portfolio = portfolioProperty.get();
+        notice = noticeProperty.get();
+        bankName = bankNameProperty.get();
+        iban = ibanProperty.get();
+        kontoNumber = kontoNumberProperty.get();
+        interestRate = interestRateProperty.get();
+        interestDays = interestDaysProperty.get();
+        interestInterval = interestIntervalProperty.get();
+        owner.onPrePersistOrUpdateOrRemoveEntity();
+        portfolio.onPrePersistOrUpdateOrRemoveEntity();
+    }
+
     @Override
     public BigDecimal getValue(@NonNull AccountService accountService) throws DataAccessException {
-        if (Currency.getInstance("EUR").equals(getValueCurrency())) return balance;
+        if (Currency.getInstance("EUR").equals(getValueCurrency())) return balanceProperty.get();
         Double latestExchangeCourse = accountService.getLatestExchangeCourse(getValueCurrency());
-        return balance.divide(BigDecimal.valueOf(latestExchangeCourse), BigDecimal.ROUND_HALF_DOWN);
+        return balanceProperty.get().divide(BigDecimal.valueOf(latestExchangeCourse), BigDecimal.ROUND_HALF_DOWN);
     }
 
     @Override
@@ -100,17 +154,31 @@ public class Account extends FinancialAsset implements Changable {
 
     @Override
     public String toString() {
-        return iban;
-    }
-
-    @Override
-    public void setChanged(boolean changed) {
-        isChanged = changed;
+        return String.format("%s (%s)", getIban(), getDescription());
     }
 
     @Override
     public boolean isChanged() {
-        return isChanged;
+        return !Objects.equals(id, idProperty.get())
+                || !Objects.equals(description, descriptionProperty.get())
+                || !Objects.equals(type, typeProperty.get())
+                || !Objects.equals(state, stateProperty.get())
+                || !Objects.equals(currencyCode, currencyProperty.get())
+                || !Objects.equals(balance, balanceProperty.get())
+                || !Objects.equals(owner, ownerProperty.get())
+                || !Objects.equals(portfolio, portfolioProperty.get())
+                || !Objects.equals(notice, noticeProperty.get())
+                || !Objects.equals(bankName, bankNameProperty.get())
+                || !Objects.equals(iban, ibanProperty.get())
+                || !Objects.equals(kontoNumber, kontoNumberProperty.get())
+                || !Objects.equals(interestRate, interestRateProperty.get())
+                || !Objects.equals(interestDays, interestDaysProperty.get())
+                || !Objects.equals(interestInterval, interestIntervalProperty.get());
+    }
+
+    @Override
+    public void restore() {
+        onPostLoadEntity();
     }
 
     @Override
@@ -118,158 +186,143 @@ public class Account extends FinancialAsset implements Changable {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Account account = (Account) obj;
-        return Objects.equals(id, account.id);
+        return Objects.equals(idProperty.get(), account.getId());
     }
 
     // region Getters & Setters
     public void setId(Long id) {
-        this.id = id;
-        isChanged = true;
+        idProperty.set(id);
     }
 
     public Long getId() {
-        return id;
+        return idProperty.get();
     }
 
     public String getDescription() {
-        return description;
+        return descriptionProperty.get();
     }
 
     public void setDescription(String description) {
-        this.description = description;
-        isChanged = true;
+        descriptionProperty.set(description);
     }
 
     public AccountType getType() {
-        return type;
+        return typeProperty.get();
     }
 
     public State getState() {
-        return state;
+        return stateProperty.get();
     }
 
     public void setState(State state) {
-        this.state = state;
+        stateProperty.set(state);
 
         if (State.ACTIVATED.equals(state)) {
             setDeactivatedAt(null);
         } else if (State.DEACTIVATED.equals(state)) {
             setDeactivatedAt(Calendar.getInstance().getTime());
         }
-        isChanged = true;
     }
 
     public void setType(AccountType type) {
-        this.type = type;
-        isChanged = true;
+        typeProperty.set(type);
     }
 
     public Currency getCurrency() {
-        if (currencyCode == null) return null;
-        return Currency.getInstance(currencyCode);
+        if (currencyProperty.get() == null) return null;
+        return Currency.getInstance(currencyProperty.get());
     }
 
     public void setCurrencyCode(Currency currency) {
-        this.currencyCode = currency.getCurrencyCode();
-        isChanged = true;
+        currencyProperty.set(currency.getCurrencyCode());
     }
 
     public double getBalance() {
-        return balance.doubleValue();
+        return balanceProperty.get().doubleValue();
     }
 
     public BigDecimal getBalanceBigDecimal() {
-        return balance;
+        return balanceProperty.get();
     }
 
     public void setBalance(double balance) {
-        this.balance = BigDecimal.valueOf(balance).setScale(2, RoundingMode.HALF_DOWN);
-        isChanged = true;
+        balanceProperty.set(BigDecimal.valueOf(balance).setScale(2, RoundingMode.HALF_DOWN));
     }
 
     public Owner getOwner() {
-        return owner;
+        return ownerProperty.get();
     }
 
     public void setOwner(Owner owner) {
-        this.owner = owner;
-        isChanged = true;
+        ownerProperty.set(owner);
     }
 
     public Portfolio getPortfolio() {
-        return portfolio;
+        return portfolioProperty.get();
     }
 
     public void setPortfolio(Portfolio portfolio) {
-        this.portfolio = portfolio;
-        isChanged = true;
+        portfolioProperty.set(portfolio);
     }
 
     public String getNotice() {
-        return notice;
+        return noticeProperty.get();
     }
 
     public void setNotice(String notice) {
-        this.notice = notice;
-        isChanged = true;
+        noticeProperty.set(notice);
     }
 
     public String getBankName() {
-        return bankName;
+        return bankNameProperty.get();
     }
 
     public void setBankName(String bankName) {
-        this.bankName = bankName;
-        isChanged = true;
+        bankNameProperty.set(bankName);
     }
 
     public String getIban() {
-        return iban;
+        return ibanProperty.get();
     }
 
     public void setIban(String iban) {
-        this.iban = iban;
-        isChanged = true;
+        ibanProperty.set(iban);
     }
 
     public String getKontoNumber() {
-        return kontoNumber;
+        return kontoNumberProperty.get();
     }
 
     public void setKontoNumber(String kontoNumber) {
-        this.kontoNumber = kontoNumber;
-        isChanged = true;
+        kontoNumberProperty.set(kontoNumber);
     }
 
     public BigDecimal getInterestRateBigDecimal() {
-        return interestRate;
+        return interestRateProperty.get();
     }
 
     public double getInterestRate() {
-        return interestRate.doubleValue();
+        return interestRateProperty.get().doubleValue();
     }
 
     public void setInterestRate(double interestRate) {
-        this.interestRate = BigDecimal.valueOf(interestRate).setScale(2, RoundingMode.HALF_DOWN);
-        isChanged = true;
+        interestRateProperty.set(BigDecimal.valueOf(interestRate).setScale(2, RoundingMode.HALF_DOWN));
     }
 
     public String getInterestDays() {
-        return interestDays;
+        return interestDaysProperty.get();
     }
 
     public void setInterestDays(String interestDays) {
-        this.interestDays = interestDays;
-        isChanged = true;
+        interestDaysProperty.set(interestDays);
     }
 
     public InterestInterval getInterestInterval() {
-        return interestInterval;
+        return interestIntervalProperty.get();
     }
 
     public void setInterestInterval(InterestInterval interestInterval) {
-        this.interestInterval = interestInterval;
-        isChanged = true;
+        interestIntervalProperty.set(interestInterval);
     }
 
     public Date getCreatedAt() {
@@ -278,7 +331,6 @@ public class Account extends FinancialAsset implements Changable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-        isChanged = true;
     }
 
     public Date getDeactivatedAt() {
@@ -287,7 +339,6 @@ public class Account extends FinancialAsset implements Changable {
 
     public void setDeactivatedAt(Date deactivatedAt) {
         this.deactivatedAt = deactivatedAt;
-        isChanged = true;
     }
 
     public List<Depot> getMappedDepots() {

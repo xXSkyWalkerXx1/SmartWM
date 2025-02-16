@@ -3,6 +3,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Changable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
+import javafx.beans.property.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
 
@@ -14,52 +15,63 @@ import java.util.*;
 @Table(name = "portfolio")
 public class Portfolio extends FinancialAsset implements Changable {
 
-    @Transient
-    private boolean isChanged = false;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private State state = State.ACTIVATED;
-
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "investment_guideline_id", nullable = false)
     private InvestmentGuideline investmentGuideline = new InvestmentGuideline();
-
     @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "depot_id", nullable = false)
     private Set<Depot> depots = Collections.emptySet();
-
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<Account> accounts = Collections.emptySet();
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
-    @PostPersist
-    @PostUpdate
-    private void onSaveOrLoad() {
-        setChanged(false);
+    @Transient
+    private final SimpleLongProperty idProperty = new SimpleLongProperty();
+    @Transient
+    private final SimpleStringProperty nameProperty = new SimpleStringProperty();
+    @Transient
+    private final ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>();
+    @Transient
+    private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
+
+    @Override
+    @PostLoad
+    public void onPostLoadEntity() {
+        idProperty.set(id);
+        nameProperty.set(name);
+        ownerProperty.set(owner);
+        stateProperty.set(state);
+    }
+
+    @Override
+    public void onPrePersistOrUpdateOrRemoveEntity() {
+        id = idProperty.get();
+        name = nameProperty.get();
+        owner = ownerProperty.get();
+        state = stateProperty.get();
+        investmentGuideline.onPrePersistOrUpdateOrRemoveEntity();
+        owner.onPrePersistOrUpdateOrRemoveEntity();
     }
 
     @Override
     public String toString() {
-        return name;
+        return nameProperty.get();
     }
 
     @Override
@@ -67,7 +79,7 @@ public class Portfolio extends FinancialAsset implements Changable {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Portfolio that = (Portfolio) obj;
-        return Objects.equals(id, that.id);
+        return Objects.equals(idProperty.get(), that.getId());
     }
 
     // region Getters & Setters
@@ -88,13 +100,17 @@ public class Portfolio extends FinancialAsset implements Changable {
 
     @Override
     public boolean isChanged() {
-        return isChanged || investmentGuideline.isChanged();
+        return investmentGuideline.isChanged()
+                || !Objects.equals(id, idProperty.get())
+                || !Objects.equals(name, nameProperty.get())
+                || !Objects.equals(owner, ownerProperty.get())
+                || !Objects.equals(state, stateProperty.get());
     }
 
     @Override
-    public void setChanged(boolean changed) {
-        investmentGuideline.setChanged(changed);
-        isChanged = changed;
+    public void restore() {
+        onPostLoadEntity();
+        investmentGuideline.restore();
     }
 
     @Override
@@ -103,45 +119,41 @@ public class Portfolio extends FinancialAsset implements Changable {
     }
 
     public void setId(Long id) {
-        this.id = id;
-        isChanged = true;
+        idProperty.set(id);
     }
 
     public Long getId() {
-        return id;
+        return idProperty.get();
     }
 
     public String getName() {
-        return name;
+        return nameProperty.get();
     }
 
     public void setName(String name) {
-        this.name = name;
-        isChanged = true;
+        nameProperty.set(name);
     }
 
     public Owner getOwner() {
-        return owner;
+        return ownerProperty.get();
     }
 
     public void setOwner(Owner owner) {
-        this.owner = owner;
-        isChanged = true;
+        ownerProperty.set(owner);
     }
 
     public State getState() {
-        return state;
+        return stateProperty.get();
     }
 
     public void setState(State state) {
-        this.state = state;
+        stateProperty.set(state);
 
         if (State.ACTIVATED.equals(state)) {
             setDeactivatedAt(null);
         } else if (State.DEACTIVATED.equals(state)) {
             setDeactivatedAt(Calendar.getInstance().getTime());
         }
-        isChanged = true;
     }
 
     public InvestmentGuideline getInvestmentGuideline() {
@@ -154,7 +166,6 @@ public class Portfolio extends FinancialAsset implements Changable {
 
     public void setDepots(List<Depot> depots) {
         this.depots = new HashSet<>(depots);
-        isChanged = true;
     }
 
     public List<Account> getAccounts() {
@@ -163,7 +174,6 @@ public class Portfolio extends FinancialAsset implements Changable {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = new HashSet<>(accounts);
-        isChanged = true;
     }
 
     public Date getCreatedAt() {
@@ -172,7 +182,6 @@ public class Portfolio extends FinancialAsset implements Changable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-        isChanged = true;
     }
 
     public Date getDeactivatedAt() {
@@ -181,7 +190,6 @@ public class Portfolio extends FinancialAsset implements Changable {
 
     public void setDeactivatedAt(Date deactivatedAt) {
         this.deactivatedAt = deactivatedAt;
-        isChanged = true;
     }
     // endregion
 }
