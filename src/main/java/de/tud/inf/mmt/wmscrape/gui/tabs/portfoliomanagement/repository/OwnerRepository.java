@@ -3,6 +3,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -57,6 +58,7 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
         inconsistentOwnerIds.addAll(findAllByAddressOrTaxInformationIsInvalid());
         inconsistentOwnerIds.addAll(findAllByForenameIsNullOrAfternameIsNullOrCreatedAtIsNull());
         inconsistentOwnerIds.addAll(findAllByAddressContainingNullValues());
+        inconsistentOwnerIds.addAll(findAllByCountryIsNotIn(OwnerService.getLocales()));
         inconsistentOwnerIds.addAll(findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()));
         inconsistentOwnerIds.addAll(findAllByStateIsNotIn(State.getValuesAsString()));
         inconsistentOwnerIds.addAll(findAllByStateIsDeactivatedButDeactivatedAtIsNull());
@@ -74,7 +76,6 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     List<Long> findAllByAddressOrTaxInformationIsInvalid();
 
     /**
-     *
      * @param states pass always {@code State.getValuesAsString()}.
      * @return all owners where the state is not in the given states.
      */
@@ -82,6 +83,17 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
             "FROM inhaber o " +
             "WHERE o.state IS NULL OR o.state NOT IN :states", nativeQuery = true)
     List<Long> findAllByStateIsNotIn(@Param("states") Collection<String> states);
+
+    /**
+     *
+     * @param countries pass always {@code OwnerService.getLocales()}.
+     * @return all owners where the country is null or not in the given countries.
+     */
+    @Query(value = "SELECT o.id " +
+            "FROM inhaber o " +
+            "JOIN inhaber_adresse a ON o.address_id = a.id " +
+            "WHERE a.country NOT IN :countries", nativeQuery = true)
+    List<Long> findAllByCountryIsNotIn(@Param("countries") Collection<String> countries);
 
     @Query(value = "SELECT o.id " +
             "FROM inhaber o " +
