@@ -100,7 +100,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         ));
         getColumns().add(createDynamicColumn(
                 "\tMaximale\nRisikoklasse (1-12)",
-                "Die Risikoklasse gibt an, wie risikoreich die Anlage ist.\n" +
+                "Gibt an, wie risikoreich maximal eine Anlage sein darf.\n" +
                         "Die Skala reicht von 1 (niedriges Risiko) bis 12 (hohes Risiko).",
                 entry -> new SimpleStringProperty(String.valueOf(entry.getMaxRiskclass())),
                 col -> col.getRowValue().getValue().setMaxRiskclass(Integer.parseInt(col.getNewValue())),
@@ -109,9 +109,9 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
         getColumns().add(createDynamicColumn(
-                "Maximale Volatilität\ninnerhalb 1 Jahr (%)",
-                "Die maximale Volatilität (0-100) gibt an, wie stark der Wert der Anlage innerhalb eines Jahres " +
-                        "schwanken (insbesondere fallen) kann.",
+                "Maximale Volatilität\n\tpro Jahr (%)",
+                "Gibt an, wie stark der Wert einer Anlage pro Jahr " +
+                        "maximal fallen darf.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getMaxVolatility())),
                 col -> {
                     // Try to parse input
@@ -132,8 +132,8 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         var minSuccess = createStaticColumn("Erwarteter minimaler Anlageerfolg", null);
         getColumns().add(minSuccess);
         minSuccess.getColumns().add(createDynamicColumn(
-                "Performance innerhalb 1 Jahr (%)",
-                "Gibt den minimal erwarteten Wertzuwachs der Anlage innerhalb eines Jahres an.",
+                "Performance pro Jahr (%)",
+                "Gibt den minimal erwartenden Wertzuwachs einer Anlage pro Jahr an.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getPerformance())),
                 col -> {
                     // Try to parse input
@@ -152,7 +152,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
         ));
         minSuccess.getColumns().add(createDynamicColumn(
                 "Nettorendite seit Kauf (%)",
-                "Gibt die minimal erwartete Rendite seit Kauf der Anlage an.",
+                "Gibt die minimal zu erwartende Nettorendite seit Kauf einer Anlage an.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getRendite())),
                 col -> {
                     // Try to parse input
@@ -172,7 +172,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
         getColumns().add(createDynamicColumn(
                 "\t   Minimale\nChancen-Risiko-Zahl (%)",
-                "Beschreibt das Verhältnis einer Anlage zum Benchmark.",
+                "Gibt das minimal zu erfüllende Verhältnis einer Anlage zum Benchmark an.",
                 entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getChanceRiskNumber())),
                 col -> {
                     // Try to parse input
