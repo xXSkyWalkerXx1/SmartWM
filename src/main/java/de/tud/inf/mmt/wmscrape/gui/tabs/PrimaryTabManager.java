@@ -81,7 +81,7 @@ public class PrimaryTabManager {
             stage.setScene(scene);
             stage.initModality(Modality.WINDOW_MODAL);
             stage.getScene().getStylesheets().add("style.css");
-            stage.initOwner(control.getScene().getWindow());
+            if (control.getScene() != null) stage.initOwner(control.getScene().getWindow());
             stage.setTitle(stageTitle);
 
             if(wait) {
