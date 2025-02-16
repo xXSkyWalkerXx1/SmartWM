@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
@@ -9,12 +10,12 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.EditableView;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.InvestmentGuidelineTable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 @Controller
-public class PortfolioOverviewController implements Openable {
+public class PortfolioOverviewController extends EditableView implements Openable {
 
     Portfolio portfolio;
 
@@ -53,6 +54,21 @@ public class PortfolioOverviewController implements Openable {
     @FXML
     AnchorPane portfolioTreeViewPane;
 
+    @FXML
+    private void initialize() {
+        inputState.getItems().setAll(State.values());
+
+        inputPortfolioName.textProperty().addListener((observable, oldValue, newValue) -> {
+            portfolio.setName(newValue);
+        });
+        inputOwner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) portfolio.setOwner(newValue);
+        });
+        inputState.valueProperty().addListener((observable, oldValue, newValue) -> {
+            portfolio.setState(newValue);
+        });
+    }
+
     @Override
     public void open() {
         portfolio = (Portfolio) portfolioManagementManager
@@ -60,13 +76,27 @@ public class PortfolioOverviewController implements Openable {
                 .getPortfolioOverviewTab()
                 .getProperties()
                 .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
-
+        if (!portfolio.isChanged()) portfolio = portfolioService.findById(portfolio.getId());
+        inputOwner.getItems().setAll(ownerService.getAll());
         loadPortfolioData();
+
+        // Initialize onUnsavedChangesAction-dialog
+        super.initialize(
+                portfolio,
+                portfolioManagementManager,
+                this::onSave,
+                this::onReset
+        );
+    }
+
+    @FXML
+    private void onOpenOwner() {
+        Navigator.navigateToOwner(portfolioManagementManager, portfolio.getOwner(), false);
     }
 
     @FXML
     private void onReset() {
-        portfolio = portfolioService.findById(portfolio.getId());
+        portfolio.restore();
         loadPortfolioData();
     }
 
@@ -81,12 +111,13 @@ public class PortfolioOverviewController implements Openable {
         // Validate first
         if (portfolioService.isInputInvalid(inputPortfolioName, portfolio, outputDeactivatedAt)) return;
 
-        // If everything is valid, we can create and save the new portfolio
-        portfolioService.writeInput(portfolio, false, inputPortfolioName, inputOwner);
-        portfolio.setState(inputState.getValue());
-
+        // If everything is valid, we can save the portfolio
         if (!portfolioService.save(portfolio)) return;
+        portfolioManagementManager.getPortfolioController().checkForPortfolioInconsistencies();
+        // Refresh data
+        portfolio = portfolioService.findById(portfolio.getId());
         loadPortfolioData();
+        portfolioManagementManager.getPortfolioController().breadCrumbBar.updateCurrentCrumbLabel(portfolio);
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(
@@ -97,17 +128,14 @@ public class PortfolioOverviewController implements Openable {
     }
 
     private void loadPortfolioData() {
+        // Load data
         inputPortfolioName.setText(portfolio.getName());
-
-        inputOwner.getItems().setAll(ownerService.getAll());
         inputOwner.getSelectionModel().select(portfolio.getOwner());
-
-        inputState.getItems().setAll(State.values());
         inputState.getSelectionModel().select(portfolio.getState());
-
         outputCreatedAt.setText(portfolio.getCreatedAt().toLocaleString());
         outputDeactivatedAt.setText(portfolio.getDeactivatedAt() != null ? portfolio.getDeactivatedAt().toLocaleString() : "");
 
+        // Load tables
         commissionSchemeTablePane.getChildren().setAll(new InvestmentGuidelineTable(
                 commissionSchemeTablePane,
                 portfolio.getInvestmentGuideline().getEntries()
@@ -129,8 +157,7 @@ public class PortfolioOverviewController implements Openable {
                 portfolioManagementManager,
                 false
         );
-        portfolioTreeView.setShowRoot(false);
-        portfolioTreeViewPane.getChildren().clear();
-        portfolioTreeViewPane.getChildren().add(portfolioTreeView);
+        portfolioTreeView.setTooltip(new Tooltip("Auflistung der im Portfolio enthaltenen Konten und Depots."));
+        portfolioTreeViewPane.getChildren().setAll(portfolioTreeView);
     }
 }
