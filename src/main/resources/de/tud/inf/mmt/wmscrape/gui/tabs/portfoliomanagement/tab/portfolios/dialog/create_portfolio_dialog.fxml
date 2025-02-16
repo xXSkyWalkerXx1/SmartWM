@@ -16,15 +16,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.CreatePortfolioDialog">
+<AnchorPane minWidth="0.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.CreatePortfolioDialog">
    <children>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane minWidth="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <BorderPane BorderPane.alignment="CENTER">
+            <BorderPane minWidth="0.0" BorderPane.alignment="CENTER">
                <center>
-                <AnchorPane BorderPane.alignment="CENTER">
+                <AnchorPane minWidth="0.0" BorderPane.alignment="CENTER">
                      <children>
-                        <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <GridPane minWidth="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -55,11 +55,11 @@
             </BorderPane>
          </top>
          <center>
-            <BorderPane BorderPane.alignment="CENTER">
+            <BorderPane minWidth="0.0" BorderPane.alignment="CENTER">
                <center>
-                <AnchorPane BorderPane.alignment="CENTER">
+                <AnchorPane minWidth="0.0" BorderPane.alignment="CENTER">
                      <children>
-                        <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox minWidth="0.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <Label text="Anlagerichtlinie">
                                  <font>
@@ -69,17 +69,19 @@
                                     <Tooltip text="Diese orientiert sich an einen Anlagezeitraum von 2 bis 5 Jahren." />
                                  </tooltip>
                               </Label>
-                              <AnchorPane fx:id="commissionSchemeTablePane">
+                              <AnchorPane fx:id="commissionSchemeTablePane" minWidth="0.0">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
                               </AnchorPane>
-                              <AnchorPane fx:id="commissionSchemeLocationTablePane" minHeight="65.0">
+                              <Label text="Aufteilung des Gesamtvermögens nach Länder bzw. Regionen:" />
+                              <AnchorPane fx:id="commissionSchemeLocationTablePane" minHeight="65.0" minWidth="0.0">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
                               </AnchorPane>
-                              <AnchorPane fx:id="commissionSchemeCurrencyTablePane" minHeight="65.0">
+                              <Label text="Aufteilung des Gesamtvermögens nach Währungen:" />
+                              <AnchorPane fx:id="commissionSchemeCurrencyTablePane" minHeight="65.0" minWidth="0.0">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
