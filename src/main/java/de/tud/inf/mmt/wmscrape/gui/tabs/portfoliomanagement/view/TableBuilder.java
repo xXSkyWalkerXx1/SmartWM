@@ -32,6 +32,7 @@ public class TableBuilder<S> {
 
     /**
      * @param parent JavaFX node-based UI Controls and all layout containers (f.e. Pane). Only used for table-sizing.
+     * @param bindHeightToParent If true, height of table will be bind to parent height.
      */
     public TableBuilder(@NonNull Region parent, @NonNull List<S> tableItems, boolean bindHeightToParent){
         tableView.getItems().addAll(tableItems);
@@ -72,11 +73,11 @@ public class TableBuilder<S> {
      * @param onCommit Defines what will be updated on commit.
      * @param textFieldFormatter Defines how the text-field is formatted. Use f.e. {@link FieldFormatter}
      */
-    public <T> void addEditableColumn(@NonNull String columnName,
-                                      float columnWidth,
-                                      @NonNull Consumer<TextField> textFieldFormatter,
-                                      @NonNull Callback<TableColumn.CellDataFeatures<S, String>, ObservableValue<String>> cellValueFactory,
-                                      @NonNull EventHandler<TableColumn.CellEditEvent<S, String>> onCommit) {
+    public void addEditableColumn(@NonNull String columnName,
+                                  float columnWidth,
+                                  @NonNull Consumer<TextField> textFieldFormatter,
+                                  @NonNull Callback<TableColumn.CellDataFeatures<S, String>, ObservableValue<String>> cellValueFactory,
+                                  @NonNull EventHandler<TableColumn.CellEditEvent<S, String>> onCommit) {
         Callback<TableColumn<S, String>, TableCell<S, String>> cellFactory = new Callback<>() {
             @Override
             public TableCell<S, String> call(TableColumn<S, String> column) {
@@ -126,6 +127,15 @@ public class TableBuilder<S> {
         tableView.getColumns().add(newColumn);
     }
 
+    public <T> void addNestedEditableColumn(@NonNull String parentColName,
+                                            float parentColumnWidth,
+                                            @NonNull TableColumn<S, ?>... subColumns) {
+        TableColumn<S, T> newColumn = createDefaultColumn(parentColName, null, null);
+        newColumn.getColumns().addAll(subColumns);
+        newColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(parentColumnWidth));
+        tableView.getColumns().add(newColumn);
+    }
+
     /**
      * @param subCols Map entries containing of sub-column-name and his cell-value-factory.
      */
@@ -143,6 +153,9 @@ public class TableBuilder<S> {
         tableView.getColumns().add(newColumn);
     }
 
+    /**
+     * Create default column with given parameters.
+     */
     private <T> TableColumn<S, T> createDefaultColumn (@NonNull String columnName,
                                                        @Nullable Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> cellValueFactory,
                                                        @Nullable Callback<TableColumn<S, T>, TableCell<S, T>> cellFactory) {
@@ -165,16 +178,27 @@ public class TableBuilder<S> {
         initializeRowFactory();
     }
 
+    /**
+     * Set action on single-click on row.
+     * @param onSingleClickAction action to be performed on single-click.
+     */
     public void setActionOnSingleClickRow(@NonNull Consumer<S> onSingleClickAction){
         this.onRowSingleClickAction = onSingleClickAction;
         initializeRowFactory();
     }
 
+    /**
+     * Set action on double-click on row.
+     * @param onDoubleClickAction action to be performed on double-click.
+     */
     public void setActionOnDoubleClickRow(@NonNull Consumer<S> onDoubleClickAction){
         this.onRowDoubleClickAction = onDoubleClickAction;
         initializeRowFactory();
     }
 
+    /**
+     * Initialize row-factory for context-menu and mouse-clicks.
+     */
     private void initializeRowFactory(){
         tableView.setRowFactory(tableView -> {
             TableRow<S> tableRow = new TableRow<>();
@@ -208,7 +232,7 @@ public class TableBuilder<S> {
     }
 
     /**
-     * @return Table with all added columns, items and so on.
+     * @return modified table.
      */
     public @NonNull TableView<S> getResult(){
         return tableView;
