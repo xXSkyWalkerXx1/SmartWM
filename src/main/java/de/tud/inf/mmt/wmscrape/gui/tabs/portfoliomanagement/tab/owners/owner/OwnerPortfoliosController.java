@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.TableFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
@@ -22,6 +23,8 @@ public class OwnerPortfoliosController implements Openable {
 
     @Autowired
     PortfolioManagementTabManager portfolioManagementManager;
+    @Autowired
+    OwnerService ownerService;
 
     @FXML
     AnchorPane portfoliosTablePane;
@@ -39,6 +42,7 @@ public class OwnerPortfoliosController implements Openable {
                 .getInhaberPortfoliosTab()
                 .getProperties()
                 .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
+        owner = ownerService.getOwnerById(owner.getId());
 
         // Show tables
         portfoliosTablePane.getChildren().add(TableFactory.createOwnerPortfoliosTable(
