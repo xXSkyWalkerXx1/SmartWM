@@ -127,6 +127,13 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
 
             // Handle navigation
             if (selectedAsset instanceof Portfolio) {
+                // If the selected portfolio is already open, do nothing.
+                // Note: this case is used to pretend adding a crumb for the same portfolio.
+                if (portfolioManagementManager.getPortfolioController().getPortfolioOverviewTab().equals(
+                        portfolioManagementManager.getPortfolioController().getPortfolioManagementTabPane().getSelectionModel().getSelectedItem())
+                ) {
+                    return;
+                }
                 Navigator.navigateToPortfolio(portfolioManagementManager, (Portfolio) selectedAsset, isOneMainMenu);
             } else if (selectedAsset instanceof Account) {
                 Navigator.navigateToAccount(portfolioManagementManager, (Account) selectedAsset, isOneMainMenu);
