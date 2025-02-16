@@ -115,6 +115,7 @@ public class CreateAccountDialog implements Openable {
                 inputDescription, inputType, inputCurrencyCode, inputBalance, inputOwner, inputPortfolio,
                 inputNotice, inputBankName, inputIban, inputKontoNumber, inputInterestRate, inputInterestDays, inputInterestInterval
         );
+        // Do not check for inconsistencies, because the navigation to main-menu with onCancel, which already checks for inconsistencies
         if (!accountService.save(account)) return;
         onCancel();
 
