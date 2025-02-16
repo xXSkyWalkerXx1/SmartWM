@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.FinancialAsset;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
@@ -26,12 +27,15 @@ import java.util.*;
 public class AccountService {
 
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private PortfolioManagementTabController portfolioManagementTabController;
 
     public List<Account> getAll() {
         try {
+            portfolioManagementTabController.checkForInconsistencies();
             return accountRepository.findAll();
         } catch (Exception e) {
             PrimaryTabManager.showDialog(
@@ -53,11 +57,12 @@ public class AccountService {
     }
 
     public Account getAccountById(long id) {
+        portfolioManagementTabController.checkForInconsistencies();
         return accountRepository.findById(id).orElseThrow();
     }
 
     /**
-     * Deletes the account and saves it again.
+     * Deletes the account and saves it again, without checking for inconsistencies.
      * @return true if the account was successfully saved, false otherwise.
      */
     @Transactional
@@ -118,9 +123,11 @@ public class AccountService {
             if (!Currency.getInstance("EUR").equals(account.getCurrency())) {
                 getLatestExchangeCourse(account.getCurrency());
             }
+            account.onPrePersistOrUpdateOrRemoveEntity();
             accountRepository.save(account);
             return true;
         } catch (DataAccessException e) {
+            e.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Fehler",
@@ -137,7 +144,7 @@ public class AccountService {
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Unerwarteter Fehler",
-                    "Das Konto konnte nicht gespeichert werden.",
+                    "Das Konto konnte nicht gespeichert werden.\nGrund: " + e.getMessage(),
                     null
             );
         }

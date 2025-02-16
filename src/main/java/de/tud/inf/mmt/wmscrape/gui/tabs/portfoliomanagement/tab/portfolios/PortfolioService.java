@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.InvestmentGuideline;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
@@ -16,7 +17,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sound.sampled.Port;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -25,9 +25,12 @@ import java.util.List;
 public class PortfolioService {
 
     @Autowired
-    PortfolioRepository portfolioRepository;
+    private PortfolioRepository portfolioRepository;
+    @Autowired
+    private PortfolioManagementTabController portfolioManagementTabController;
 
     public Portfolio findById(long id) {
+        portfolioManagementTabController.checkForInconsistencies();
         return portfolioRepository.findById(id).orElseThrow();
     }
 
@@ -41,8 +44,10 @@ public class PortfolioService {
 
     public List<Portfolio> getAll() {
         try {
+            portfolioManagementTabController.checkForInconsistencies();
             return portfolioRepository.findAll();
         } catch (Exception e) {
+            e.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Fehler",
@@ -53,11 +58,17 @@ public class PortfolioService {
         }
     }
 
+    /**
+     * @param portfolio to save.
+     * @return true if the portfolio was successfully saved, false otherwise.
+     */
     public boolean save(Portfolio portfolio) {
         try {
+            portfolio.onPrePersistOrUpdateOrRemoveEntity();
             portfolioRepository.save(portfolio);
             return true;
         } catch (DataIntegrityViolationException integrityViolationException) {
+            integrityViolationException.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Fehler",
@@ -68,7 +79,7 @@ public class PortfolioService {
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Unerwarteter Fehler",
-                    "Das Portfolio konnte nicht gespeichert werden.",
+                    "Das Portfolio konnte nicht gespeichert werden.\nGrund: " + e.getMessage(),
                     null
             );
         }
