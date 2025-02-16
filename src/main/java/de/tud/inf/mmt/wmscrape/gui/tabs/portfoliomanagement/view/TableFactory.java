@@ -601,7 +601,7 @@ public class TableFactory {
         );
 
         tableBuilder.addColumn(
-                "Aufteilung",
+                "Region",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<InvestmentGuideline.DivisionByLocation, String>, ObservableValue<String>>) cellDataFeatures
                         -> new SimpleStringProperty("%")
@@ -786,7 +786,7 @@ public class TableFactory {
         );
 
         tableBuilder.addColumn(
-                "Aufteilung",
+                "Währung",
                 0.1f,
                 (Callback<TableColumn.CellDataFeatures<InvestmentGuideline.DivisionByCurrency, String>, ObservableValue<String>>) cellDataFeatures
                         -> new SimpleStringProperty("%")
