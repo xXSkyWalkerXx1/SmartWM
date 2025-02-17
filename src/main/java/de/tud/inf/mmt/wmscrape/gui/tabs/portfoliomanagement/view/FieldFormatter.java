@@ -1,12 +1,17 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Tooltip;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 public class FieldFormatter {
 
@@ -58,11 +63,15 @@ public class FieldFormatter {
                 if (Integer.parseInt(change.getControlNewText()) >= from
                         && Integer.parseInt(change.getControlNewText()) <= to) {
                     return change;
+                } else {
+                    // otherwise set to 'to' as default value
+                    change.setText(String.valueOf(to));
+                    change.setRange(0, change.getControlText().length());
+                    return change;
                 }
             } catch (NumberFormatException e) {
                 return null;
             }
-            return null;
         }));
     }
 
@@ -110,11 +119,41 @@ public class FieldFormatter {
                         && (to == null || FormatUtils.parseFloat(change.getControlNewText()) <= to)) {
                     if (changePredicate != null && !changePredicate.test(change)) return null;
                     return change;
+                } else if (to != null) {
+                    // otherwise set to 'to' as default value
+                    change.setText(FormatUtils.formatFloat(to));
+                    change.setRange(0, change.getControlText().length());
+                    return change;
                 }
             } catch (Exception e) {
                 return null;
             }
             return null;
+        }));
+    }
+
+    public static void setDeactivatedAtFormatter(@NonNull DatePicker inputCreatedAt, @NonNull DatePicker inputDeactivatedAt) {
+        inputDeactivatedAt.getEditor().setTextFormatter(new TextFormatter<String>(change -> {
+            if (change.getText().isEmpty()) return change;
+
+            LocalDate parsedDate = LocalDate.parse(
+                    change.getText(),
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy")
+            );
+
+            if (inputCreatedAt.getValue() != null && (parsedDate.isBefore(inputCreatedAt.getValue()) || parsedDate.isAfter(LocalDate.now()))) {
+                inputDeactivatedAt.getEditor().setStyle("-fx-border-color: red;");
+                inputDeactivatedAt.getEditor().tooltipProperty().unbind();
+                inputDeactivatedAt.getEditor().setTooltip(new Tooltip("Das Datum kann nicht vor dem Erstell-Datum bzw. in der Zukunft liegen!"));
+                change.setText("");
+                change.setRange(0, change.getControlText().length());
+                return change;
+            } else {
+                inputDeactivatedAt.getEditor().setStyle(null);
+                inputDeactivatedAt.getEditor().tooltipProperty().unbind();
+                inputDeactivatedAt.getEditor().setTooltip(null);
+            }
+            return change;
         }));
     }
 }
