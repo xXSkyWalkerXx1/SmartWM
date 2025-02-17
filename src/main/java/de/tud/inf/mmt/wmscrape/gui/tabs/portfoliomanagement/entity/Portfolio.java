@@ -66,7 +66,7 @@ public class Portfolio extends FinancialAsset implements Changable {
         owner = ownerProperty.get();
         state = stateProperty.get();
         investmentGuideline.onPrePersistOrUpdateOrRemoveEntity();
-        owner.onPrePersistOrUpdateOrRemoveEntity();
+        if (owner != null) owner.onPrePersistOrUpdateOrRemoveEntity();
     }
 
     @Override
