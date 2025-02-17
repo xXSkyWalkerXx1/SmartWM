@@ -136,8 +136,8 @@ public class Account extends FinancialAsset implements Changable {
         interestRate = interestRateProperty.get();
         interestDays = interestDaysProperty.get();
         interestInterval = interestIntervalProperty.get();
-        owner.onPrePersistOrUpdateOrRemoveEntity();
-        portfolio.onPrePersistOrUpdateOrRemoveEntity();
+        if (owner != null) owner.onPrePersistOrUpdateOrRemoveEntity();
+        if (portfolio != null) portfolio.onPrePersistOrUpdateOrRemoveEntity();
     }
 
     @Override
