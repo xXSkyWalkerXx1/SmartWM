@@ -92,6 +92,11 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
     }
 
     @Override
+    protected void onCancel() {
+        inputPortfolioName.getParent().getScene().getWindow().hide();
+    }
+
+    @Override
     protected void onSave() {
         // Validate first
         if (!areTextFieldsValid() || !areComboboxInputsValid()) return;

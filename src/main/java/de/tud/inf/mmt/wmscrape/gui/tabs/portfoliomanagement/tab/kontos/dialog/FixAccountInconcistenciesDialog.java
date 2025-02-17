@@ -102,6 +102,11 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
     }
 
     @Override
+    protected void onCancel() {
+        inputDescription.getParent().getScene().getWindow().hide();
+    }
+
+    @Override
     protected void onSave() {
         // Validate first
         if (!areTextFieldsValid() || !areComboboxInputsValid()) return;

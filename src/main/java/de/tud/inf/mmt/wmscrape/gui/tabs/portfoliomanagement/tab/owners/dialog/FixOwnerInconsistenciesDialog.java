@@ -104,6 +104,11 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
     }
 
     @Override
+    protected void onCancel() {
+        inputForename.getParent().getScene().getWindow().hide();
+    }
+
+    @Override
     protected void onSave() {
         // Validate first
         if (!areTextFieldsValid() || !areComboboxInputsValid()) return;
