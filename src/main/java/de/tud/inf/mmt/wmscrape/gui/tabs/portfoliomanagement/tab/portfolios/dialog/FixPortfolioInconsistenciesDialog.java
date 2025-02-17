@@ -125,6 +125,10 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
         this.portfolio = portfolio;
     }
 
+    public Portfolio getPortfolio() {
+        return portfolio;
+    }
+
     private boolean areTextFieldsValid() {
         inputCreatedAt.getEditor().tooltipProperty().unbind();
         inputDeactivatedAt.getEditor().tooltipProperty().unbind();

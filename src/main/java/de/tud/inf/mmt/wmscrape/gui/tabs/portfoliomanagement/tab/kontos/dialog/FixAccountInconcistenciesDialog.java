@@ -138,6 +138,10 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
         this.account = account;
     }
 
+    public Account getAccount() {
+        return account;
+    }
+
     private boolean areTextFieldsValid() {
         inputCreatedAt.getEditor().tooltipProperty().unbind();
         inputDeactivatedAt.getEditor().tooltipProperty().unbind();

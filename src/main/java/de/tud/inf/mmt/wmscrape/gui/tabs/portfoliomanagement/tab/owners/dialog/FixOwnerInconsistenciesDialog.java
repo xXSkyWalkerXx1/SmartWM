@@ -143,6 +143,10 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
         this.owner = owner;
     }
 
+    public Owner getOwner() {
+        return owner;
+    }
+
     private boolean areTextFieldsValid() {
         inputCreatedAt.getEditor().tooltipProperty().unbind();
         inputDeactivatedAt.getEditor().tooltipProperty().unbind();
