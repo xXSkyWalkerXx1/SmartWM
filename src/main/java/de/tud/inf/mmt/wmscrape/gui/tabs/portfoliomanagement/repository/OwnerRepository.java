@@ -167,11 +167,14 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
         if (addressId.isPresent()) {
             Owner.Address address = reconstructedOwner.getAddress();
             address.setId(addressId.get());
-            address.setCountry(findCountryByAddressId(addressId.get()).orElse(null));
             address.setLocation(findLocationByAddressId(addressId.get()).orElse(null));
             address.setPlz(findPlzByAddressId(addressId.get()).orElse(null));
             address.setStreet(findStreetByAddressId(addressId.get()).orElse(null));
             address.setStreetNumber(findStreetNumberByAddressId(addressId.get()).orElse(null));
+
+            // Set country only if it is in the locales.
+            String country = findCountryByAddressId(addressId.get()).orElse(null);
+            OwnerService.getLocales().stream().filter(c -> c.equals(country)).findFirst().ifPresent(address::setCountry);
         }
 
         Optional<Long> taxInformationId = findTaxInformationIdByOwnerId(id);
