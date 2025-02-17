@@ -71,19 +71,25 @@ public class TableFactory {
 
         tableBuilder.addColumn(
                 "Vorname",
-                0.25f,
+                0.20f,
                 (Callback<TableColumn.CellDataFeatures<Owner, String>, ObservableValue<String>>) ownerCellDataFeatures
                         -> new SimpleStringProperty(ownerCellDataFeatures.getValue().getForename())
         );
         tableBuilder.addColumn(
                 "Nachname",
-                0.25f,
+                0.20f,
                 (Callback<TableColumn.CellDataFeatures<Owner, String>, ObservableValue<String>>) ownerCellDataFeatures
                         -> new SimpleStringProperty(ownerCellDataFeatures.getValue().getAftername())
         );
         tableBuilder.addColumn(
-                "Status",
+                "Steuernummer",
                 0.15f,
+                (Callback<TableColumn.CellDataFeatures<Owner, String>, ObservableValue<String>>) ownerCellDataFeatures
+                        -> new SimpleStringProperty(ownerCellDataFeatures.getValue().getTaxInformation().getTaxNumber())
+        );
+        tableBuilder.addColumn(
+                "Status",
+                0.10f,
                 (Callback<TableColumn.CellDataFeatures<Owner, String>, ObservableValue<String>>) ownerCellDataFeatures
                         -> new SimpleStringProperty(ownerCellDataFeatures.getValue().getState().getDisplayText())
         );
@@ -463,16 +469,12 @@ public class TableFactory {
                 0.3f,
                 Map.entry(
                         "Name",
-                        accountCellDataFeatures -> new SimpleStringProperty(accountCellDataFeatures.getValue().getBankName())
+                        (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                                -> new SimpleStringProperty(accountCellDataFeatures.getValue().getBankName())
                 ),
                 Map.entry(
                         "IBAN",
                         accountCellDataFeatures -> new SimpleStringProperty(accountCellDataFeatures.getValue().getIban())
-                ),
-                Map.entry(
-                        "Konto-Nr.",
-                        (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                                -> new SimpleStringProperty(accountCellDataFeatures.getValue().getKontoNumber())
                 )
         );
         tableBuilder.addColumn(
@@ -1002,16 +1004,12 @@ public class TableFactory {
                 0.2f,
                 Map.entry(
                         "Name",
-                        accountCellDataFeatures -> new SimpleStringProperty(accountCellDataFeatures.getValue().getBankName())
+                        (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
+                                -> new SimpleStringProperty(accountCellDataFeatures.getValue().getBankName())
                 ),
                 Map.entry(
                         "IBAN",
                         accountCellDataFeatures -> new SimpleStringProperty(accountCellDataFeatures.getValue().getIban())
-                ),
-                Map.entry(
-                        "Konto-Nr.",
-                        (Callback<TableColumn.CellDataFeatures<Account, String>, ObservableValue<String>>) accountCellDataFeatures
-                                -> new SimpleStringProperty(accountCellDataFeatures.getValue().getKontoNumber())
                 )
         );
         tableBuilder.addColumn(
