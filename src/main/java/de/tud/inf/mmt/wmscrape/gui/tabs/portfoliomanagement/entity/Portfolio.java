@@ -126,6 +126,10 @@ public class Portfolio extends FinancialAsset implements Changable {
         return idProperty.get();
     }
 
+    public SimpleLongProperty idProperty() {
+        return idProperty;
+    }
+
     public String getName() {
         return nameProperty.get();
     }

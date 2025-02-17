@@ -198,6 +198,10 @@ public class Account extends FinancialAsset implements Changable {
         return idProperty.get();
     }
 
+    public SimpleLongProperty idProperty() {
+        return idProperty;
+    }
+
     public String getDescription() {
         return descriptionProperty.get();
     }
