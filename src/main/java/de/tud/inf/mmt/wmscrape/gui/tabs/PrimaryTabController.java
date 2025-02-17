@@ -83,6 +83,7 @@ public class PrimaryTabController {
 
         primaryTabPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (managementTab.equals(primaryTabPane.getSelectionModel().getSelectedItem())) {
+                portfolioManagementTabController.getPortfolioManagementTabPane().getSelectionModel().clearSelection();
                 portfolioManagementTabController.showPortfolioManagementTabs();
             }
         });
