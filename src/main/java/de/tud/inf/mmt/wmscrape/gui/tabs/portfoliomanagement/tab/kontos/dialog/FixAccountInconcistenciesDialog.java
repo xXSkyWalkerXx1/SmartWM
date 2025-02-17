@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.dialog;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.ComboBoxValidator;
@@ -10,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextInputControl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
@@ -20,6 +22,9 @@ import java.util.List;
 
 @Controller
 public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
+
+    @Autowired
+    private PortfolioManagementTabController portfolioManagementTabController;
 
     @FXML
     ComboBox<State> inputState;
@@ -98,6 +103,7 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
     @FXML
     private void onDelete() {
         accountService.deleteById(account.getId());
+        portfolioManagementTabController.navigateBackAfterDeletion(account);
         onCancel();
     }
 

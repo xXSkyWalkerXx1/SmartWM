@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.dialog;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
@@ -9,6 +10,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
@@ -21,6 +23,9 @@ import java.util.List;
 public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
 
     Owner owner;
+
+    @Autowired
+    private PortfolioManagementTabController portfolioManagementTabController;
 
     @FXML
     ComboBox<State> inputState;
@@ -100,6 +105,7 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
     @FXML
     private void onDelete() {
         ownerService.deleteById(owner.getId());
+        portfolioManagementTabController.navigateBackAfterDeletion(owner);
         onCancel();
     }
 
