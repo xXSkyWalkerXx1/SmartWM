@@ -159,6 +159,6 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
     }
 
     private boolean areComboboxInputsValid() {
-        return ComboBoxValidator.areComboboxInputsValid(List.of(inputState, inputMaritalState));
+        return ComboBoxValidator.areComboboxInputsValid(List.of(inputState, inputMaritalState, inputCountry));
     }
 }
