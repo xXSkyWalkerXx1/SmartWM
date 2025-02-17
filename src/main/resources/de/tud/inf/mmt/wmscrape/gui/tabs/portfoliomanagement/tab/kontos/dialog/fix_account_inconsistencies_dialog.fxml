@@ -56,8 +56,8 @@
                               <RowConstraints />
                            </rowConstraints>
                         </GridPane>
-                        <DatePicker fx:id="inputCreatedAt" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                        <DatePicker fx:id="inputDeactivatedAt" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                        <DatePicker fx:id="inputCreatedAt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <DatePicker fx:id="inputDeactivatedAt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                             </children>
                      <rowConstraints>
                         <RowConstraints />

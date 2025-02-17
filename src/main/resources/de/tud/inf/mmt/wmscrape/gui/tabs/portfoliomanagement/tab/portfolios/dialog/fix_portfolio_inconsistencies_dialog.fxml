@@ -109,8 +109,8 @@
                                <ComboBox fx:id="inputState" maxWidth="125.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                <Label text="Erstellt am" GridPane.rowIndex="3" />
                                <Label text="Deaktiviert am" GridPane.rowIndex="4" />
-                               <DatePicker fx:id="inputCreatedAt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                               <DatePicker fx:id="inputDeactivatedAt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                               <DatePicker fx:id="inputCreatedAt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                               <DatePicker fx:id="inputDeactivatedAt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                            </children>
                         </GridPane>
                      </children>
