@@ -111,7 +111,9 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
     @Override
     protected void onSave() {
         // Validate first
-        if (!areTextFieldsValid() || !areComboboxInputsValid()) return;
+        boolean areTextFieldsValid = areTextFieldsValid();
+        boolean areComboboxInputsValid = areComboboxInputsValid();
+        if (!areTextFieldsValid || !areComboboxInputsValid) return;
 
         // If everything is valid, we can create and save the new owner
         ownerService.writeInput(
