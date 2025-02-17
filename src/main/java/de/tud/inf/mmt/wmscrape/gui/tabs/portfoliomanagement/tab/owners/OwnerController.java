@@ -63,7 +63,7 @@ public class OwnerController implements Openable {
     }
 
     public void setOwnerTreeView(@NonNull PortfolioTreeView portfolioTreeView){
-        portfolioTreeView.setTooltip(new Tooltip("Auflistung der dem Inhaber zugeordneten Portfolios, Konten und Depots."));
+        portfolioTreeView.setTooltip(new Tooltip("Auflistung der dem Inhaber zugeordneten Portfolios."));
         ownerTreeViewPane.getChildren().setAll(portfolioTreeView);
     }
 
