@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.PortfolioRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.ComboBoxValidator;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -44,6 +45,9 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
     protected void initialize() {
         if (portfolio == null) throw new IllegalStateException("Portfolio must be set before initializing dialog.");
         super.initialize();
+
+        // Deactivated at should not be before created at
+        FieldFormatter.setDeactivatedAtFormatter(inputCreatedAt, inputDeactivatedAt);
 
         // Set content of combo-boxes
         inputOwner.getItems().setAll(ownerService.getOwnerRepository().findAllAsFake());

@@ -5,6 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementT
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.ComboBoxValidator;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.fxml.FXML;
@@ -37,6 +38,9 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
     protected void initialize() {
         if (account == null) throw new IllegalStateException("Account must be set before initializing dialog.");
         super.initialize();
+
+        // Deactivated at should not be before created at
+        FieldFormatter.setDeactivatedAtFormatter(inputCreatedAt, inputDeactivatedAt);
 
         // Set content of combo-boxes
         inputState.getItems().setAll(State.values());
