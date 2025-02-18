@@ -2,21 +2,26 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="756.0" prefWidth="1337.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.PortfolioSnapshotsController">
     <children>
-        <Label layoutX="539.0" layoutY="273.0" text="Portfolio Snapshots">
-            <font>
-                <Font name="System Bold" size="38.0" />
-            </font>
-        </Label>
-        <Text layoutX="169.0" layoutY="413.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hier sollen Möglichkeiten zur Verwaltung und Vergleichen von Portfolio-Snapshots gegeben werden" textAlignment="CENTER" wrappingWidth="1000">
-            <font>
-                <Font size="32.0" />
-            </font>
-        </Text>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+              <Label text="Portfolio Snapshots" textAlignment="CENTER">
+                  <font>
+                      <Font name="System Bold" size="38.0" />
+                  </font>
+              </Label>
+              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hier sollen Möglichkeiten zur Verwaltung und Vergleichen von Portfolio-Snapshots gegeben werden" textAlignment="CENTER" wrappingWidth="1000">
+                  <font>
+                      <Font size="32.0" />
+                  </font>
+              </Text>
+         </children>
+      </VBox>
     </children>
 
 </AnchorPane>
