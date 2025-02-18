@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 public class OwnerDepotsController implements Openable {
@@ -39,7 +39,11 @@ public class OwnerDepotsController implements Openable {
                 .getInhaberDepotsTab()
                 .getProperties()
                 .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
-        owner = ownerService.getOwnerById(owner.getId());
+        try {
+            owner = ownerService.getOwnerById(owner.getId());
+        } catch (NoSuchElementException e) {
+            return;
+        }
 
         depotsTablePane.getChildren().add(TableFactory.createOwnerDepotsTable(
                 depotsTablePane,
