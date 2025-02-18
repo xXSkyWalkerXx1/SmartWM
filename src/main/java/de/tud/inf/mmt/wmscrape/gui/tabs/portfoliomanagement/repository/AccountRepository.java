@@ -124,7 +124,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Long> findByCurrencyIsNotIn(Collection<String> currencies);
 
     @Query(value = "SELECT a.id " +
-            "FROM account a " +
+            "FROM pkonto a " +
             "WHERE a.created_at > NOW() OR a.deactivated_at < a.created_at OR a.deactivated_at > NOW()", nativeQuery = true)
     List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
     // endregion
