@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoTransactionsController"
-            prefHeight="756.0" prefWidth="1337.0">
+
+<AnchorPane prefHeight="756.0" prefWidth="1337.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto.KontoTransactionsController">
     <children>
-        <Label layoutX="539.0" layoutY="273.0" text="Konto Transaktionshistorie">
-            <font>
-                <Font name="System Bold" size="38.0" />
-            </font>
-        </Label>
-        <Text layoutX="168.0" layoutY="408.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hier soll die Transaktionshistorie des Kontos dargestellt werden" wrappingWidth="1000">
-            <font>
-                <Font size="32.0" />
-            </font>
-        </Text>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+              <Label text="Konto Transaktionen">
+                  <font>
+                      <Font name="System Bold" size="38.0" />
+                  </font>
+              </Label>
+              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hier sollen die Transaktionen des Kontos dargestellt und neue erstellt werden können" textAlignment="CENTER" wrappingWidth="1000">
+                  <font>
+                      <Font size="32.0" />
+                  </font>
+              </Text>
+         </children>
+      </VBox>
     </children>
 
 </AnchorPane>
