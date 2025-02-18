@@ -125,7 +125,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query(value = "SELECT a.id " +
             "FROM pkonto a " +
-            "WHERE a.created_at > NOW() OR a.deactivated_at < a.created_at OR a.deactivated_at > NOW()", nativeQuery = true)
+            "WHERE a.created_at > NOW() " +
+            "OR (a.deactivated_at IS NOT NULL AND a.deactivated_at < a.created_at) " +
+            "OR (a.deactivated_at IS NOT NULL AND a.deactivated_at > NOW())", nativeQuery = true)
     List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
     // endregion
 

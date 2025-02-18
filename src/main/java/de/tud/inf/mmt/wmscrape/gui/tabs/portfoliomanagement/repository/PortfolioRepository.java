@@ -237,7 +237,9 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
     @Query(value = "SELECT p.id " +
             "FROM portfolio p " +
-            "WHERE p.created_at > NOW() OR p.deactivated_at < p.created_at OR p.deactivated_at > NOW()", nativeQuery = true)
+            "WHERE p.created_at > NOW() " +
+            "OR (p.deactivated_at IS NOT NULL AND p.deactivated_at < p.created_at) " +
+            "OR (p.deactivated_at IS NOT NULL AND p.deactivated_at > NOW())", nativeQuery = true)
     List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
     // endregion
 

@@ -142,7 +142,9 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
     @Query(value = "SELECT o.id " +
             "FROM inhaber o " +
-            "WHERE o.created_at > NOW() OR o.deactivated_at < o.created_at OR o.deactivated_at > NOW()", nativeQuery = true)
+            "WHERE o.created_at > NOW() " +
+            "OR (o.deactivated_at IS NOT NULL AND o.deactivated_at < o.created_at) " +
+            "OR (o.deactivated_at IS NOT NULL AND o.deactivated_at > NOW())", nativeQuery = true)
     List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
     // endregion
 
