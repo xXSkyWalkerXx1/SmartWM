@@ -2,6 +2,8 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.InvestmentType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Changable;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import org.checkerframework.common.value.qual.IntRange;
 
 import javax.persistence.*;
@@ -21,39 +23,72 @@ public class InvestmentGuideline implements Changable {
     @Table(name = "anlagen_richtlinie_eintrag")
     public static class Entry implements Changable {
 
-        @Transient
-        private boolean isChanged = false;
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-
         @Enumerated(EnumType.STRING)
         @Column(name = "investment_type", nullable = false)
         private InvestmentType type;
-
         @Column(name = "asset_allocation")
         private BigDecimal assetAllocation = BigDecimal.valueOf(0); // %
-
         @IntRange(from = 1, to = 12)
         @Column(name = "max_riskclass")
         private Integer maxRiskclass = 1;
-
         @Column(name = "max_volatility")
         private BigDecimal maxVolatility = BigDecimal.valueOf(0); // %, within 1 year
-
         @Column(name = "performance")
         private BigDecimal performance = BigDecimal.valueOf(0); // %, within 1 year
-
         @Column(name = "rendite")
-        private BigDecimal rendite = BigDecimal.valueOf(0); // %, since buy
-
+        private BigDecimal rendite = BigDecimal.valueOf(0);
         @Column(name = "chance_risk_number")
         private BigDecimal chanceRiskNumber = BigDecimal.valueOf(100); // %
-
         @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
         @JoinColumn(name = "child_entry_id") // ToDo: rename to parent_entry_id
         private List<Entry> childEntries = new ArrayList<>();
+
+        @Transient
+        private final SimpleLongProperty idProperty = new SimpleLongProperty();
+        @Transient
+        private final SimpleObjectProperty<InvestmentType> typeProperty = new SimpleObjectProperty<>();
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> assetAllocationProperty = new SimpleObjectProperty<>(assetAllocation);
+        @Transient
+        private final SimpleObjectProperty<Integer> maxRiskclassProperty = new SimpleObjectProperty<>(maxRiskclass);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> maxVolatilityProperty = new SimpleObjectProperty<>(maxVolatility);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> performanceProperty = new SimpleObjectProperty<>(performance);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> renditeProperty = new SimpleObjectProperty<>(rendite);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> chanceRiskNumberProperty = new SimpleObjectProperty<>(chanceRiskNumber);
+
+        @Override
+        @PostLoad
+        public void onPostLoadEntity() {
+            childEntries.forEach(Changable::onPostLoadEntity);
+            idProperty.set(id);
+            typeProperty.set(type);
+            assetAllocationProperty.set(assetAllocation);
+            maxRiskclassProperty.set(maxRiskclass);
+            maxVolatilityProperty.set(maxVolatility);
+            performanceProperty.set(performance);
+            renditeProperty.set(rendite);
+            chanceRiskNumberProperty.set(chanceRiskNumber);
+        }
+
+        @Override
+        public void onPrePersistOrUpdateOrRemoveEntity() {
+            childEntries.forEach(Changable::onPrePersistOrUpdateOrRemoveEntity);
+            id = idProperty.get();
+            type = typeProperty.get();
+            assetAllocation = assetAllocationProperty.get();
+            maxRiskclass = maxRiskclassProperty.get();
+            maxVolatility = maxVolatilityProperty.get();
+            performance = performanceProperty.get();
+            rendite = renditeProperty.get();
+            chanceRiskNumber = chanceRiskNumberProperty.get();
+        }
 
         @Override
         public String toString(){
@@ -61,93 +96,92 @@ public class InvestmentGuideline implements Changable {
         }
 
         @Override
-        public void setChanged(boolean changed) {
-            childEntries.forEach(entry -> entry.setChanged(changed));
-            isChanged = changed;
+        public boolean isChanged() {
+            return childEntries.stream().anyMatch(Changable::isChanged)
+                    || !Objects.equals(id, idProperty.get())
+                    || !Objects.equals(type, typeProperty.get())
+                    || !Objects.equals(assetAllocation, assetAllocationProperty.get())
+                    || !Objects.equals(maxRiskclass, maxRiskclassProperty.get())
+                    || !Objects.equals(maxVolatility, maxVolatilityProperty.get())
+                    || !Objects.equals(performance, performanceProperty.get())
+                    || !Objects.equals(rendite, renditeProperty.get())
+                    || !Objects.equals(chanceRiskNumber, chanceRiskNumberProperty.get());
         }
 
         @Override
-        public boolean isChanged() {
-            return isChanged || childEntries.stream().anyMatch(Changable::isChanged);
+        public void restore() {
+            onPostLoadEntity();
+            childEntries.forEach(Changable::restore);
         }
 
         // region Getters & Setters
         public Long getId() {
-            return id;
+            return idProperty.get();
         }
 
         public void setId(Long id) {
-            this.id = id;
-            isChanged = true;
+            idProperty.set(id);
         }
 
         public InvestmentType getType() {
-            return type;
+            return typeProperty.get();
         }
 
         public void setType(InvestmentType type) {
-            this.type = type;
-            isChanged = true;
+            typeProperty.set(type);
         }
 
         public float getAssetAllocation() {
-            return assetAllocation.floatValue();
+            return assetAllocationProperty.get().floatValue();
         }
 
         public void setAssetAllocation(float assetAllocation) {
-            this.assetAllocation = BigDecimal.valueOf(assetAllocation).setScale(2,RoundingMode.HALF_DOWN);
-            childEntries.forEach(entry -> entry.setAssetAllocation(assetAllocation));
-            isChanged = true;
+            assetAllocationProperty.set(BigDecimal.valueOf(assetAllocation).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         public Integer getMaxRiskclass() {
-            return maxRiskclass;
+            return maxRiskclassProperty.get();
         }
 
         public void setMaxRiskclass(Integer maxRiskclass) {
-            this.maxRiskclass = maxRiskclass;
+            maxRiskclassProperty.set(maxRiskclass);
             childEntries.forEach(entry -> entry.setMaxRiskclass(maxRiskclass));
-            isChanged = true;
         }
 
         public float getMaxVolatility() {
-            return maxVolatility.floatValue();
+            return maxVolatilityProperty.get().floatValue();
         }
 
         public void setMaxVolatility(float maxVolatility) {
-            this.maxVolatility = BigDecimal.valueOf(maxVolatility).setScale(2,RoundingMode.HALF_DOWN);
+            maxVolatilityProperty.set(BigDecimal.valueOf(maxVolatility).setScale(2,RoundingMode.HALF_DOWN));
             childEntries.forEach(entry -> entry.setMaxVolatility(maxVolatility));
-            isChanged = true;
         }
 
         public float getPerformance() {
-            return performance.floatValue();
+            return performanceProperty.get().floatValue();
         }
 
         public void setPerformance(float performance) {
-            this.performance = BigDecimal.valueOf(performance).setScale(2,RoundingMode.HALF_DOWN);
+            performanceProperty.set(BigDecimal.valueOf(performance).setScale(2,RoundingMode.HALF_DOWN));
             childEntries.forEach(entry -> entry.setPerformance(performance));
-            isChanged = true;
         }
 
         public float getRendite() {
-            return rendite.floatValue();
+            return renditeProperty.get().floatValue();
         }
 
         public void setRendite(float rendite) {
-            this.rendite = BigDecimal.valueOf(rendite).setScale(2,RoundingMode.HALF_DOWN);
+            renditeProperty.set(BigDecimal.valueOf(rendite).setScale(2,RoundingMode.HALF_DOWN));
             childEntries.forEach(entry -> entry.setRendite(rendite));
-            isChanged = true;
         }
 
         public float getChanceRiskNumber() {
-            return chanceRiskNumber.floatValue();
+            return chanceRiskNumberProperty.get().floatValue();
         }
 
         public void setChanceRiskNumber(float chanceRiskNumber) {
-            this.chanceRiskNumber = BigDecimal.valueOf(chanceRiskNumber).setScale(2,RoundingMode.HALF_DOWN);
+            chanceRiskNumberProperty.set(BigDecimal.valueOf(chanceRiskNumber).setScale(2,RoundingMode.HALF_DOWN));
             childEntries.forEach(entry -> entry.setChanceRiskNumber(chanceRiskNumber));
-            isChanged = true;
         }
 
         public List<Entry> getChildEntries() {
@@ -156,7 +190,6 @@ public class InvestmentGuideline implements Changable {
 
         public void addChildEntry(Entry childEntry) {
             this.childEntries.add(childEntry);
-            isChanged = true;
         }
         // endregion
     }
@@ -165,13 +198,9 @@ public class InvestmentGuideline implements Changable {
     @Table(name = "anlagen_richtlinie_unterteilung_ort")
     public static class DivisionByLocation implements Changable {
 
-        @Transient
-        private boolean isChanged = false;
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-
         private BigDecimal germany = BigDecimal.valueOf(0);
         private BigDecimal europe_without_brd = BigDecimal.valueOf(0);
         private BigDecimal northamerica_with_usa = BigDecimal.valueOf(0);
@@ -180,97 +209,136 @@ public class InvestmentGuideline implements Changable {
         private BigDecimal japan = BigDecimal.valueOf(0);
         private BigDecimal emergine_markets = BigDecimal.valueOf(0);
 
+        @Transient
+        private final SimpleLongProperty idProperty = new SimpleLongProperty();
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> germanyProperty = new SimpleObjectProperty<>(germany);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> europeWithoutBrdProperty = new SimpleObjectProperty<>(europe_without_brd);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> northAmericaWithUsaProperty = new SimpleObjectProperty<>(northamerica_with_usa);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> asiaWithoutChinaProperty = new SimpleObjectProperty<>(asia_without_china);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> chinaProperty = new SimpleObjectProperty<>(china);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> japanProperty = new SimpleObjectProperty<>(japan);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> emergineMarketsProperty = new SimpleObjectProperty<>(emergine_markets);
+
         @Override
-        public void setChanged(boolean changed) {
-            isChanged = changed;
+        @PostLoad
+        public void onPostLoadEntity() {
+            idProperty.set(id);
+            germanyProperty.set(germany);
+            europeWithoutBrdProperty.set(europe_without_brd);
+            northAmericaWithUsaProperty.set(northamerica_with_usa);
+            asiaWithoutChinaProperty.set(asia_without_china);
+            chinaProperty.set(china);
+            japanProperty.set(japan);
+            emergineMarketsProperty.set(emergine_markets);
+        }
+
+        @Override
+        public void onPrePersistOrUpdateOrRemoveEntity() {
+            id = idProperty.get();
+            germany = germanyProperty.get();
+            europe_without_brd = europeWithoutBrdProperty.get();
+            northamerica_with_usa = northAmericaWithUsaProperty.get();
+            asia_without_china = asiaWithoutChinaProperty.get();
+            china = chinaProperty.get();
+            japan = japanProperty.get();
+            emergine_markets = emergineMarketsProperty.get();
         }
 
         @Override
         public boolean isChanged() {
-            return isChanged;
+            return !Objects.equals(id, idProperty.get())
+                    || !Objects.equals(europe_without_brd, europeWithoutBrdProperty.get())
+                    || !Objects.equals(northamerica_with_usa, northAmericaWithUsaProperty.get())
+                    || !Objects.equals(asia_without_china, asiaWithoutChinaProperty.get())
+                    || !Objects.equals(china, chinaProperty.get())
+                    || !Objects.equals(japan, japanProperty.get())
+                    || !Objects.equals(emergine_markets, emergineMarketsProperty.get());
+        }
+
+        @Override
+        public void restore() {
+            onPostLoadEntity();
         }
 
         public Long getId() {
-            return id;
+            return idProperty.get();
         }
 
         public void setId(Long id) {
-            this.id = id;
-            isChanged = true;
+            idProperty.set(id);
         }
 
         public float getGermany() {
-            return germany.floatValue();
+            return germanyProperty.get().floatValue();
         }
 
         public void setGermany(float germany) {
-            this.germany = BigDecimal.valueOf(germany).setScale(2,RoundingMode.HALF_DOWN);
-            isChanged = true;
+            germanyProperty.set(BigDecimal.valueOf(germany).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         public float getEurope_without_brd() {
-            return europe_without_brd.floatValue();
+            return europeWithoutBrdProperty.get().floatValue();
         }
 
         public void setEurope_without_brd(float europe_without_brd) {
-            this.europe_without_brd = BigDecimal.valueOf(europe_without_brd).setScale(2,RoundingMode.HALF_DOWN);
-            isChanged = true;
+            europeWithoutBrdProperty.set(BigDecimal.valueOf(europe_without_brd).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         public float getNorthamerica_with_usa() {
-            return northamerica_with_usa.floatValue();
+            return northAmericaWithUsaProperty.get().floatValue();
         }
 
         public void setNorthamerica_with_usa(float northamerica_with_usa) {
-            this.northamerica_with_usa = BigDecimal.valueOf(northamerica_with_usa).setScale(2,RoundingMode.HALF_DOWN);
-            isChanged = true;
+            northAmericaWithUsaProperty.set(BigDecimal.valueOf(northamerica_with_usa).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         public float getAsia_without_china() {
-            return asia_without_china.floatValue();
+            return asiaWithoutChinaProperty.get().floatValue();
         }
 
         public void setAsia_without_china(float asia_without_china) {
-            this.asia_without_china = BigDecimal.valueOf(asia_without_china).setScale(2,RoundingMode.HALF_DOWN);
-            isChanged = true;
+            asiaWithoutChinaProperty.set(BigDecimal.valueOf(asia_without_china).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         public float getChina() {
-            return china.floatValue();
+            return chinaProperty.get().floatValue();
         }
 
         public void setChina(float china) {
-            this.china = BigDecimal.valueOf(china).setScale(2,RoundingMode.HALF_DOWN);
-            isChanged = true;
+            chinaProperty.set(BigDecimal.valueOf(china).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         public float getJapan() {
-            return japan.floatValue();
+            return japanProperty.get().floatValue();
         }
 
         public void setJapan(float japan) {
-            this.japan = BigDecimal.valueOf(japan).setScale(2,RoundingMode.HALF_DOWN);
-            isChanged = true;
+            japanProperty.set(BigDecimal.valueOf(japan).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         public float getEmergine_markets() {
-            return emergine_markets.floatValue();
+            return emergineMarketsProperty.get().floatValue();
         }
 
         public void setEmergine_markets(float emergine_markets) {
-            this.emergine_markets = BigDecimal.valueOf(emergine_markets).setScale(2,RoundingMode.HALF_DOWN);
-            isChanged = true;
+            emergineMarketsProperty.set(BigDecimal.valueOf(emergine_markets).setScale(2,RoundingMode.HALF_DOWN));
         }
 
         public float getSum() {
-            return germany
-                    .add(europe_without_brd)
-                    .add(northamerica_with_usa)
-                    .add(asia_without_china)
-                    .add(china)
-                    .add(japan)
-                    .add(emergine_markets)
-                    .floatValue();
+            return getGermany()
+                    + getEurope_without_brd()
+                    + getNorthamerica_with_usa()
+                    + getAsia_without_china()
+                    + getChina()
+                    + getJapan()
+                    + getEmergine_markets();
         }
     }
 
@@ -278,13 +346,9 @@ public class InvestmentGuideline implements Changable {
     @Table(name = "anlagen_richtlinie_unterteilung_währung")
     public static class DivisionByCurrency implements Changable {
 
-        @Transient
-        private boolean isChanged = false;
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-
         private BigDecimal euro = BigDecimal.valueOf(0);
         private BigDecimal usd = BigDecimal.valueOf(0);
         private BigDecimal chf = BigDecimal.valueOf(0); // Schweizer Franken
@@ -293,134 +357,180 @@ public class InvestmentGuideline implements Changable {
         private BigDecimal asia_currencies = BigDecimal.valueOf(0);
         private BigDecimal others = BigDecimal.valueOf(0);
 
+        @Transient
+        private final SimpleLongProperty idProperty = new SimpleLongProperty();
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> euroProperty = new SimpleObjectProperty<>(euro);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> usdProperty = new SimpleObjectProperty<>(usd);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> chfProperty = new SimpleObjectProperty<>(chf);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> gbpProperty = new SimpleObjectProperty<>(gbp);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> yenProperty = new SimpleObjectProperty<>(yen);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> asiaCurrenciesProperty = new SimpleObjectProperty<>(asia_currencies);
+        @Transient
+        private final SimpleObjectProperty<BigDecimal> othersProperty = new SimpleObjectProperty<>(others);
+
         @Override
-        public void setChanged(boolean changed) {
-            isChanged = changed;
+        @PostLoad
+        public void onPostLoadEntity() {
+            idProperty.set(id);
+            euroProperty.set(euro);
+            usdProperty.set(usd);
+            chfProperty.set(chf);
+            gbpProperty.set(gbp);
+            yenProperty.set(yen);
+            asiaCurrenciesProperty.set(asia_currencies);
+            othersProperty.set(others);
+        }
+
+        @Override
+        public void onPrePersistOrUpdateOrRemoveEntity() {
+            id = idProperty.get();
+            euro = euroProperty.get();
+            usd = usdProperty.get();
+            chf = chfProperty.get();
+            gbp = gbpProperty.get();
+            yen = yenProperty.get();
+            asia_currencies = asiaCurrenciesProperty.get();
+            others = othersProperty.get();
         }
 
         @Override
         public boolean isChanged() {
-            return isChanged;
+            return !Objects.equals(id, idProperty.get())
+                    || !Objects.equals(euro, euroProperty.get())
+                    || !Objects.equals(usd, usdProperty.get())
+                    || !Objects.equals(chf, chfProperty.get())
+                    || !Objects.equals(gbp, gbpProperty.get())
+                    || !Objects.equals(yen, yenProperty.get())
+                    || !Objects.equals(asia_currencies, asiaCurrenciesProperty.get())
+                    || !Objects.equals(others, othersProperty.get());
+        }
+
+        @Override
+        public void restore() {
+            onPostLoadEntity();
         }
 
         public Long getId() {
-            return id;
+            return idProperty.get();
         }
 
         public void setId(Long id) {
-            this.id = id;
-            isChanged = true;
+            idProperty.set(id);
         }
 
         public float getEuro() {
-            return euro.floatValue();
+            return euroProperty.get().floatValue();
         }
 
         public void setEuro(float euro) {
-            this.euro = BigDecimal.valueOf(euro).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            euroProperty.set(BigDecimal.valueOf(euro).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public float getUsd() {
-            return usd.floatValue();
+            return usdProperty.get().floatValue();
         }
 
         public void setUsd(float usd) {
-            this.usd = BigDecimal.valueOf(usd).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            usdProperty.set(BigDecimal.valueOf(usd).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public float getChf() {
-            return chf.floatValue();
+            return chfProperty.get().floatValue();
         }
 
         public void setChf(float chf) {
-            this.chf = BigDecimal.valueOf(chf).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            chfProperty.set(BigDecimal.valueOf(chf).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public float getGbp() {
-            return gbp.floatValue();
+            return gbpProperty.get().floatValue();
         }
 
         public void setGbp(float gbp) {
-            this.gbp = BigDecimal.valueOf(gbp).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            gbpProperty.set(BigDecimal.valueOf(gbp).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public float getYen() {
-            return yen.floatValue();
+            return yenProperty.get().floatValue();
         }
 
         public void setYen(float yen) {
-            this.yen = BigDecimal.valueOf(yen).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            yenProperty.set(BigDecimal.valueOf(yen).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public float getAsiaCurrencies() {
-            return asia_currencies.floatValue();
+            return asiaCurrenciesProperty.get().floatValue();
         }
 
         public void setAsia_currencies(float asia_currencies) {
-            this.asia_currencies = BigDecimal.valueOf(asia_currencies).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            asiaCurrenciesProperty.set(BigDecimal.valueOf(asia_currencies).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public float getOthers() {
-            return others.floatValue();
+            return othersProperty.get().floatValue();
         }
 
         public void setOthers(float others) {
-            this.others = BigDecimal.valueOf(others).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            othersProperty.set(BigDecimal.valueOf(others).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public float getSum() {
-            return euro
-                    .add(usd)
-                    .add(chf)
-                    .add(gbp)
-                    .add(yen)
-                    .add(asia_currencies)
-                    .add(others)
-                    .floatValue();
+            return getEuro() + getUsd() + getChf() + getGbp() + getYen() + getAsiaCurrencies() + getOthers();
         }
     }
     // endregion
 
-    @Transient
-    private boolean isChanged = false;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "entry_id") // ToDo: rename to investment_guideline_id
     private Set<Entry> entries = new HashSet<>();
-
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "division_by_location_id")
     private DivisionByLocation divisionByLocation = new DivisionByLocation();
-
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "division_by_currency_id")
     private DivisionByCurrency divisionByCurrency = new DivisionByCurrency();
 
+    @Transient
+    private final SimpleLongProperty idProperty = new SimpleLongProperty();
+
     @Override
-    public void setChanged(boolean changed) {
-        entries.forEach(entry -> entry.setChanged(changed));
-        divisionByLocation.setChanged(changed);
-        divisionByCurrency.setChanged(changed);
-        isChanged = changed;
+    @PostLoad
+    public void onPostLoadEntity() {
+        divisionByLocation.onPostLoadEntity();
+        divisionByCurrency.onPostLoadEntity();
+        idProperty.set(id);
+    }
+
+    @Override
+    public void onPrePersistOrUpdateOrRemoveEntity() {
+        id = idProperty.get();
+        entries.forEach(Changable::onPrePersistOrUpdateOrRemoveEntity);
+        divisionByLocation.onPrePersistOrUpdateOrRemoveEntity();
+        divisionByCurrency.onPrePersistOrUpdateOrRemoveEntity();
     }
 
     @Override
     public boolean isChanged() {
-        return isChanged
-                || entries.stream().anyMatch(Changable::isChanged)
+        return entries.stream().anyMatch(Changable::isChanged)
                 || divisionByLocation.isChanged()
                 || divisionByCurrency.isChanged();
+    }
+
+    @Override
+    public void restore() {
+        onPostLoadEntity();
+        entries.forEach(Changable::restore);
+        divisionByLocation.restore();
+        divisionByCurrency.restore();
     }
 
     /**
@@ -448,11 +558,11 @@ public class InvestmentGuideline implements Changable {
 
     // region Getters & Setters
     public Long getId() {
-        return id;
+        return idProperty.get();
     }
 
     public void setId(Long id) {
-        this.id = id;
+        idProperty.set(id);
     }
 
     public List<Entry> getEntries() {
