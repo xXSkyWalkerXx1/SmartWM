@@ -53,18 +53,23 @@ public class FieldFormatter {
      */
     public static void setInputIntRange(@NonNull TextField textField, int from, int to) {
         textField.setTextFormatter(new TextFormatter<String>(change -> {
+            // allow empty input
+            if (change.getControlNewText().isEmpty()) {
+                change.setText(String.valueOf(from));
+                return change;
+            }
+
+            // otherwise try to parse and check input
             try {
-                // allow empty input
-                if (change.getControlNewText().isEmpty()) {
-                    change.setText(String.valueOf(from));
+                int input = Integer.parseInt(change.getControlNewText());
+
+                if (input >= from && input <= to) {
                     return change;
-                }
-                // otherwise try to parse and check input
-                if (Integer.parseInt(change.getControlNewText()) >= from
-                        && Integer.parseInt(change.getControlNewText()) <= to) {
+                } else if (input < from) {
+                    change.setText(String.valueOf(from));
+                    change.setRange(0, change.getControlText().length());
                     return change;
                 } else {
-                    // otherwise set to 'to' as default value
                     change.setText(String.valueOf(to));
                     change.setRange(0, change.getControlText().length());
                     return change;
@@ -115,12 +120,16 @@ public class FieldFormatter {
 
             // otherwise try to parse and check input
             try {
-                if (FormatUtils.parseFloat(change.getControlNewText()) >= from
-                        && (to == null || FormatUtils.parseFloat(change.getControlNewText()) <= to)) {
+                float input = FormatUtils.parseFloat(change.getControlNewText());
+
+                if (input >= from && (to == null || input <= to)) {
                     if (changePredicate != null && !changePredicate.test(change)) return null;
                     return change;
-                } else if (to != null) {
-                    // otherwise set to 'to' as default value
+                } else if (input < from) {
+                    change.setText(FormatUtils.formatFloat(from));
+                    change.setRange(0, change.getControlText().length());
+                    return change;
+                } else if (to != null && input > to) {
                     change.setText(FormatUtils.formatFloat(to));
                     change.setRange(0, change.getControlText().length());
                     return change;
@@ -132,19 +141,46 @@ public class FieldFormatter {
         }));
     }
 
+    public static void setActivatedAtFormatter(@NonNull DatePicker inputCreatedAt) {
+        var dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        inputCreatedAt.getEditor().setTextFormatter(new TextFormatter<String>(change -> {
+            if (change.getText().isEmpty()) return change;
+            LocalDate parsedDate = LocalDate.parse(change.getText(), dateTimeFormatter);
+
+            if (parsedDate.isAfter(LocalDate.now())) {
+                inputCreatedAt.getEditor().setStyle("-fx-border-color: red;");
+                inputCreatedAt.getEditor().tooltipProperty().unbind();
+                inputCreatedAt.getEditor().setTooltip(new Tooltip(String.format(
+                        "Das Datum (hinterlegt: %s) darf nicht in der Zukunft liegen!",
+                        parsedDate
+                )));
+                change.setText("");
+                change.setRange(0, change.getControlText().length());
+                return change;
+            } else {
+                inputCreatedAt.getEditor().setStyle(null);
+                inputCreatedAt.getEditor().tooltipProperty().unbind();
+                inputCreatedAt.getEditor().setTooltip(null);
+            }
+            return change;
+        }));
+    }
+
     public static void setDeactivatedAtFormatter(@NonNull DatePicker inputCreatedAt, @NonNull DatePicker inputDeactivatedAt) {
+        var dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
         inputDeactivatedAt.getEditor().setTextFormatter(new TextFormatter<String>(change -> {
             if (change.getText().isEmpty()) return change;
-
-            LocalDate parsedDate = LocalDate.parse(
-                    change.getText(),
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy")
-            );
+            LocalDate parsedDate = LocalDate.parse(change.getText(), dateTimeFormatter);
 
             if (inputCreatedAt.getValue() != null && (parsedDate.isBefore(inputCreatedAt.getValue()) || parsedDate.isAfter(LocalDate.now()))) {
                 inputDeactivatedAt.getEditor().setStyle("-fx-border-color: red;");
                 inputDeactivatedAt.getEditor().tooltipProperty().unbind();
-                inputDeactivatedAt.getEditor().setTooltip(new Tooltip("Das Datum kann nicht vor dem Erstell-Datum bzw. in der Zukunft liegen!"));
+                inputDeactivatedAt.getEditor().setTooltip(new Tooltip(String.format(
+                        "Das Datum (hinterlegt: %s) darf nicht vor dem Erstell-Datum bzw. in der Zukunft liegen!",
+                        parsedDate
+                )));
                 change.setText("");
                 change.setRange(0, change.getControlText().length());
                 return change;
