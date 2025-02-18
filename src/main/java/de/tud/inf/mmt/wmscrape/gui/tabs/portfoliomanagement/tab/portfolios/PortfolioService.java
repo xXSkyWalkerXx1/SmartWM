@@ -6,6 +6,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.InvestmentGuideline;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.PortfolioRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
@@ -17,9 +18,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PortfolioService {
@@ -29,9 +28,16 @@ public class PortfolioService {
     @Autowired
     private PortfolioManagementTabController portfolioManagementTabController;
 
-    public Portfolio findById(long id) {
-        portfolioManagementTabController.checkForInconsistencies();
-        return portfolioRepository.findById(id).orElseThrow();
+    /**
+     * Searches for inconsistencies in the database and tries to fix them. After that it returns the portfolio with the id, if it exists.
+     * @throws NoSuchElementException if the portfolio with the given id does not exist.
+     */
+    public Portfolio findById(long id) throws NoSuchElementException {
+        HashMap<Long, Long> idMapping = portfolioManagementTabController
+                .checkForInconsistencies()
+                .getOrDefault(BreadcrumbElementType.PORTFOLIO, new HashMap<>());
+        if (idMapping.containsKey(id)) id = idMapping.get(id);
+        return portfolioRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     /**
@@ -65,10 +71,12 @@ public class PortfolioService {
     public boolean save(Portfolio portfolio) {
         try {
             portfolio.onPrePersistOrUpdateOrRemoveEntity();
-            portfolioRepository.save(portfolio);
+            Portfolio persistedPortfolio = portfolioRepository.save(portfolio);
+            // Update the owner with the id from the database.
+            persistedPortfolio.onPostLoadEntity();
+            portfolio.setId(persistedPortfolio.getId());
             return true;
         } catch (DataIntegrityViolationException integrityViolationException) {
-            integrityViolationException.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Fehler",
@@ -105,8 +113,8 @@ public class PortfolioService {
                 Alert.AlertType.WARNING,
                 "Portfolio löschen",
                 "Sind Sie sicher, dass Sie das Portfolio löschen möchten?\n" +
-                        "Etwaige Beziehungen zu Konten und Depots werden dabei nicht berücksichtigt und kann zu einem" +
-                        " fehlerhaften Verhalten der Anwendung führen!;",
+                        "Etwaige Beziehungen werden dabei nicht berücksichtigt und kann zu einem" +
+                        " fehlerhaften Verhalten der Anwendung führen!",
                 null,
                 () -> {
                     portfolioRepository.delete(portfolio);
