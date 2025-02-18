@@ -41,6 +41,7 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
         super.initialize();
 
         // Deactivated at should not be before created at
+        FieldFormatter.setActivatedAtFormatter(inputCreatedAt);
         FieldFormatter.setDeactivatedAtFormatter(inputCreatedAt, inputDeactivatedAt);
 
         // Set content of combo-boxes
@@ -80,7 +81,7 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
         }
         if (owner.getDeactivatedAt() != null) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(owner.getCreatedAt());
+            calendar.setTime(owner.getDeactivatedAt());
             inputDeactivatedAt.setValue(LocalDate.of(
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH) + 1,

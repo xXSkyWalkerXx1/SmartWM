@@ -48,6 +48,7 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
         super.initialize();
 
         // Deactivated at should not be before created at
+        FieldFormatter.setActivatedAtFormatter(inputCreatedAt);
         FieldFormatter.setDeactivatedAtFormatter(inputCreatedAt, inputDeactivatedAt);
 
         // Set content of combo-boxes
