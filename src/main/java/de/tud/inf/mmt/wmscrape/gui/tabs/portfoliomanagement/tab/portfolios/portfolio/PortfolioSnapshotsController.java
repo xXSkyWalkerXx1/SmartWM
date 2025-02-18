@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class PortfolioAnalyseController implements Openable {
+public class PortfolioSnapshotsController implements Openable {
 
     @FXML
     PortfolioManagementTabManager portfolioManagementTabManager;
 
     @Autowired
-    public PortfolioAnalyseController(PortfolioManagementTabManager portfolioManagementTabManager) {
+    public PortfolioSnapshotsController(PortfolioManagementTabManager portfolioManagementTabManager) {
         this.portfolioManagementTabManager = portfolioManagementTabManager;
     }
 
