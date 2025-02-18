@@ -109,11 +109,11 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "JOIN anlagen_richtlinie_eintrag e ON e.entry_id = g.id " +
             "LEFT JOIN anlagen_richtlinie_eintrag c ON c.child_entry_id = e.id " +
             "WHERE e.asset_allocation NOT BETWEEN 0 AND 100 OR c.asset_allocation NOT BETWEEN 0 AND 100 " +
-            "OR e.chance_risk_number < 0 OR c.chance_risk_number < 0 " +
-            "OR e.max_riskclass NOT BETWEEN 1 AND 12 OR c.max_riskclass NOT BETWEEN 1 AND 12 " +
-            "OR e.max_volatility NOT BETWEEN 0 AND 100 OR c.max_volatility NOT BETWEEN 0 AND 100 " +
-            "OR e.performance < 0 OR c.performance < 0 " +
-            "OR e.rendite < 0 OR c.rendite < 0" , nativeQuery = true)
+            "OR e.chance_risk_number < 0 OR c.chance_risk_number < 0 OR e.chance_risk_number != c.chance_risk_number " +
+            "OR e.max_riskclass NOT BETWEEN 1 AND 12 OR c.max_riskclass NOT BETWEEN 1 AND 12 OR e.max_riskclass != c.max_riskclass " +
+            "OR e.max_volatility NOT BETWEEN 0 AND 100 OR c.max_volatility NOT BETWEEN 0 AND 100 OR e.max_volatility != c.max_volatility " +
+            "OR e.performance < 0 OR c.performance < 0 OR e.performance != c.performance " +
+            "OR e.rendite < 0 OR c.rendite < 0 OR e.rendite != c.rendite" , nativeQuery = true)
     List<Long> findAllByInvalidValues();
 
     /**
