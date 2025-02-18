@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 public class PortfolioOverviewController extends EditableView implements Openable {
@@ -76,7 +77,13 @@ public class PortfolioOverviewController extends EditableView implements Openabl
                 .getPortfolioOverviewTab()
                 .getProperties()
                 .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
-        if (!portfolio.isChanged()) portfolio = portfolioService.findById(portfolio.getId());
+        if (!portfolio.isChanged()) {
+            try {
+                portfolio = portfolioService.findById(portfolio.getId());
+            } catch (NoSuchElementException e) {
+                e.printStackTrace();
+            }
+        }
         inputOwner.getItems().setAll(ownerService.getAll());
         loadPortfolioData();
 
@@ -113,11 +120,9 @@ public class PortfolioOverviewController extends EditableView implements Openabl
 
         // If everything is valid, we can save the portfolio
         if (!portfolioService.save(portfolio)) return;
-        portfolioManagementManager.getPortfolioController().checkForPortfolioInconsistencies();
         // Refresh data
         portfolio = portfolioService.findById(portfolio.getId());
         loadPortfolioData();
-        portfolioManagementManager.getPortfolioController().breadCrumbBar.updateCurrentCrumbLabel(portfolio);
 
         // Finally, show success-dialog
         PrimaryTabManager.showInfoDialog(
@@ -128,6 +133,8 @@ public class PortfolioOverviewController extends EditableView implements Openabl
     }
 
     private void loadPortfolioData() {
+        portfolioManagementManager.getPortfolioController().refreshCrumbs();
+
         // Load data
         inputPortfolioName.setText(portfolio.getName());
         inputOwner.getSelectionModel().select(portfolio.getOwner());
