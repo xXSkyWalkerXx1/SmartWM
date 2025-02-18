@@ -50,6 +50,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
         inconsistentAccountIds.addAll(findByCurrencyIsNotIn(
                 Currency.getAvailableCurrencies().stream().map(Currency::getCurrencyCode).collect(Collectors.toList()))
         );
+        inconsistentAccountIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture());
         return inconsistentAccountIds;
     }
 
@@ -121,6 +122,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             "FROM pkonto a " +
             "WHERE a.currency_code IS NULL OR a.currency_code NOT IN :currencies", nativeQuery = true)
     List<Long> findByCurrencyIsNotIn(Collection<String> currencies);
+
+    @Query(value = "SELECT a.id " +
+            "FROM account a " +
+            "WHERE a.created_at > NOW() OR a.deactivated_at < a.created_at OR a.deactivated_at > NOW()", nativeQuery = true)
+    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
     // endregion
 
     // region Transaction to reconstruct an account

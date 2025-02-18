@@ -60,6 +60,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
         inconsistentPortfolioIds.addAll(findAllByInvalidInvestmentGuidelineEntries());
         inconsistentPortfolioIds.addAll(findAllBySumOfDivisionByLocationIsNot100());
         inconsistentPortfolioIds.addAll(findAllBySumOfDivisionByCurrencyIsNot100());
+        inconsistentPortfolioIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture());
         return inconsistentPortfolioIds;
     }
 
@@ -233,6 +234,11 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "OR SUM(gc.asia_currencies) + SUM(gc.chf) + SUM(gc.euro) + SUM(gc.gbp) + SUM(gc.others) + SUM(gc.usd) + SUM(gc.yen) != 100",
             nativeQuery = true)
     List<Long> findAllBySumOfDivisionByCurrencyIsNot100();
+
+    @Query(value = "SELECT p.id " +
+            "FROM portfolio p " +
+            "WHERE p.created_at > NOW() OR p.deactivated_at < p.created_at OR p.deactivated_at > NOW()", nativeQuery = true)
+    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
     // endregion
 
     // region Transaction to reconstruct a portfolio

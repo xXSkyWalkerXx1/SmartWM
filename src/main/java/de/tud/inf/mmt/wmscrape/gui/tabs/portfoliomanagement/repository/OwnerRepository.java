@@ -62,6 +62,7 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
         inconsistentOwnerIds.addAll(findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()));
         inconsistentOwnerIds.addAll(findAllByStateIsNotIn(State.getValuesAsString()));
         inconsistentOwnerIds.addAll(findAllByStateIsDeactivatedButDeactivatedAtIsNull());
+        inconsistentOwnerIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture());
         return inconsistentOwnerIds;
     }
 
@@ -138,6 +139,11 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
             "OR t.solidarity_surcharge_tax_rate IS NULL OR t.solidarity_surcharge_tax_rate NOT BETWEEN 0 AND 100 " +
             "OR t.tax_rate IS NULL OR t.tax_rate NOT BETWEEN 0 AND 100", nativeQuery = true)
     List<Long> findAllByTaxInformationContainingNullOrInvalidValues(@Param("maritalStates") Collection<String> maritalStates);
+
+    @Query(value = "SELECT o.id " +
+            "FROM inhaber o " +
+            "WHERE o.created_at > NOW() OR o.deactivated_at < o.created_at OR o.deactivated_at > NOW()", nativeQuery = true)
+    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
     // endregion
 
     // region Transaction to reconstruct an owner
