@@ -1,6 +1,7 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.konto;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
@@ -13,25 +14,23 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos.AccountService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.PortfolioService;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.Calendar;
+import java.text.ParseException;
 import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 
 @Controller
-public class KontoOverviewController implements Openable {
+public class KontoOverviewController extends EditableView implements Openable {
 
     Account account;
 
@@ -94,6 +93,58 @@ public class KontoOverviewController implements Openable {
         );
         inputState.getItems().setAll(State.values());
         inputInterestInterval.getItems().setAll(InterestInterval.values());
+
+        // Initialize listeners
+        inputDescription.textProperty().addListener((observable, oldValue, newValue) -> {
+            account.setDescription(newValue);
+        });
+        inputType.valueProperty().addListener((observable, oldValue, newValue) -> {
+            account.setType(newValue);
+        });
+        inputCurrencyCode.valueProperty().addListener((observable, oldValue, newValue) -> {
+            account.setCurrencyCode(newValue);
+        });
+        inputBalance.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                account.setBalance(FormatUtils.parseFloat(inputBalance.getText()));
+            } catch (ParseException e) {
+                throw new RuntimeException("Error while parsing balance. This should not happen here!");
+            }
+        });
+        inputOwner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) account.setOwner(newValue);
+        });
+        inputPortfolio.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) account.setPortfolio(newValue);
+        });
+        inputNotice.textProperty().addListener((observable, oldValue, newValue) -> {
+            account.setNotice(newValue);
+        });
+        inputState.valueProperty().addListener((observable, oldValue, newValue) -> {
+            account.setState(newValue);
+        });
+        inputBankName.textProperty().addListener((observable, oldValue, newValue) -> {
+            account.setBankName(newValue);
+        });
+        inputIban.textProperty().addListener((observable, oldValue, newValue) -> {
+            account.setIban(newValue);
+        });
+        inputKontoNumber.textProperty().addListener((observable, oldValue, newValue) -> {
+            account.setKontoNumber(newValue);
+        });
+        inputInterestRate.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                account.setInterestRate(FormatUtils.parseFloat(inputInterestRate.getText()));
+            } catch (ParseException e) {
+                throw new RuntimeException("Error while parsing interest-rate. This should not happen here!");
+            }
+        });
+        inputInterestDays.textProperty().addListener((observable, oldValue, newValue) -> {
+            account.setInterestDays(newValue);
+        });
+        inputInterestInterval.valueProperty().addListener((observable, oldValue, newValue) -> {
+            account.setInterestInterval(newValue);
+        });
     }
 
     @Override
@@ -103,14 +154,27 @@ public class KontoOverviewController implements Openable {
                 .getKontoOverviewTab()
                 .getProperties()
                 .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
-
+        if (!account.isChanged()) account = accountService.getAccountById(account.getId());
         loadAccountData();
+
+        // Initialize onUnsavedChangesAction-dialog
+        super.initialize(
+                account,
+                portfolioManagementTabManager,
+                this::onSave,
+                this::onReset
+        );
     }
 
     @FXML
     private void onReset() {
-        account = accountService.getAccountById(account.getId());
+        account.restore();
         loadAccountData();
+    }
+
+    @FXML
+    private void onOpenOwner() {
+        Navigator.navigateToOwner(portfolioManagementTabManager, account.getOwner(), false);
     }
 
     @FXML
@@ -129,13 +193,9 @@ public class KontoOverviewController implements Openable {
         }
 
         // If everything is valid, we can create and save the new account
-        accountService.writeInput( account, false,
-                inputDescription, inputType, inputCurrencyCode, inputBalance, inputOwner, inputPortfolio,
-                inputNotice, inputBankName, inputIban, inputKontoNumber, inputInterestRate, inputInterestDays, inputInterestInterval
-        );
-        account.setState(inputState.getValue());
-
         if (!accountService.save(account)) return;
+        // Refresh data
+        account = accountService.getAccountById(account.getId());
         loadAccountData();
 
         // Finally, show success-dialog
@@ -147,6 +207,8 @@ public class KontoOverviewController implements Openable {
     }
 
     private void loadAccountData() {
+        portfolioManagementTabManager.getPortfolioController().refreshCrumbs();
+
         inputOwner.getItems().setAll(ownerService.getAll());
         inputPortfolio.getItems().setAll(portfolioService.getAll());
 
@@ -168,14 +230,14 @@ public class KontoOverviewController implements Openable {
         inputInterestInterval.getSelectionModel().select(account.getInterestInterval());
 
         prepareTableData();
-        var depotsTable = new PortfolioTreeView(
+        var treeView = new PortfolioTreeView(
                 accountDepotsTablePane,
                 List.of(account.getPortfolio()),
                 portfolioManagementTabManager,
                 false
         );
-        depotsTable.setShowRoot(false);
-        accountDepotsTablePane.getChildren().setAll(depotsTable);
+        treeView.setTooltip(new Tooltip("Auflistung der Depots, denen dieses Konto als Verrechnungskonto zugeordnet ist."));
+        accountDepotsTablePane.getChildren().setAll(treeView);
     }
 
     private void prepareTableData() {
