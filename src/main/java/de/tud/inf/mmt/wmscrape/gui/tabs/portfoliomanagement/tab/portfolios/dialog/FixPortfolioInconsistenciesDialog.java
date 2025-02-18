@@ -10,6 +10,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextInputControl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +114,11 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
         boolean areTextFieldsValid = areTextFieldsValid();
         boolean areComboboxInputsValid = areComboboxInputsValid();
         if (!areTextFieldsValid || !areComboboxInputsValid) return;
+
+        if (portfolioService.isInputInvalid(
+                inputPortfolioName, portfolio,
+                (Control) commissionSchemeTablePane.getChildren().get(0)
+        )) return;
 
         // If everything is valid, we can create and save the new owner
         portfolioService.writeInput(portfolio, false, inputPortfolioName, inputOwner);
