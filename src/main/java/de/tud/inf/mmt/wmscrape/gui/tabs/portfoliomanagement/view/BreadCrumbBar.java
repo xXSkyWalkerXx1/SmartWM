@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -17,7 +18,6 @@ public class BreadCrumbBar extends ToolBar {
 
     public BreadCrumbBar() {
         super();
-
         setMinHeight(25);
         setStyle("-fx-spacing: 0px;"); // reduces the spacing between the buttons
     }
@@ -40,43 +40,21 @@ public class BreadCrumbBar extends ToolBar {
 
     /**
      * Adds a crumb to the bread crumb bar
-     * @param label the label of the crumb
-     * @param type the type of the crumb
-     * @param contextMenuItems the items to be displayed in the context menu
-     * @param contextMenuItemAction the action to be executed when a context menu item is clicked
+     * @param element the element to be displayed in the crumb, f.e. an account, depot, owner or portfolio
      * @param onClick the action to be executed when the crumb is clicked
      * @param <T> the type of the context menu items
      */
-    public <T> void addCrumb(@NonNull String label, @NonNull BreadcrumbElementType type, @NonNull List<T> contextMenuItems,
-                             @NonNull Consumer<T> contextMenuItemAction, @NonNull Runnable onClick) {
+    public <T> void addCrumb(@NonNull BreadcrumbElement element, @NonNull Runnable onClick) {
         if (!hasRootCrumble) throw new IllegalStateException("Root crumb not added yet");
 
         // add prefix to text
-        switch (type) {
-            case OWNER -> label = "Inhaber: " + label;
-            case PORTFOLIO -> label = "Portfolio: " + label;
-            case ACCOUNT -> label = "Konto: " + label;
-            case DEPOT -> label = "Depot: " + label;
-        }
+        String label = getLabelWithPrefix(element.type, element.toString());
 
         // create crumb
         org.controlsfx.control.BreadCrumbBar.BreadCrumbButton crumb = createDefaultCrumb(label, onClick);
+        crumb.setUserData(element);
 
-        // create context-menu
-        ContextMenu contextMenu = new ContextMenu();
-        for (T contextMenuItem : contextMenuItems) {
-            MenuItem menuItem = new MenuItem(contextMenuItem.toString());
-            menuItem.setOnAction(event -> {
-                contextMenuItemAction.accept(contextMenuItem);
-                removeCrumbsAfter(crumb);
-                getItems().remove(crumb);
-                addCrumb(contextMenuItem.toString(), type, contextMenuItems, contextMenuItemAction, onClick);
-            });
-            contextMenu.getItems().add(menuItem);
-        }
-
-        crumb.setContextMenu(contextMenu);
-        crumb.setUserData(type);
+        // add new crumb
         getItems().add(crumb);
     }
 
@@ -88,6 +66,16 @@ public class BreadCrumbBar extends ToolBar {
             removeCrumbsAfter(crumb);
         });
         return crumb;
+    }
+
+    @NonNull
+    private String getLabelWithPrefix(@NonNull BreadcrumbElementType type, @NonNull String label) {
+        return switch (type) {
+            case PORTFOLIO -> "Portfolio: " + label;
+            case ACCOUNT -> "Konto: " + label;
+            case DEPOT -> "Depot: " + label;
+            case OWNER -> "Inhaber: " + label;
+        };
     }
 
     /**
@@ -113,10 +101,41 @@ public class BreadCrumbBar extends ToolBar {
         int lastIndex = -1;
 
         for (Node crumb : getItems()) {
-            if (lastType.equals(crumb.getUserData())) lastIndex = getItems().indexOf(crumb);
+            BreadcrumbElement userData = (BreadcrumbElement) crumb.getUserData();
+            if (userData == null) continue;
+            if (lastType.equals(userData.type)) lastIndex = getItems().indexOf(crumb);
         }
-
         if (lastIndex != -1) getItems().remove(lastIndex + 1, getItems().size());
+    }
+
+    /**
+     * Updates the label of the current crumb
+     * @param crumbItem The item to be displayed in the current crumb
+     */
+    public <T> void updateCurrentCrumbLabel(@NonNull T crumbItem) {
+        if (getItems().size() < 2) return; // that means there is no crumb or only a root-crumb
+        org.controlsfx.control.BreadCrumbBar.BreadCrumbButton currentCrumb = (org.controlsfx.control.BreadCrumbBar.BreadCrumbButton) getItems().get(getItems().size() - 1);
+
+        BreadcrumbElement userData = (BreadcrumbElement) currentCrumb.getUserData();
+        if (userData == null) return;
+
+        String labelWithPrefix = getLabelWithPrefix(userData.type, crumbItem.toString());
+        currentCrumb.setText(trimText(labelWithPrefix));
+    }
+
+    /**
+     * Updates the crumb with the given element.
+     * @param crumb The crumb to be updated. It has to be a crumb that is contained in the bread crumb bar. See {@link #getItems()} for all crumb elements.
+     * @param crumbElement The new element to be displayed in the crumb, f.e. an owner.
+     */
+    public void updateCrumb(@NonNull org.controlsfx.control.BreadCrumbBar.BreadCrumbButton crumb, @NonNull Object crumbElement) {
+        BreadcrumbElement userData = (BreadcrumbElement) crumb.getUserData();
+        if (userData == null) return;
+
+        userData.element = crumbElement;
+        String labelWithPrefix = getLabelWithPrefix(userData.type, crumbElement.toString());
+        crumb.setText(trimText(labelWithPrefix));
+        crumb.setUserData(userData);
     }
 
     /**
@@ -124,7 +143,7 @@ public class BreadCrumbBar extends ToolBar {
      */
     @NonNull
     private String trimText(@NonNull String text) {
-        return text.length() > 50 ? text.substring(0, 50) + "..." : text;
+        return text.length() > 50 ? text.substring(0, 48) + "..." : text;
     }
 
     /**
