@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -62,7 +63,7 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
         inconsistentOwnerIds.addAll(findAllByTaxInformationContainingNullOrInvalidValues(MaritalState.getValuesAsString()));
         inconsistentOwnerIds.addAll(findAllByStateIsNotIn(State.getValuesAsString()));
         inconsistentOwnerIds.addAll(findAllByStateIsDeactivatedButDeactivatedAtIsNull());
-        inconsistentOwnerIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture());
+        inconsistentOwnerIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture(LocalDateTime.now()));
         return inconsistentOwnerIds;
     }
 
@@ -142,10 +143,10 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
     @Query(value = "SELECT o.id " +
             "FROM inhaber o " +
-            "WHERE o.created_at > NOW() " +
+            "WHERE o.created_at > :now " +
             "OR (o.deactivated_at IS NOT NULL AND o.deactivated_at < o.created_at) " +
-            "OR (o.deactivated_at IS NOT NULL AND o.deactivated_at > NOW())", nativeQuery = true)
-    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
+            "OR (o.deactivated_at IS NOT NULL AND o.deactivated_at > :now)", nativeQuery = true)
+    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture(@Param("now") LocalDateTime now);
     // endregion
 
     // region Transaction to reconstruct an owner

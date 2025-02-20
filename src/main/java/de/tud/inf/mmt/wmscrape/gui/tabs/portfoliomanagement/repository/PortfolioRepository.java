@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -60,7 +61,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
         inconsistentPortfolioIds.addAll(findAllByInvalidInvestmentGuidelineEntries());
         inconsistentPortfolioIds.addAll(findAllBySumOfDivisionByLocationIsNot100());
         inconsistentPortfolioIds.addAll(findAllBySumOfDivisionByCurrencyIsNot100());
-        inconsistentPortfolioIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture());
+        inconsistentPortfolioIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture(LocalDateTime.now()));
         return inconsistentPortfolioIds;
     }
 
@@ -237,10 +238,10 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
     @Query(value = "SELECT p.id " +
             "FROM portfolio p " +
-            "WHERE p.created_at > NOW() " +
+            "WHERE p.created_at > :now " +
             "OR (p.deactivated_at IS NOT NULL AND p.deactivated_at < p.created_at) " +
-            "OR (p.deactivated_at IS NOT NULL AND p.deactivated_at > NOW())", nativeQuery = true)
-    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
+            "OR (p.deactivated_at IS NOT NULL AND p.deactivated_at > :now)", nativeQuery = true)
+    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture(@Param("now") LocalDateTime now);
     // endregion
 
     // region Transaction to reconstruct a portfolio

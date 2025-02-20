@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
         inconsistentAccountIds.addAll(findByCurrencyIsNotIn(
                 Currency.getAvailableCurrencies().stream().map(Currency::getCurrencyCode).collect(Collectors.toList()))
         );
-        inconsistentAccountIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture());
+        inconsistentAccountIds.addAll(findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture(LocalDateTime.now()));
         return inconsistentAccountIds;
     }
 
@@ -125,10 +126,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query(value = "SELECT a.id " +
             "FROM pkonto a " +
-            "WHERE a.created_at > NOW() " +
+            "WHERE a.created_at > :now " +
             "OR (a.deactivated_at IS NOT NULL AND a.deactivated_at < a.created_at) " +
-            "OR (a.deactivated_at IS NOT NULL AND a.deactivated_at > NOW())", nativeQuery = true)
-    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture();
+            "OR (a.deactivated_at IS NOT NULL AND a.deactivated_at > :now)", nativeQuery = true)
+    List<Long> findAllByCreatedAtIsInFutureOrDeactivatedAtIsBeforeCreatedAtOrIsInFuture(@Param("now") LocalDateTime now);
     // endregion
 
     // region Transaction to reconstruct an account
