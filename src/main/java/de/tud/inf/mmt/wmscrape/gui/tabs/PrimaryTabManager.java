@@ -154,6 +154,17 @@ public class PrimaryTabManager {
     }
 
     /**
+     * Shows an alert dialog with a warning message and waits for the 'ok'-click.
+     * @param region Some element inside the controller class used as a reference to get the stage/scene.
+     */
+    public static void showAndWaitInfoDialog(String title, String content, Region region) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
+        alert.setTitle(title);
+        if (region != null) PrimaryTabManager.setAlertPosition(alert, region);
+        alert.showAndWait();
+    }
+
+    /**
      * Shows an alert dialog of the given alert-type with an "OK"-button.
      * @param region Some element inside the controller class used as a reference to get the stage/scene.
      */
