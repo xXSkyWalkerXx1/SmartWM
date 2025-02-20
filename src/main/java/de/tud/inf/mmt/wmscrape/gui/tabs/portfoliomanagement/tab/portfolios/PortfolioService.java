@@ -53,7 +53,6 @@ public class PortfolioService {
             portfolioManagementTabController.checkForInconsistencies();
             return portfolioRepository.findAll();
         } catch (Exception e) {
-            e.printStackTrace();
             PrimaryTabManager.showDialog(
                     Alert.AlertType.ERROR,
                     "Fehler",
