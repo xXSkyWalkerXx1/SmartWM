@@ -150,7 +150,7 @@ public class FixOwnerInconsistenciesDialog extends CreateOwnerDialog {
         onCancel();
 
         // Finally, show success-dialog
-        PrimaryTabManager.showInfoDialog(
+        PrimaryTabManager.showAndWaitInfoDialog(
                 "Inhaber aktualisiert",
                 "Der Inhaber wurde erfolgreich aktualisiert.",
                 inputForename

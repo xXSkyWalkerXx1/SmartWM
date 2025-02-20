@@ -145,7 +145,7 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
         onCancel();
 
         // Finally, show success-dialog
-        PrimaryTabManager.showInfoDialog(
+        PrimaryTabManager.showAndWaitInfoDialog(
                 "Konto aktualisiert",
                 "Das Konto wurde erfolgreich aktualisiert.",
                 inputState

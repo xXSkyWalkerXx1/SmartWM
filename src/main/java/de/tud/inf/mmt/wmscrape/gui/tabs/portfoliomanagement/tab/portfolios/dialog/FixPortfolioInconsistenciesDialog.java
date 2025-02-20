@@ -139,7 +139,7 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
         onCancel();
 
         // Finally, show success-dialog
-        PrimaryTabManager.showInfoDialog(
+        PrimaryTabManager.showAndWaitInfoDialog(
                 "Portfolio aktualisiert",
                 "Das Portfolio wurde erfolgreich aktualisiert.",
                 inputState
