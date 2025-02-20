@@ -128,14 +128,17 @@ public class AccountService {
      */
     public boolean save(Account account) {
         try {
-            if (!Currency.getInstance("EUR").equals(account.getCurrency())) {
-                getLatestExchangeCourse(account.getCurrency());
-            }
+            // check if there exists an exchange course for the currency
+            getLatestExchangeCourse(account.getCurrency());
+
+            // persist the account
             account.onPrePersistOrUpdateOrRemoveEntity();
             Account persistedAccount = accountRepository.save(account);
+
             // Update the owner with the id from the database.
             persistedAccount.onPostLoadEntity();
             account.setId(persistedAccount.getId());
+
             return true;
         } catch (DataAccessException e) {
             PrimaryTabManager.showDialog(
