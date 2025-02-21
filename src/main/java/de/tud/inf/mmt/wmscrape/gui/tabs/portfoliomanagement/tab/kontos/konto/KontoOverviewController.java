@@ -174,7 +174,7 @@ public class KontoOverviewController extends EditableView implements Openable {
 
     @FXML
     private void onOpenOwner() {
-        Navigator.navigateToOwner(portfolioManagementTabManager, account.getOwner(), false);
+        Navigator.navigateToOwner(portfolioManagementTabManager, account.getOwner(), true);
     }
 
     @FXML
@@ -233,8 +233,7 @@ public class KontoOverviewController extends EditableView implements Openable {
         var treeView = new PortfolioTreeView(
                 accountDepotsTablePane,
                 List.of(account.getPortfolio()),
-                portfolioManagementTabManager,
-                false
+                portfolioManagementTabManager
         );
         treeView.setTooltip(new Tooltip("Auflistung der Depots, denen dieses Konto als Verrechnungskonto zugeordnet ist."));
         accountDepotsTablePane.getChildren().setAll(treeView);

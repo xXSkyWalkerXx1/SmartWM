@@ -55,20 +55,16 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
         }
     }
 
-    private boolean isOneMainMenu = true;
     private final TreeItem<Item> rootTreeItem;
     private final PortfolioManagementTabManager portfolioManagementManager;
 
     /**
      * @param parent JavaFX node-based UI Controls and all layout containers (f.e. Pane). Only used for view-sizing.
-     * @param isOnMainMenu If true, breadcrumbs will be set, otherwise they will be added.
      */
     public PortfolioTreeView(
             @NonNull Region parent,
             @NonNull List<Portfolio> portfolios,
-            @NonNull PortfolioManagementTabManager portfolioManagementManager,
-            boolean isOnMainMenu){
-        this.isOneMainMenu = isOnMainMenu;
+            @NonNull PortfolioManagementTabManager portfolioManagementManager){
         this.portfolioManagementManager = portfolioManagementManager;
 
         Portfolio root = new Portfolio();
@@ -134,11 +130,11 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
                 ) {
                     return;
                 }
-                Navigator.navigateToPortfolio(portfolioManagementManager, (Portfolio) selectedAsset, isOneMainMenu);
+                Navigator.navigateToPortfolio(portfolioManagementManager, (Portfolio) selectedAsset, true);
             } else if (selectedAsset instanceof Account) {
-                Navigator.navigateToAccount(portfolioManagementManager, (Account) selectedAsset, isOneMainMenu);
+                Navigator.navigateToAccount(portfolioManagementManager, (Account) selectedAsset, true);
             } else { // Otherwise, it has to be an instance of 'Depot'
-                Navigator.navigateToDepot(portfolioManagementManager, (Depot) selectedAsset, isOneMainMenu);
+                Navigator.navigateToDepot(portfolioManagementManager, (Depot) selectedAsset, true);
             }
         }
     };

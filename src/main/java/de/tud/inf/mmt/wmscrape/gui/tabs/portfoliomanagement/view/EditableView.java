@@ -47,8 +47,7 @@ public abstract class EditableView {
                                     .selectLast();
 
                             // If the user clicked on a root-crumb, we have to recreate it.
-                            Boolean hasNoRootCrumble = !portfolioManagementController.breadCrumbBar.hasRootCrumble();
-                            if (!hasNoRootCrumble) hasNoRootCrumble = null;
+                            boolean hasNoRootCrumble = !portfolioManagementController.breadCrumbBar.hasRootCrumble();
 
                             // Navigate back to the entity
                             if (changableEntity instanceof Owner) {

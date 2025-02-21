@@ -103,8 +103,7 @@ public class TableFactory {
         tableBuilder.setActionOnSingleClickRow(owner -> ownerController.setOwnerTreeView(new PortfolioTreeView(
                 parent,
                 owner.getPortfolios().stream().toList(),
-                ownerController.getPortfolioManagementTabManager(),
-                true
+                ownerController.getPortfolioManagementTabManager()
         )));
         tableBuilder.setActionOnDoubleClickRow(openOwnerOverviewAction);
 
@@ -144,7 +143,7 @@ public class TableFactory {
         Consumer<Portfolio> openPortfolioOverviewAction = portfolio -> Navigator.navigateToPortfolio(
                 portfolioManagementTabManager,
                 portfolio,
-                false
+                true
         );
 
         tableBuilder.addColumn(
@@ -210,7 +209,7 @@ public class TableFactory {
         Consumer<Account> openAccountOverviewAction = account -> Navigator.navigateToAccount(
                 portfolioManagementTabManager,
                 account,
-                false
+                true
         );
 
         tableBuilder.addColumn(
@@ -271,7 +270,7 @@ public class TableFactory {
         Consumer<Depot> openDepotOverviewAction = depot -> Navigator.navigateToDepot(
                 portfolioManagementTabManager,
                 depot,
-                false
+                true
         );
 
         tableBuilder.addColumn(
@@ -327,7 +326,7 @@ public class TableFactory {
         Consumer<Depot> openDepotOverviewAction = depot -> Navigator.navigateToDepot(
                 ownerDepotsController.getPortfolioManagementManager(),
                 depot,
-                false
+                true
         );
 
         tableBuilder.addColumn(
@@ -374,7 +373,7 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem("Portfolio anzeigen", depot -> Navigator.navigateToPortfolio(
                 ownerDepotsController.getPortfolioManagementManager(),
                 depot.getPortfolio(),
-                false
+                true
         ));
 
         return tableBuilder.getResult();
@@ -390,7 +389,7 @@ public class TableFactory {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Account> openAccountOverviewAction = account -> {
-            Navigator.navigateToAccount(portfolioManagementTabManager, account, false);
+            Navigator.navigateToAccount(portfolioManagementTabManager, account, true);
         };
 
         tableBuilder.addColumn(
@@ -443,7 +442,7 @@ public class TableFactory {
 
         TableBuilder<Account> tableBuilder = new TableBuilder<>(parent, tableItems);
         Consumer<Account> openAccountOverviewAction = account -> {
-            Navigator.navigateToAccount(portfolioManagementTabManager, account, false);
+            Navigator.navigateToAccount(portfolioManagementTabManager, account, true);
         };
 
         tableBuilder.addColumn(
@@ -1086,7 +1085,7 @@ public class TableFactory {
         Consumer<Depot> openDepotOverviewAction = depot -> Navigator.navigateToDepot(
                 portfolioManagementTabManager,
                 depot,
-                false
+                true
         );
 
         tableBuilder.addColumn(

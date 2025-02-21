@@ -98,7 +98,7 @@ public class PortfolioOverviewController extends EditableView implements Openabl
 
     @FXML
     private void onOpenOwner() {
-        Navigator.navigateToOwner(portfolioManagementManager, portfolio.getOwner(), false);
+        Navigator.navigateToOwner(portfolioManagementManager, portfolio.getOwner(), true);
     }
 
     @FXML
@@ -161,8 +161,7 @@ public class PortfolioOverviewController extends EditableView implements Openabl
         var portfolioTreeView = new PortfolioTreeView(
                 portfolioTreeViewPane,
                 List.of(portfolio),
-                portfolioManagementManager,
-                false
+                portfolioManagementManager
         );
         portfolioTreeView.setTooltip(new Tooltip("Auflistung der im Portfolio enthaltenen Konten und Depots."));
         portfolioTreeViewPane.getChildren().setAll(portfolioTreeView);
