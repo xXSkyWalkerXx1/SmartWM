@@ -52,9 +52,6 @@ public class PortfolioManagementTabController {
     @Autowired
     private PrimaryTabController primaryTabController;
 
-    // flag to check if this controller is initialized
-    public boolean isInitialized = false;
-
     // Views of this management
     @FXML
     private TabPane portfolioManagementTabPane;
@@ -104,7 +101,7 @@ public class PortfolioManagementTabController {
     @Autowired
     private PortfolioStrukturController portfolioStrukturController;
     @Autowired
-    private PortfolioAnalyseController portfolioAnalyseController;
+    private PortfolioSnapshotsController portfolioSnapshotsController;
     @Autowired
     private PortfolioBenchmarkController portfolioBenchmarkController;
 
@@ -193,8 +190,8 @@ public class PortfolioManagementTabController {
                 PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioOverview.fxml", portfolioOverviewController)
         );
         portfolioAnalyseTab = createSubTab(
-                "Analyse",
-                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioAnalyse.fxml", portfolioAnalyseController)
+                "Snapshots",
+                PrimaryTabManager.loadTabFxml("gui/tabs/portfoliomanagement/tab/portfolios/portfolio/portfolioSnapshots.fxml", portfolioSnapshotsController)
         );
         portfolioBenchmarkTab = createSubTab(
                 "Benchmarks",
@@ -207,7 +204,7 @@ public class PortfolioManagementTabController {
 
         portfoliosTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioListController);
         portfolioOverviewTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioOverviewController);
-        portfolioAnalyseTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioAnalyseController);
+        portfolioAnalyseTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioSnapshotsController);
         portfolioBenchmarkTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioBenchmarkController);
         portfolioStrukturTab.getProperties().put(TAB_PROPERTY_CONTROLLER, portfolioStrukturController);
 
@@ -314,97 +311,137 @@ public class PortfolioManagementTabController {
         portfolioManagementTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
             if (newTab == null) return;
 
-            // for the following part there must exist a controller in tab properties
+            // call open method of controller to refresh data
             if (!newTab.getProperties().containsKey(TAB_PROPERTY_CONTROLLER)) return;
             Openable tabController = (Openable) newTab.getProperties().get(TAB_PROPERTY_CONTROLLER);
-
-            // check on main-menus for database-inconsistencies
-            if (isInitialized && isControllerInstanceOf(
-                    tabController,
-                    ownerController, accountMenuController, portfolioListController
-            )) {
-                long startTime = System.nanoTime();
-                while (ownerRepository.inconsistentOwnerExists()
-                        || accountRepository.inconsistentAccountsExists()
-                        || portfolioRepository.inconsistentPortfoliosExists()) {
-                    // owners
-                    Set<Long> inconsistentOwnerIds = ownerRepository.getInconsistentOwnerIds();
-                    inconsistentOwnerIds.forEach(ownerId -> {
-                        fixOwnerInconsistenciesDialog.setOwner(ownerRepository.reconstructOwner(ownerId));
-                        inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/owners/dialog/fix_owner_inconsistencies_dialog.fxml");
-                        inconsistenciesDialogController.setStageTitle("Inhaber inkonsistent");
-                        inconsistenciesDialogController.setController(fixOwnerInconsistenciesDialog);
-                        showInconsistenciesDialog();
-                    });
-
-                    // portfolios
-                    Set<Long> inconsistentPortfolioIds = portfolioRepository.getInconsistentPortfolioIds();
-                    inconsistentPortfolioIds.forEach(portfolioId -> {
-                        fixPortfolioInconsistenciesDialog.setPortfolio(portfolioRepository.reconstructPortfolio(portfolioId));
-                        inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/portfolios/dialog/fix_portfolio_inconsistencies_dialog.fxml");
-                        inconsistenciesDialogController.setStageTitle("Portfolio inkonsistent");
-                        inconsistenciesDialogController.setController(fixPortfolioInconsistenciesDialog);
-                        showInconsistenciesDialog();
-                    });
-
-                    // accounts
-                    Set<Long> inconsistentAccountIds = accountRepository.getInconsistentAccountIds();
-                    inconsistentAccountIds.addAll(accountService.findByCurrencyHasNoExchangeCourse());
-
-                    inconsistentAccountIds.forEach(accountId -> {
-                        fixAccountInconcistenciesDialog.setAccount(accountRepository.reconstructAccount(accountId));
-                        inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/kontos/dialog/fix_account_inconsistencies_dialog.fxml");
-                        inconsistenciesDialogController.setStageTitle("Konto inkonsistent");
-                        inconsistenciesDialogController.setController(fixAccountInconcistenciesDialog);
-                        showInconsistenciesDialog();
-                    });
-                }
-                long endTime = System.nanoTime();
-
-                long elapsedTime = (endTime - startTime) / 1_000_000;
-                System.out.println("Elapsed Time: " + elapsedTime + " ms");
-            }
-
-            // call open method of controller to refresh data
             tabController.open();
-            isInitialized = true;
         });
 
         // Show tabs of portfoliomanagement
-        portfolioManagementTabPane.getTabs().addAll(portfoliosTab, depotTab, kontoTab, inhaberTab);
+        portfolioManagementTabPane.getTabs().setAll(portfoliosTab, depotTab, kontoTab, inhaberTab);
         showPortfolioManagementTabs();
     }
 
-    private boolean isControllerInstanceOf(@NonNull Object controller, @NonNull Object... controllers) {
-        for (Object c : controllers) {
-            if (controller.getClass().isInstance(c)) {
-                return true;
-            }
-        }
-        return false;
+    // region Inconsistencies
+    /**
+     * Check for inconsistencies in owners, portfolios and accounts in the database and show a dialog to fix them.
+     * @return A mapping of old ids to new ids for each entity.
+     */
+    public HashMap<BreadcrumbElementType, HashMap<Long, Long>> checkForInconsistencies() {
+        HashMap<BreadcrumbElementType, HashMap<Long, Long>> idMappings = new HashMap<>();
+
+        //long startTime = System.nanoTime();
+        idMappings.put(BreadcrumbElementType.OWNER, checkForOwnerInconsistencies());
+        idMappings.put(BreadcrumbElementType.PORTFOLIO, checkForPortfolioInconsistencies());
+        idMappings.put(BreadcrumbElementType.ACCOUNT, checkForAccountInconsistencies());
+        //long endTime = System.nanoTime();
+        //long elapsedTime = (endTime - startTime) / 1_000_000;
+        //System.out.println("Elapsed Time: " + elapsedTime + " ms");
+        return idMappings;
     }
 
     /**
-     * Navigates back to the predefined tab after deletion of an entity.
-     * If portfolio it navigates back to the portfolio management tabs.
-     * If owner it navigates back to the portfolio management tabs and selects the owner tab.
-     * If account it navigates back to the portfolio of the account.
-     * If depot it navigates back to the portfolio of the depot.
+     * Check for owner inconsistencies in the database and show a dialog to fix them.
+     * @return A mapping of old owner ids to new owner ids.
+     */
+    public HashMap<Long, Long> checkForOwnerInconsistencies() {
+        HashMap<Long, Long> ownerIdMapping = new HashMap<>();
+
+        while (ownerRepository.inconsistentOwnerExists()) {
+            Set<Long> inconsistentOwnerIds = ownerRepository.getInconsistentOwnerIds();
+            inconsistentOwnerIds.forEach(ownerId -> {
+                fixOwnerInconsistenciesDialog.setOwner(ownerRepository.reconstructOwner(ownerId));
+                inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/owners/dialog/fix_owner_inconsistencies_dialog.fxml");
+                inconsistenciesDialogController.setStageTitle("Inhaber inkonsistent");
+                inconsistenciesDialogController.setController(fixOwnerInconsistenciesDialog);
+                fixOwnerInconsistenciesDialog.getOwner().idProperty().addListener((observable, oldValue, newValue) -> {
+                    ownerIdMapping.put(oldValue.longValue(), newValue.longValue());
+                });
+                showInconsistenciesDialog();
+            });
+        }
+        return ownerIdMapping;
+    }
+
+    /**
+     * Check for portfolio inconsistencies in the database and show a dialog to fix them.
+     */
+    public HashMap<Long, Long> checkForPortfolioInconsistencies() {
+        HashMap<Long, Long> portfolioIdMapping = new HashMap<>();
+
+        while (portfolioRepository.inconsistentPortfoliosExists()) {
+            Set<Long> inconsistentPortfolioIds = portfolioRepository.getInconsistentPortfolioIds();
+            inconsistentPortfolioIds.forEach(portfolioId -> {
+                fixPortfolioInconsistenciesDialog.setPortfolio(portfolioRepository.reconstructPortfolio(portfolioId));
+                inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/portfolios/dialog/fix_portfolio_inconsistencies_dialog.fxml");
+                inconsistenciesDialogController.setStageTitle("Portfolio inkonsistent");
+                inconsistenciesDialogController.setController(fixPortfolioInconsistenciesDialog);
+                fixPortfolioInconsistenciesDialog.getPortfolio().idProperty().addListener((observable, oldValue, newValue) -> {
+                    portfolioIdMapping.put(oldValue.longValue(), newValue.longValue());
+                });
+                showInconsistenciesDialog();
+            });
+        }
+        return portfolioIdMapping;
+    }
+
+    /**
+     * Check for account inconsistencies in the database and show a dialog to fix them.
+     * @return A mapping of old account ids to new account ids.
+     */
+    public HashMap<Long, Long> checkForAccountInconsistencies() {
+        HashMap<Long, Long> accountIdMapping = new HashMap<>();
+
+        while (accountRepository.inconsistentAccountsExists()) {
+            Set<Long> inconsistentAccountIds = accountRepository.getInconsistentAccountIds();
+            inconsistentAccountIds.addAll(accountService.findByCurrencyHasNoExchangeCourse());
+
+            inconsistentAccountIds.forEach(accountId -> {
+                fixAccountInconcistenciesDialog.setAccount(accountRepository.reconstructAccount(accountId));
+                inconsistenciesDialogController.setFxmlFilePath("gui/tabs/portfoliomanagement/tab/kontos/dialog/fix_account_inconsistencies_dialog.fxml");
+                inconsistenciesDialogController.setStageTitle("Konto inkonsistent");
+                inconsistenciesDialogController.setController(fixAccountInconcistenciesDialog);
+                fixAccountInconcistenciesDialog.getAccount().idProperty().addListener((observable, oldValue, newValue) -> {
+                    accountIdMapping.put(oldValue.longValue(), newValue.longValue());
+                });
+                showInconsistenciesDialog();
+            });
+        }
+        return accountIdMapping;
+    }
+    // endregion
+
+    /**
+     * Navigates back to the main-menu, depending on the entity that was deleted.
+     * F.e. if an owner was deleted, the main-menu of the owner-management will be shown.
      * @param fromEntity The entity that was deleted.
      */
     public void navigateBackAfterDeletion(@NonNull Object fromEntity) {
-        if (fromEntity instanceof Portfolio) {
-            showPortfolioManagementTabs();
-        } else if (fromEntity instanceof Owner) {
-            showPortfolioManagementTabs();
+        showPortfolioManagementTabs();
+
+        if (fromEntity instanceof Owner) {
             portfolioManagementTabPane.getSelectionModel().select(inhaberTab);
+        } else if (fromEntity instanceof Portfolio) {
+            portfolioManagementTabPane.getSelectionModel().select(portfoliosTab);
         } else if (fromEntity instanceof Account) {
-            Navigator.navigateToPortfolio(portfolioManagementTabManager, ((Account) fromEntity).getPortfolio(), true);
+            portfolioManagementTabPane.getSelectionModel().select(kontoTab);
         } else if (fromEntity instanceof Depot) {
-            Navigator.navigateToPortfolio(portfolioManagementTabManager, ((Depot) fromEntity).getPortfolio(), true);
-        } else {
-            throw new IllegalArgumentException("Unknown entity type: " + fromEntity.getClass().getName());
+            portfolioManagementTabPane.getSelectionModel().select(depotTab);
         }
+    }
+
+    /**
+     * Navigates to the previous crumb in the breadcrumb bar.
+     */
+    public void navigateToPreviousCrumb() {
+        int breadCrumbsCount = breadCrumbBar.getItems().size();
+        if (breadCrumbsCount == 0) return;
+
+        try {
+            int index = breadCrumbsCount - 2;
+            org.controlsfx.control.BreadCrumbBar.BreadCrumbButton lastCrumb = (org.controlsfx.control.BreadCrumbBar.BreadCrumbButton) breadCrumbBar.getItems().get(index);
+            lastCrumb.fire();
+        } catch (Exception ignore) {}
     }
 
     public void showPortfolioManagementTabs() {
@@ -416,6 +453,7 @@ public class PortfolioManagementTabController {
     // region Show specific entity tabs
     public void showDepotTabs() {
         portfolioManagementTabPane.getTabs().setAll(depotTabs);
+        // don't use 'selectFirst' - that will cause a bug
         portfolioManagementTabPane.getSelectionModel().select(depotWertpapierTab);
     }
 
@@ -431,7 +469,8 @@ public class PortfolioManagementTabController {
             }
         });
         portfolioManagementTabPane.getTabs().setAll(portfolioTabs);
-        portfolioManagementTabPane.getSelectionModel().selectFirst();
+        // don't use 'selectFirst' - that will cause a bug
+        portfolioManagementTabPane.getSelectionModel().select(portfolioOverviewTab);
     }
 
     /**
@@ -447,7 +486,8 @@ public class PortfolioManagementTabController {
 
         });
         portfolioManagementTabPane.getTabs().setAll(kontoTabs);
-        portfolioManagementTabPane.getSelectionModel().selectFirst();
+        // don't use 'selectFirst' - that will cause a bug
+        portfolioManagementTabPane.getSelectionModel().select(kontoÜbersichtTab);
     }
 
     /**
@@ -462,16 +502,16 @@ public class PortfolioManagementTabController {
             }
         });
         portfolioManagementTabPane.getTabs().setAll(ownerTabs);
-        portfolioManagementTabPane.getSelectionModel().selectFirst();
+        // don't use 'selectFirst' - that will cause a bug
+        portfolioManagementTabPane.getSelectionModel().select(inhaberÜbersichtTab);
     }
     // endregion
 
-    public <T> void createBreadcrumbInstance(@NonNull String label, @NonNull List<T> contextMenuItems,
-                                             @NonNull Consumer<T> contextMenuItemAction, @NonNull Runnable onLabelClick,
-                                             @NonNull BreadcrumbElementType type) {
+    // region Add breadcrumbs
+    public void createBreadcrumbInstance(@NonNull BreadcrumbElement element, @NonNull Runnable onLabelClick) {
         // add root crumb if no root crumb is present
         if (!breadCrumbBar.hasRootCrumble()) {
-            switch (type) {
+            switch (element.type) {
                 case OWNER -> breadCrumbBar.addRootCrumb(
                         "Inhaber-Verwaltung",
                         () -> {
@@ -500,93 +540,52 @@ public class PortfolioManagementTabController {
         }
 
         // create and add crumb
-        breadCrumbBar.addCrumb(label, type, contextMenuItems, contextMenuItemAction, onLabelClick);
+        breadCrumbBar.addCrumb(element, onLabelClick);
     }
 
     public void addBreadcrumb(BreadcrumbElement element) {
         switch (element.type) {
-            case DEPOT -> addDepotBreadcrumbs((Depot) element.element);
-            case PORTFOLIO -> addPortfolioBreadcrumbs((Portfolio) element.element);
-            case OWNER -> addOwnerBreadcrumbs((Owner) element.element);
-            case ACCOUNT -> addKontoBreadcrumbs((Account) element.element);
+            case DEPOT -> createBreadcrumbInstance(
+                    element,
+                    this::showDepotTabs
+            );
+            case PORTFOLIO -> createBreadcrumbInstance(
+                    element,
+                    () -> showPortfolioTabs((Portfolio) element.element)
+            );
+            case OWNER -> createBreadcrumbInstance(
+                    element,
+                    () -> showInhaberTabs((Owner) element.element)
+            );
+            case ACCOUNT -> createBreadcrumbInstance(
+                    element,
+                    () -> showKontoTabs((Account) element.element)
+            );
         }
     }
 
-    // region Add breadcrumbs
-    public void addDepotBreadcrumbs(@NonNull Depot chosenDepot) {
-        List<Depot> contextMenuItems;
+    /**
+     * Refreshes the breadcrumbs in the breadcrumb bar.
+     * That means that the elements of the breadcrumbs will be updated with the latest data.
+     */
+    public void refreshCrumbs() {
+        for (int i = 0; i < breadCrumbBar.getItems().size(); i++) {
+            org.controlsfx.control.BreadCrumbBar.BreadCrumbButton crumb = (org.controlsfx.control.BreadCrumbBar.BreadCrumbButton)
+                    breadCrumbBar.getItems().get(i);
+            BreadcrumbElement userData = (BreadcrumbElement) crumb.getUserData();
+            if (userData == null) continue;
 
-        // ToDo: implement later!
-        // check if the breadcrumb already contains a portfolio, so we can filter the accounts by the portfolio
-        if (breadCrumbBar.containsType(BreadcrumbElementType.PORTFOLIO)) {
-            contextMenuItems = chosenDepot.getPortfolio().getDepots();
-        } else {
-            contextMenuItems = new ArrayList<>();
+            BreadcrumbElementType crumbType = userData.type;
+            try {
+                switch (crumbType) {
+                    case OWNER -> breadCrumbBar.updateCrumb(crumb, ownerService.getOwnerById(((Owner) userData.element).getId()));
+                    case PORTFOLIO -> breadCrumbBar.updateCrumb(crumb, portfolioService.findById(((Portfolio) userData.element).getId()));
+                    case ACCOUNT -> breadCrumbBar.updateCrumb(crumb, accountService.getAccountById(((Account) userData.element).getId()));
+                }
+            } catch (NoSuchElementException e) {
+                navigateBackAfterDeletion(userData.element);
+            }
         }
-
-        createBreadcrumbInstance(
-                chosenDepot.toString(),
-                contextMenuItems,
-                depot -> showDepotTabs(),
-                this::showDepotTabs,
-                BreadcrumbElementType.DEPOT
-        );
-    }
-
-    public void addPortfolioBreadcrumbs(@NonNull Portfolio chosenPortfolio) {
-        List<Portfolio> contextMenuItems;
-
-        // check if the breadcrumb already contains an owner, so we can filter the accounts by the owner
-        if (breadCrumbBar.containsType(BreadcrumbElementType.OWNER)) {
-            // reload the account from the database to get his portfolio
-            contextMenuItems = portfolioService.findById(chosenPortfolio.getId())
-                    .getOwner()
-                    .getPortfolios()
-                    .stream().toList();
-        } else {
-            contextMenuItems = portfolioService.getAll();
-        }
-
-        createBreadcrumbInstance(
-                chosenPortfolio.toString(),
-                contextMenuItems,
-                this::showPortfolioTabs,
-                () -> showPortfolioTabs(chosenPortfolio),
-                BreadcrumbElementType.PORTFOLIO
-        );
-    }
-
-    public void addOwnerBreadcrumbs(@NonNull Owner chosenOwner) {
-        createBreadcrumbInstance(
-                chosenOwner.toString(),
-                ownerService.getAll(),
-                this::showInhaberTabs,
-                () -> showInhaberTabs(chosenOwner),
-                BreadcrumbElementType.OWNER
-        );
-    }
-
-    public void addKontoBreadcrumbs(@NonNull Account chosenKonto) {
-        List<Account> contextMenuItems;
-
-        // check if the breadcrumb already contains a portfolio, so we can filter the accounts by the portfolio
-        if (breadCrumbBar.containsType(BreadcrumbElementType.PORTFOLIO)) {
-            // reload the account from the database to get the accounts of the portfolio
-            contextMenuItems = accountService.getAccountById(chosenKonto.getId())
-                    .getPortfolio()
-                    .getAccounts()
-                    .stream().toList();
-        } else {
-            contextMenuItems = accountService.getAll();
-        }
-
-        createBreadcrumbInstance(
-                chosenKonto.toString(),
-                contextMenuItems,
-                this::showKontoTabs,
-                () -> showKontoTabs(chosenKonto),
-                BreadcrumbElementType.ACCOUNT
-        );
     }
     // endregion
 
@@ -642,6 +641,7 @@ public class PortfolioManagementTabController {
     public TabPane getPortfolioManagementTabPane() {
         return portfolioManagementTabPane;
     }
+
     // endregion
 
     private void showInconsistenciesDialog() {
