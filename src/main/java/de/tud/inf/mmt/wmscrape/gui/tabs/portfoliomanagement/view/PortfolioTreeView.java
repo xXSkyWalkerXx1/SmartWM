@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
 
-    public static class Item {
+    public class Item {
 
         private boolean isRoot = false;
         private final FinancialAsset asset;
@@ -37,10 +37,10 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
         public String toString() {
             if (isRoot) return asset.toString();
             if (asset instanceof Portfolio) return String.format(
-                    "%s (%s €)",
-                    asset,
-                    FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
-            );
+                        disableShowPortfolioSum ? "%s" : "%s (%s €)",
+                        asset,
+                        FormatUtils.formatFloat(asset.getValue(portfolioManagementManager.getAccountService()).floatValue())
+                );
             if (asset instanceof Account) return String.format(
                     "Konto: %s (%s €)",
                     asset,
@@ -57,6 +57,7 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
 
     private final TreeItem<Item> rootTreeItem;
     private final PortfolioManagementTabManager portfolioManagementManager;
+    private boolean disableShowPortfolioSum = false;
 
     /**
      * @param parent JavaFX node-based UI Controls and all layout containers (f.e. Pane). Only used for view-sizing.
@@ -65,7 +66,20 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
             @NonNull Region parent,
             @NonNull List<Portfolio> portfolios,
             @NonNull PortfolioManagementTabManager portfolioManagementManager){
+        this(parent, portfolios, portfolioManagementManager, false);
+    }
+
+    /**
+     * With this constructor, the sum of the portfolios will not be shown.
+     * @param parent JavaFX node-based UI Controls and all layout containers (f.e. Pane). Only used for view-sizing.
+     */
+    public PortfolioTreeView(
+            @NonNull Region parent,
+            @NonNull List<Portfolio> portfolios,
+            @NonNull PortfolioManagementTabManager portfolioManagementManager,
+            boolean disableShowPortfolioSum){
         this.portfolioManagementManager = portfolioManagementManager;
+        this.disableShowPortfolioSum = disableShowPortfolioSum;
 
         Portfolio root = new Portfolio();
         if (portfolios.isEmpty()) {
