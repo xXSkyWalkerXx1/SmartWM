@@ -3,7 +3,10 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Changable;
-import org.springframework.lang.NonNull;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -19,90 +22,115 @@ public class Owner implements Changable {
     @Table(name = "inhaber_adresse")
     public static class Address implements Changable {
 
-        @Transient
-        private boolean isChanged = false;
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-
         @Column(name = "country", nullable = false)
         private String country;
-
         @Column(name = "plz", nullable = false)
         private String plz;
-
         @Column(name = "location", nullable = false)
         private String location; // Stadt/Dorf
-
         @Column(name = "street", nullable = false)
         private String street;
-
         @Column(name = "street_number", nullable = false)
         private String streetNumber;
 
+        @Transient
+        private final SimpleLongProperty idProperty = new SimpleLongProperty();
+        @Transient
+        private final SimpleStringProperty countryProperty = new SimpleStringProperty();
+        @Transient
+        private final SimpleStringProperty plzProperty = new SimpleStringProperty();
+        @Transient
+        private final SimpleStringProperty locationProperty = new SimpleStringProperty();
+        @Transient
+        private final SimpleStringProperty streetProperty = new SimpleStringProperty();
+        @Transient
+        private final SimpleStringProperty streetNumberProperty = new SimpleStringProperty();
+
         @Override
-        public boolean isChanged() {
-            return isChanged;
+        @PostLoad
+        public void onPostLoadEntity() {
+            idProperty.set(id);
+            countryProperty.set(country);
+            plzProperty.set(plz);
+            locationProperty.set(location);
+            streetProperty.set(street);
+            streetNumberProperty.set(streetNumber);
         }
 
         @Override
-        public void setChanged(boolean changed) {
-            isChanged = changed;
+        public void onPrePersistOrUpdateOrRemoveEntity() {
+            id = idProperty.get();
+            country = countryProperty.get();
+            plz = plzProperty.get();
+            location = locationProperty.get();
+            street = streetProperty.get();
+            streetNumber = streetNumberProperty.get();
+        }
+
+        @Override
+        public boolean isChanged() {
+            return !Objects.equals(id, idProperty.get())
+                    || !Objects.equals(country, countryProperty.get())
+                    || !Objects.equals(plz, plzProperty.get())
+                    || !Objects.equals(location, locationProperty.get())
+                    || !Objects.equals(street, streetProperty.get())
+                    || !Objects.equals(streetNumber, streetNumberProperty.get());
+        }
+
+        @Override
+        public void restore() {
+            onPostLoadEntity();
         }
 
         public Long getId() {
-            return id;
+            return idProperty.get();
         }
 
         public void setId(Long id) {
-            this.id = id;
-            isChanged = true;
+            idProperty.set(id);
         }
 
         public String getCountry() {
-            return country;
+            return countryProperty.get();
         }
 
         public void setCountry(String country) {
-            this.country = country;
-            isChanged = true;
+            countryProperty.set(country);
         }
 
         public String getPlz() {
-            return plz;
+            return plzProperty.get();
         }
 
         public void setPlz(String plz) {
-            this.plz = plz;
-            isChanged = true;
+            plzProperty.set(plz);
         }
 
         public String getLocation() {
-            return location;
+            return locationProperty.get();
         }
 
         public void setLocation(String location) {
-            this.location = location;
-            isChanged = true;
+            locationProperty.set(location);
         }
 
         public String getStreet() {
-            return street;
+            return streetProperty.get();
         }
 
         public void setStreet(String street) {
-            this.street = street;
-            isChanged = true;
+            streetProperty.set(street);
         }
 
         public String getStreetNumber() {
-            return streetNumber;
+            return streetNumberProperty.get();
         }
 
         public void setStreetNumber(String streetNumber) {
-            this.streetNumber = streetNumber;
-            isChanged = true;
+            streetNumberProperty.set(streetNumber);
         }
     }
 
@@ -110,190 +138,235 @@ public class Owner implements Changable {
     @Table(name = "inhaber_steuer_informationen")
     public static class TaxInformation implements Changable {
 
-        @Transient
-        private boolean isChanged = false;
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-
         @Column(name = "tax_number", nullable = false, unique = true)
         private String taxNumber;
-
         @Enumerated(EnumType.STRING)
         @Column(name = "marital_state", nullable = false)
         private MaritalState maritalState;
-
         @Column(name = "tax_rate", nullable = false)
         private BigDecimal taxRate = BigDecimal.valueOf(0);
-
         @Column(name = "church_tax_rate", nullable = false)
         private BigDecimal churchTaxRate = BigDecimal.valueOf(0);
-
         @Column(name = "capital_gainstax_rate", nullable = false)
         private BigDecimal capitalGainsTaxRate = BigDecimal.valueOf(0);
-
         @Column(name = "solidarity_surcharge_tax_rate", nullable = false)
         private BigDecimal solidaritySurchargeTaxRate = BigDecimal.valueOf(0);
 
+        @Transient
+        private final SimpleLongProperty idProperty = new SimpleLongProperty();
+        @Transient
+        private final SimpleStringProperty taxNumberProperty = new SimpleStringProperty();
+        @Transient
+        private final ObjectProperty<MaritalState> maritalStateProperty = new SimpleObjectProperty<>();
+        @Transient
+        private final ObjectProperty<BigDecimal> taxRateProperty = new SimpleObjectProperty<>();
+        @Transient
+        private final ObjectProperty<BigDecimal> churchTaxRateProperty = new SimpleObjectProperty<>();
+        @Transient
+        private final ObjectProperty<BigDecimal> capitalGainsTaxRateProperty = new SimpleObjectProperty<>();
+        @Transient
+        private final ObjectProperty<BigDecimal> solidaritySurchargeTaxRateProperty = new SimpleObjectProperty<>();
+
         @Override
-        public boolean isChanged() {
-            return isChanged;
+        @PostLoad
+        public void onPostLoadEntity() {
+            idProperty.set(id);
+            taxNumberProperty.set(taxNumber);
+            maritalStateProperty.set(maritalState);
+            taxRateProperty.set(taxRate);
+            churchTaxRateProperty.set(churchTaxRate);
+            capitalGainsTaxRateProperty.set(capitalGainsTaxRate);
+            solidaritySurchargeTaxRateProperty.set(solidaritySurchargeTaxRate);
         }
 
         @Override
-        public void setChanged(boolean changed) {
-            isChanged = changed;
+        public void onPrePersistOrUpdateOrRemoveEntity() {
+            id = idProperty.get();
+            taxNumber = taxNumberProperty.get();
+            maritalState = maritalStateProperty.get();
+            taxRate = taxRateProperty.get();
+            churchTaxRate = churchTaxRateProperty.get();
+            capitalGainsTaxRate = capitalGainsTaxRateProperty.get();
+            solidaritySurchargeTaxRate = solidaritySurchargeTaxRateProperty.get();
+        }
+
+        @Override
+        public boolean isChanged() {
+            return !Objects.equals(id, idProperty.get())
+                    || !Objects.equals(taxNumber, taxNumberProperty.get())
+                    || !Objects.equals(maritalState, maritalStateProperty.get())
+                    || !Objects.equals(taxRate, taxRateProperty.get())
+                    || !Objects.equals(churchTaxRate, churchTaxRateProperty.get())
+                    || !Objects.equals(capitalGainsTaxRate, capitalGainsTaxRateProperty.get())
+                    || !Objects.equals(solidaritySurchargeTaxRate, solidaritySurchargeTaxRateProperty.get());
+        }
+
+        @Override
+        public void restore() {
+            onPostLoadEntity();
         }
 
         public Long getId() {
-            return id;
+            return idProperty.get();
         }
 
         public void setId(Long id) {
-            this.id = id;
-            isChanged = true;
+            idProperty.set(id);
         }
 
         public String getTaxNumber() {
-            return taxNumber;
+            return taxNumberProperty.get();
         }
 
         public void setTaxNumber(String taxNumber) {
-            this.taxNumber = taxNumber;
-            isChanged = true;
+            taxNumberProperty.set(taxNumber);
         }
 
         public MaritalState getMaritalState() {
-            return maritalState;
+            return maritalStateProperty.get();
         }
 
         public void setMaritalState(MaritalState maritalState) {
-            this.maritalState = maritalState;
-            isChanged = true;
+            maritalStateProperty.set(maritalState);
         }
 
         public double getTaxRate() {
-            return taxRate.doubleValue();
+            return taxRateProperty.get().doubleValue();
         }
 
         public void setTaxRate(double taxRate) {
-            this.taxRate = BigDecimal.valueOf(taxRate).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            taxRateProperty.set(BigDecimal.valueOf(taxRate).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public double getChurchTaxRate() {
-            return churchTaxRate.doubleValue();
+            return churchTaxRateProperty.get().doubleValue();
         }
 
         public void setChurchTaxRate(double churchTaxRate) {
-            this.churchTaxRate = BigDecimal.valueOf(churchTaxRate).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            churchTaxRateProperty.set(BigDecimal.valueOf(churchTaxRate).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public double getCapitalGainsTaxRate() {
-            return capitalGainsTaxRate.doubleValue();
+            return capitalGainsTaxRateProperty.get().doubleValue();
         }
 
         public void setCapitalGainsTaxRate(double capitalGainsTaxRate) {
-            this.capitalGainsTaxRate = BigDecimal.valueOf(capitalGainsTaxRate).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            capitalGainsTaxRateProperty.set(BigDecimal.valueOf(capitalGainsTaxRate).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public double getSolidaritySurchargeTaxRate() {
-            return solidaritySurchargeTaxRate.doubleValue();
+            return solidaritySurchargeTaxRateProperty.get().doubleValue();
         }
 
         public void setSolidaritySurchargeTaxRate(double solidaritySurchargeTaxRate) {
-            this.solidaritySurchargeTaxRate = BigDecimal.valueOf(solidaritySurchargeTaxRate).setScale(2, RoundingMode.HALF_DOWN);
-            isChanged = true;
+            solidaritySurchargeTaxRateProperty.set(BigDecimal.valueOf(solidaritySurchargeTaxRate).setScale(2, RoundingMode.HALF_DOWN));
         }
 
         public BigDecimal getTaxRateBigDecimal() {
-            return taxRate;
+            return taxRateProperty.get();
         }
 
         public BigDecimal getChurchTaxRateBigDecimal() {
-            return churchTaxRate;
+            return churchTaxRateProperty.get();
         }
 
         public BigDecimal getCapitalGainsTaxRateBigDecimal() {
-            return capitalGainsTaxRate;
+            return capitalGainsTaxRateProperty.get();
         }
 
         public BigDecimal getSolidaritySurchargeTaxRateBigDecimal() {
-            return solidaritySurchargeTaxRate;
+            return solidaritySurchargeTaxRateProperty.get();
         }
     }
     // endregion
 
-    @Transient
-    private boolean isChanged = false;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private State state = State.ACTIVATED;
-
     @Column(name = "forename", nullable = false)
     private String forename;
-
     @Column(name = "aftername", nullable = false)
     private String aftername;
-
     @Column(name = "notice")
     private String notice;
-
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address = new Address();
-
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "tax_information_id", nullable = false) // creates foreign-key
     private TaxInformation taxInformation = new TaxInformation();
-
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Portfolio> portfolios = Collections.emptySet();
-
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Account> accounts = Collections.emptySet();
-
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Depot> depots = Collections.emptySet();
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
 
-    //@PostLoad
-    @PostPersist
-    @PostUpdate
-    private void onSaveOrLoad() {
-        setChanged(false);
+    @Transient
+    private final SimpleLongProperty idProperty = new SimpleLongProperty();
+    @Transient
+    private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
+    @Transient
+    private final SimpleStringProperty forenameProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleStringProperty afternameProperty = new SimpleStringProperty();
+    @Transient
+    private final SimpleStringProperty noticeProperty = new SimpleStringProperty();
+
+    @Override
+    @PostLoad
+    public void onPostLoadEntity() {
+        idProperty.set(id);
+        stateProperty.set(state);
+        forenameProperty.set(forename);
+        afternameProperty.set(aftername);
+        noticeProperty.set(notice);
+    }
+
+    @Override
+    public void onPrePersistOrUpdateOrRemoveEntity() {
+        address.onPrePersistOrUpdateOrRemoveEntity();
+        taxInformation.onPrePersistOrUpdateOrRemoveEntity();
+        id = idProperty.get();
+        state = stateProperty.get();
+        forename = forenameProperty.get();
+        aftername = afternameProperty.get();
+        notice = noticeProperty.get();
     }
 
     @Override
     public boolean isChanged() {
-        return isChanged || address.isChanged() || taxInformation.isChanged();
+        return address.isChanged()
+                || taxInformation.isChanged()
+                || !Objects.equals(id, idProperty.get())
+                || !Objects.equals(state, stateProperty.get())
+                || !Objects.equals(forename, forenameProperty.get())
+                || !Objects.equals(aftername, afternameProperty.get())
+                || !Objects.equals(notice, noticeProperty.get());
     }
 
     @Override
-    public void setChanged(boolean changed) {
-        address.setChanged(changed);
-        taxInformation.setChanged(changed);
-        isChanged = changed;
+    public void restore() {
+        onPostLoadEntity();
+        address.restore();
+        taxInformation.restore();
     }
 
     @Override
     public String toString() {
-        return String.format("%s %s (Steuer-Nr.: %s)", forename, aftername, taxInformation.taxNumber);
+        return String.format("%s %s (Steuer-Nr.: %s)", getForename(), getAftername(), taxInformation.getTaxNumber());
     }
 
     @Override
@@ -301,60 +374,58 @@ public class Owner implements Changable {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Owner owner = (Owner) obj;
-        return Objects.equals(id, owner.id);
+        return Objects.equals(idProperty.get(), owner.getId());
     }
 
     // region Getters & Setters
     public Long getId() {
-        return id;
+        return idProperty.get();
+    }
+
+    public SimpleLongProperty idProperty() {
+        return idProperty;
     }
 
     public void setId(Long id) {
-        this.id = id;
-        isChanged = true;
+        idProperty.set(id);
     }
 
     public State getState() {
-        return state;
+        return stateProperty.get();
     }
 
     public void setState(State state) {
-        this.state = state;
+        stateProperty.set(state);
 
         if (State.ACTIVATED.equals(state)) {
             setDeactivatedAt(null);
         } else if (State.DEACTIVATED.equals(state)) {
             setDeactivatedAt(Calendar.getInstance().getTime());
         }
-
-        isChanged = true;
     }
 
     public String getForename() {
-        return forename;
+        return forenameProperty.get();
     }
 
     public void setForename(String forename) {
-        this.forename = forename;
-        isChanged = true;
+        forenameProperty.set(forename);
     }
 
     public String getAftername() {
-        return aftername;
+        return afternameProperty.get();
     }
 
     public void setAftername(String aftername) {
-        this.aftername = aftername;
-        isChanged = true;
+        afternameProperty.set(aftername);
     }
 
     public String getNotice() {
-        return notice;
+        return noticeProperty.get();
     }
 
     public void setNotice(String notice) {
-        this.notice = notice;
-        isChanged = true;
+        noticeProperty.set(notice);
     }
 
     public Date getCreatedAt() {
@@ -363,7 +434,6 @@ public class Owner implements Changable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-        isChanged = true;
     }
 
     public Date getDeactivatedAt() {
@@ -372,7 +442,6 @@ public class Owner implements Changable {
 
     public void setDeactivatedAt(Date deactivatedAt) {
         this.deactivatedAt = deactivatedAt;
-        isChanged = true;
     }
 
     public Address getAddress() {
