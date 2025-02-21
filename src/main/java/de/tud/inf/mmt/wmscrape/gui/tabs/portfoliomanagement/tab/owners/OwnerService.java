@@ -1,13 +1,14 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.OwnerRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
@@ -15,18 +16,19 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class OwnerService {
 
     @Autowired
     private OwnerRepository ownerRepository;
+    @Autowired
+    private PortfolioManagementTabController portfolioManagementTabController;
 
     public List<Owner> getAll(){
         try {
+            portfolioManagementTabController.checkForInconsistencies();
             return ownerRepository.findAll();
         } catch (Exception e) {
             PrimaryTabManager.showDialog(
@@ -39,13 +41,25 @@ public class OwnerService {
         }
     }
 
-    public Owner getOwnerById(long id){
-        return ownerRepository.findById(id).orElseThrow();
+    /**
+     * Searches for inconsistencies in the database and tries to fix them. After that it returns the owner with the id, if it exists.
+     * @throws NoSuchElementException if the owner with the given id does not exist.
+     */
+    public Owner getOwnerById(long id) throws NoSuchElementException {
+        HashMap<Long, Long> idMapping = portfolioManagementTabController
+                .checkForInconsistencies()
+                .getOrDefault(BreadcrumbElementType.OWNER, new HashMap<>());
+        if (idMapping.containsKey(id)) id = idMapping.get(id);
+        return ownerRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     public boolean save(Owner owner) {
         try {
-            ownerRepository.save(owner);
+            owner.onPrePersistOrUpdateOrRemoveEntity();
+            Owner persistedOwner = ownerRepository.save(owner);
+            // Update the owner with the id from the database.
+            persistedOwner.onPostLoadEntity();
+            owner.setId(persistedOwner.getId());
             return true;
         } catch (DataIntegrityViolationException integrityViolationException) {
             PrimaryTabManager.showDialog(
@@ -84,7 +98,7 @@ public class OwnerService {
                 Alert.AlertType.WARNING,
                 "Inhaber löschen",
                 "Sind Sie sicher, dass Sie den Inhaber löschen möchten?\n" +
-                        "Etwaige Beziehungen zu Konten oder Depots werden dabei nicht berücksichtigt und kann zu einem" +
+                        "Etwaige Beziehungen werden dabei nicht berücksichtigt und kann zu einem" +
                         " fehlerhaften Verhalten der Anwendung führen!",
                 null,
                 () -> {
@@ -102,9 +116,21 @@ public class OwnerService {
         ownerRepository.deleteById(id);
     }
 
+    /**
+     * @return all available locales as string array.
+     */
+    @NonNull
+    public static Collection<String> getLocales() {
+        var locales = Locale.getISOCountries();
+        for (int i = 0; i < locales.length; i++) {
+            locales[i] = new Locale("", locales[i]).getDisplayCountry();
+        }
+        return List.of(Arrays.stream(locales).sorted().toArray(String[]::new));
+    }
+
     public void writeInput(@NonNull Owner owner, boolean isOnCreate,
                            @NonNull TextField inputForename, @NonNull TextField inputAftername, @NonNull TextArea inputNotice,
-                           @NonNull TextField inputCountry, @NonNull TextField inputPlz, @NonNull TextField inputLocation,
+                           @NonNull ComboBox<String> inputCountry, @NonNull TextField inputPlz, @NonNull TextField inputLocation,
                            @NonNull TextField inputStreet, @NonNull TextField inputStreetNumber, @NonNull TextField inputTaxNumber,
                            @NonNull ComboBox<MaritalState> inputMaritalState, @NonNull TextField inputTaxRate,
                            @NonNull TextField inputChurchTaxRate, @NonNull TextField inputCapitalGainsTaxRate,
@@ -115,7 +141,7 @@ public class OwnerService {
         if (isOnCreate) owner.setCreatedAt(Calendar.getInstance().getTime());
 
         Owner.Address ownerAddress = owner.getAddress();
-        ownerAddress.setCountry(inputCountry.getText());
+        ownerAddress.setCountry(inputCountry.getSelectionModel().getSelectedItem());
         ownerAddress.setPlz(inputPlz.getText());
         ownerAddress.setLocation(inputLocation.getText());
         ownerAddress.setStreet(inputStreet.getText());
