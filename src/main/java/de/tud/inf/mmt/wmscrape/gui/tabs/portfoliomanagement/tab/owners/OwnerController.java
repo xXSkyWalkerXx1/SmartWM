@@ -45,8 +45,7 @@ public class OwnerController implements Openable {
         setOwnerTreeView(new PortfolioTreeView(
                 ownerTreeViewPane,
                 new ArrayList<>(),
-                portfolioManagementTabManager,
-                true
+                portfolioManagementTabManager
         ));
     }
 
