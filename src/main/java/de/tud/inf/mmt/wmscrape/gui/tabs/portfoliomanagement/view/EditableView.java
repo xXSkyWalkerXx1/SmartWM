@@ -64,19 +64,16 @@ public abstract class EditableView {
                                 portfolioManagementController.breadCrumbBar.removeCrumbsAfterLast(BreadcrumbElementType.DEPOT);
                             }
                         },
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                onButtonYesClickAction.run();
+                        () -> {
+                            onButtonYesClickAction.run();
 
-                                // Refresh the tab where we wanted to navigate to
-                                var tabPaneSelectionModel = portfolioManagementController
-                                        .getPortfolioManagementTabPane()
-                                        .getSelectionModel();
-                                var selectedIndex = tabPaneSelectionModel.getSelectedIndex();
-                                tabPaneSelectionModel.clearSelection();
-                                tabPaneSelectionModel.select(selectedIndex);
-                            }
+                            // Refresh the tab where we wanted to navigate to
+                            var tabPaneSelectionModel = portfolioManagementController
+                                    .getPortfolioManagementTabPane()
+                                    .getSelectionModel();
+                            var selectedIndex = tabPaneSelectionModel.getSelectedIndex();
+                            tabPaneSelectionModel.clearSelection();
+                            tabPaneSelectionModel.select(selectedIndex);
                         },
                         onButtonNoClickAction
                 );
