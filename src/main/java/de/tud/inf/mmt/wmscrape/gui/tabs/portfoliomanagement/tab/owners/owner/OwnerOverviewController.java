@@ -8,10 +8,8 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.MaritalState;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners.OwnerService;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.PortfolioTreeView;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.*;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -19,10 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.text.ParseException;
-import java.util.Calendar;
+import java.util.Locale;
+import java.util.NoSuchElementException;
 
 @Controller
-public class OwnerOverviewController implements Openable {
+public class OwnerOverviewController extends EditableView implements Openable {
 
     Owner owner;
 
@@ -44,7 +43,7 @@ public class OwnerOverviewController implements Openable {
     @FXML
     TextField outputDeactivatedAt;
     @FXML
-    TextField inputCountry;
+    ComboBox<String> inputCountry;
     @FXML
     TextField inputPlz;
     @FXML
@@ -70,25 +69,11 @@ public class OwnerOverviewController implements Openable {
 
     @FXML
     private void initialize() {
+        inputCountry.getItems().setAll(OwnerService.getLocales());
+        inputCountry.getSelectionModel().select(Locale.getDefault().getDisplayCountry());
+
         inputState.getItems().setAll(State.values());
         inputMaritalState.getItems().setAll(MaritalState.values());
-    }
-
-    @Override
-    public void open() {
-        owner = (Owner) portfolioManagementManager
-                .getPortfolioController()
-                .getInhaberÜbersichtTab()
-                .getProperties()
-                .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
-
-        loadOwnerData();
-        ownerTreeViewPane.getChildren().setAll(new PortfolioTreeView(
-                ownerTreeViewPane,
-                owner.getPortfolios().stream().toList(),
-                portfolioManagementManager,
-                false
-        ));
 
         // Change TextFields so that they only accept integers
         FieldFormatter.setInputFloatRange(inputTaxRate, 0f, 100f, change -> {
@@ -97,8 +82,7 @@ public class OwnerOverviewController implements Openable {
                         FormatUtils.parseFloat(change.getControlNewText()),
                         FormatUtils.parseFloat(inputChurchTaxRate.getText())
                                 + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText())
-                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                        inputMaritalState
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText())
                 );
             } catch (ParseException e) {
                 return false;
@@ -110,8 +94,7 @@ public class OwnerOverviewController implements Openable {
                         FormatUtils.parseFloat(change.getControlNewText()),
                         FormatUtils.parseFloat(inputTaxRate.getText())
                                 + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText())
-                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                        inputMaritalState
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText())
                 );
             } catch (ParseException e) {
                 return false;
@@ -123,8 +106,7 @@ public class OwnerOverviewController implements Openable {
                         FormatUtils.parseFloat(change.getControlNewText()),
                         FormatUtils.parseFloat(inputTaxRate.getText())
                                 + FormatUtils.parseFloat(inputChurchTaxRate.getText())
-                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText()),
-                        inputMaritalState
+                                + FormatUtils.parseFloat(inputSolidaritySurchargeTaxRate.getText())
                 );
             } catch (ParseException e) {
                 return false;
@@ -136,18 +118,102 @@ public class OwnerOverviewController implements Openable {
                         FormatUtils.parseFloat(change.getControlNewText()),
                         FormatUtils.parseFloat(inputTaxRate.getText())
                                 + FormatUtils.parseFloat(inputChurchTaxRate.getText())
-                                + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText()),
-                        inputMaritalState
+                                + FormatUtils.parseFloat(inputCapitalGainsTaxRate.getText())
                 );
             } catch (ParseException e) {
                 return false;
             }
         });
+
+        // Set listeners
+
+        /* notice for future reference: use the focusedProperty instead of the textProperty and just compare the values in your setters directly!
+        inputForename.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+                System.out.println("Focus changed: " + t1);
+            }
+        });
+         */
+        inputForename.textProperty().addListener((observableValue, s, t1) -> owner.setForename(t1));
+        inputAftername.textProperty().addListener((observableValue, s, t1) -> owner.setAftername(t1));
+        inputNotice.textProperty().addListener((observableValue, s, t1) -> owner.setNotice(t1));
+        inputState.valueProperty().addListener((observableValue, state, t1) -> owner.setState(t1));
+        inputCountry.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> owner.getAddress().setCountry(t1));
+        inputPlz.textProperty().addListener((observableValue, s, t1) -> owner.getAddress().setPlz(t1));
+        inputLocation.textProperty().addListener((observableValue, s, t1) -> owner.getAddress().setLocation(t1));
+        inputStreet.textProperty().addListener((observableValue, s, t1) -> owner.getAddress().setStreet(t1));
+        inputStreetNumber.textProperty().addListener((observableValue, s, t1) -> owner.getAddress().setStreetNumber(t1));
+        inputTaxNumber.textProperty().addListener((observableValue, s, t1) -> owner.getTaxInformation().setTaxNumber(t1));
+        inputMaritalState.valueProperty().addListener((observableValue, maritalState, t1) -> owner.getTaxInformation().setMaritalState(t1));
+        inputTaxRate.textProperty().addListener((observableValue, s, t1) -> {
+            try {
+                owner.getTaxInformation().setTaxRate(FormatUtils.parseFloat(t1));
+            } catch (ParseException ignore) {} // this should not happen here due the text-formatters
+        });
+        inputChurchTaxRate.textProperty().addListener((observableValue, s, t1) -> {
+            try {
+                owner.getTaxInformation().setChurchTaxRate(FormatUtils.parseFloat(t1));
+            } catch (ParseException ignore) {}
+        });
+        inputCapitalGainsTaxRate.textProperty().addListener((observableValue, s, t1) -> {
+            try {
+                owner.getTaxInformation().setCapitalGainsTaxRate(FormatUtils.parseFloat(t1));
+            } catch (ParseException ignore) {}
+        });
+        inputSolidaritySurchargeTaxRate.textProperty().addListener((observableValue, s, t1) -> {
+            try {
+                owner.getTaxInformation().setSolidaritySurchargeTaxRate(FormatUtils.parseFloat(t1));
+            } catch (ParseException ignore) {}
+        });
+    }
+
+    @Override
+    public void open() {
+        owner = (Owner) portfolioManagementManager
+                .getPortfolioController()
+                .getInhaberÜbersichtTab()
+                .getProperties()
+                .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
+        if (!owner.isChanged()) {
+            try {
+                owner = ownerService.getOwnerById(owner.getId());
+            } catch (NoSuchElementException e) {
+                /*
+                Should only happen, in the following example:
+                1. you open an owner
+                2. you navigate to an account of him
+                3. after that you create an inconsistency in the database (f.e. via SQL-Browser like HeidiSQL)
+                4. from the account you navigate to the owner of this account (which is the same as in 1.)
+                5. it detects the inconsistency, but you choose to delete the owner instead of fixing the inconsistency
+                6. now the owner is deleted and the owner is not found in the database
+                This happens only because of the complexity of the navigation.
+                 */
+                return;
+            }
+        }
+        loadOwnerData();
+
+        var treeView = new PortfolioTreeView(
+                ownerTreeViewPane,
+                owner.getPortfolios().stream().toList(),
+                portfolioManagementManager
+        );
+        treeView.setTooltip(new Tooltip("Auflistung der dem Inhaber zugeordneten Portfolios, Konten und Depots."));
+        ownerTreeViewPane.getChildren().setAll(treeView);
+
+        // Initialize onUnsavedChangesAction-dialog
+        super.initialize(
+                owner,
+                portfolioManagementManager,
+                this::onSave,
+                this::onReset
+        );
     }
 
     @FXML
     private void onReset() {
-        owner = ownerService.getOwnerById(owner.getId());
+        owner.restore();
         loadOwnerData();
     }
 
@@ -161,21 +227,14 @@ public class OwnerOverviewController implements Openable {
     private void onSave() {
         // Validate first
         if (FieldValidator.isInputEmpty(
-                inputForename, inputAftername, inputCountry, inputPlz, inputLocation, inputStreet, inputStreetNumber,
+                inputForename, inputAftername, inputPlz, inputLocation, inputStreet, inputStreetNumber,
                 inputTaxNumber, inputTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
         )) return;
 
-        // If everything is valid, we can update and save the owner
-        ownerService.writeInput(
-                owner, false,
-                inputForename, inputAftername, inputNotice,
-                inputCountry, inputPlz, inputLocation, inputStreet, inputStreetNumber,
-                inputTaxNumber, inputMaritalState, inputTaxRate,
-                inputChurchTaxRate, inputCapitalGainsTaxRate, inputSolidaritySurchargeTaxRate
-        );
-        owner.setState(inputState.getValue());
-
+        // If everything is valid, we can save the owner
         if (!ownerService.save(owner)) return;
+        // Refresh data
+        owner = ownerService.getOwnerById(owner.getId());
         loadOwnerData();
 
         // Finally, show success-dialog
@@ -187,13 +246,15 @@ public class OwnerOverviewController implements Openable {
     }
 
     private void loadOwnerData() {
+        portfolioManagementManager.getPortfolioController().refreshCrumbs();
+
         inputForename.setText(owner.getForename());
         inputAftername.setText(owner.getAftername());
         inputNotice.setText(owner.getNotice());
         inputState.getSelectionModel().select(owner.getState());
         outputCreatedAt.setText(owner.getCreatedAt().toLocaleString());
         outputDeactivatedAt.setText(owner.getDeactivatedAt() == null ? "" : owner.getDeactivatedAt().toLocaleString());
-        inputCountry.setText(owner.getAddress().getCountry());
+        inputCountry.getSelectionModel().select(owner.getAddress().getCountry());
         inputPlz.setText(owner.getAddress().getPlz());
         inputLocation.setText(owner.getAddress().getLocation());
         inputStreet.setText(owner.getAddress().getStreet());
