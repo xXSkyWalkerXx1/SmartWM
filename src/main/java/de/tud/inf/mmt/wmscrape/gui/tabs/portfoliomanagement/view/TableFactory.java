@@ -3,6 +3,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
@@ -185,12 +186,20 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem(
                 "Vermögen anzeigen",
                 portfolio -> {
-                    Navigator.navigateToOwnerAssets(portfolioManagementTabManager, portfolio.getOwner());
-                    portfolioManagementTabManager.getPortfolioController().addBreadcrumb(new BreadcrumbElement(
-                            portfolio.getOwner(),
-                            BreadcrumbElementType.OWNER
-                    ));
-                    // ^ just a little workaround, not nice, but reduces code
+                    var properties = portfolioManagementTabManager.getPortfolioController()
+                            .getInhaberVermögenTab()
+                            .getProperties();
+
+                    if (properties.containsKey(PortfolioManagementTabController.TAB_PROPERTY_CONTROLLER)) {
+                        PrimaryTabManager.loadFxml(
+                                "gui/tabs/portfoliomanagement/tab/owners/owner/ownerVermögen.fxml",
+                                "Portfolio-Vermögen",
+                                null,
+                                true,
+                                properties.get(PortfolioManagementTabController.TAB_PROPERTY_CONTROLLER),
+                                true
+                                );
+                    }
                 }
         );
 
