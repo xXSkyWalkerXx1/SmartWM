@@ -38,8 +38,8 @@ public class InvestmentGuideline implements Changable {
         private BigDecimal maxVolatility = BigDecimal.valueOf(0); // %, within 1 year
         @Column(name = "performance")
         private BigDecimal performance = BigDecimal.valueOf(0); // %, within 1 year
-        @Column(name = "rendite")
-        private BigDecimal rendite = BigDecimal.valueOf(0);
+        @Column(name = "rendite") // change to 'performance_since_buy'
+        private BigDecimal performanceSinceBuy = BigDecimal.valueOf(0); // %, since buy
         @Column(name = "chance_risk_number")
         private BigDecimal chanceRiskNumber = BigDecimal.valueOf(100); // %
         @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -59,7 +59,7 @@ public class InvestmentGuideline implements Changable {
         @Transient
         private final SimpleObjectProperty<BigDecimal> performanceProperty = new SimpleObjectProperty<>(performance);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> renditeProperty = new SimpleObjectProperty<>(rendite);
+        private final SimpleObjectProperty<BigDecimal> performanceSinceBuyProperty = new SimpleObjectProperty<>(performanceSinceBuy);
         @Transient
         private final SimpleObjectProperty<BigDecimal> chanceRiskNumberProperty = new SimpleObjectProperty<>(chanceRiskNumber);
 
@@ -73,7 +73,7 @@ public class InvestmentGuideline implements Changable {
             maxRiskclassProperty.set(maxRiskclass);
             maxVolatilityProperty.set(maxVolatility);
             performanceProperty.set(performance);
-            renditeProperty.set(rendite);
+            performanceSinceBuyProperty.set(performanceSinceBuy);
             chanceRiskNumberProperty.set(chanceRiskNumber);
         }
 
@@ -86,7 +86,7 @@ public class InvestmentGuideline implements Changable {
             maxRiskclass = maxRiskclassProperty.get();
             maxVolatility = maxVolatilityProperty.get();
             performance = performanceProperty.get();
-            rendite = renditeProperty.get();
+            performanceSinceBuy = performanceSinceBuyProperty.get();
             chanceRiskNumber = chanceRiskNumberProperty.get();
         }
 
@@ -104,7 +104,7 @@ public class InvestmentGuideline implements Changable {
                     || !Objects.equals(maxRiskclass, maxRiskclassProperty.get())
                     || !Objects.equals(maxVolatility, maxVolatilityProperty.get())
                     || !Objects.equals(performance, performanceProperty.get())
-                    || !Objects.equals(rendite, renditeProperty.get())
+                    || !Objects.equals(performanceSinceBuy, performanceSinceBuyProperty.get())
                     || !Objects.equals(chanceRiskNumber, chanceRiskNumberProperty.get());
         }
 
@@ -166,13 +166,13 @@ public class InvestmentGuideline implements Changable {
             childEntries.forEach(entry -> entry.setPerformance(performance));
         }
 
-        public float getRendite() {
-            return renditeProperty.get().floatValue();
+        public float getPerformanceSinceBuy() {
+            return performanceSinceBuyProperty.get().floatValue();
         }
 
-        public void setRendite(float rendite) {
-            renditeProperty.set(BigDecimal.valueOf(rendite).setScale(2,RoundingMode.HALF_DOWN));
-            childEntries.forEach(entry -> entry.setRendite(rendite));
+        public void setPerformanceSinceBuy(float performanceSinceBuy) {
+            performanceSinceBuyProperty.set(BigDecimal.valueOf(performanceSinceBuy).setScale(2,RoundingMode.HALF_DOWN));
+            childEntries.forEach(entry -> entry.setPerformanceSinceBuy(performanceSinceBuy));
         }
 
         public float getChanceRiskNumber() {

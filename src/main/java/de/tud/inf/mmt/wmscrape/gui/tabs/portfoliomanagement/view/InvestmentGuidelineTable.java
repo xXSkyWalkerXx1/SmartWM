@@ -151,9 +151,9 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                 investmentType -> !InvestmentType.LIQUIDITY.equals(investmentType)
         ));
         minSuccess.getColumns().add(createDynamicColumn(
-                "Nettorendite seit Kauf (%)",
-                "Gibt die minimal zu erwartende Nettorendite seit Kauf einer Anlage an.",
-                entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getRendite())),
+                "Performance seit Kauf (%)",
+                "Gibt den minimal erwartenden Wertzuwachs einer Anlage seit Kauf an.",
+                entry -> new SimpleStringProperty(FormatUtils.formatFloat(entry.getPerformanceSinceBuy())),
                 col -> {
                     // Try to parse input
                     float input;
@@ -163,7 +163,7 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                         return;
                     }
 
-                    col.getRowValue().getValue().setRendite(input);
+                    col.getRowValue().getValue().setPerformanceSinceBuy(input);
                 },
                 textField -> FieldFormatter.setInputFloatRange(textField, 0f, null),
                 true,

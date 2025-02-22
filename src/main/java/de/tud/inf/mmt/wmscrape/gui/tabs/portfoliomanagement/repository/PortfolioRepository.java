@@ -295,7 +295,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
                             if (resultSet[3] != null) parentEntry.setMaxRiskclass((Integer) resultSet[3]);
                             if (resultSet[4] != null) parentEntry.setMaxVolatility(((BigDecimal) resultSet[4]).floatValue());
                             if (resultSet[5] != null) parentEntry.setPerformance(((BigDecimal) resultSet[5]).floatValue());
-                            if (resultSet[6] != null) parentEntry.setRendite(((BigDecimal) resultSet[6]).floatValue());
+                            if (resultSet[6] != null) parentEntry.setPerformanceSinceBuy(((BigDecimal) resultSet[6]).floatValue());
 
                             // Load child-entries of parent here
                             for (InvestmentGuideline.Entry childEntry : parentEntry.getChildEntries()) {
@@ -310,7 +310,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
                                             if (childResultSet[2] != null) childEntry.setMaxRiskclass((Integer) childResultSet[2]);
                                             if (childResultSet[3] != null) childEntry.setMaxVolatility(((BigDecimal) childResultSet[3]).floatValue());
                                             if (childResultSet[4] != null) childEntry.setPerformance(((BigDecimal) childResultSet[4]).floatValue());
-                                            if (childResultSet[5] != null) childEntry.setRendite(((BigDecimal) childResultSet[5]).floatValue());
+                                            if (childResultSet[5] != null) childEntry.setPerformanceSinceBuy(((BigDecimal) childResultSet[5]).floatValue());
                                         });
                             }
                         });
