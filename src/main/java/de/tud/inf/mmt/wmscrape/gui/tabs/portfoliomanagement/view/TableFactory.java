@@ -570,10 +570,21 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem(
                 "Vermögen anzeigen",
                 portfolio -> {
-                    Navigator.navigateToOwnerAssets(portfolioListController.getPortfolioManagementManager(), portfolio.getOwner());
-                    portfolioListController.getPortfolioManagementManager().getPortfolioController().addBreadcrumb(
-                            new BreadcrumbElement(portfolio.getOwner(), BreadcrumbElementType.OWNER)
-                    );
+                    var portfolioManagementTabManager = portfolioListController.getPortfolioManagementManager();
+                    var properties = portfolioManagementTabManager.getPortfolioController()
+                            .getInhaberVermögenTab()
+                            .getProperties();
+
+                    if (properties.containsKey(PortfolioManagementTabController.TAB_PROPERTY_CONTROLLER)) {
+                        PrimaryTabManager.loadFxml(
+                                "gui/tabs/portfoliomanagement/tab/owners/owner/ownerVermögen.fxml",
+                                "Portfolio-Vermögen",
+                                null,
+                                true,
+                                properties.get(PortfolioManagementTabController.TAB_PROPERTY_CONTROLLER),
+                                true
+                        );
+                    }
                 }
         );
         tableBuilder.addRowContextMenuItem(
