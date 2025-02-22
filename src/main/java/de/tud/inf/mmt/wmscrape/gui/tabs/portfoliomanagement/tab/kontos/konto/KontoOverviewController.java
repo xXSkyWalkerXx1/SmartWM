@@ -229,15 +229,20 @@ public class KontoOverviewController extends EditableView implements Openable {
         inputInterestDays.setText(String.valueOf(account.getInterestDays()));
         inputInterestInterval.getSelectionModel().select(account.getInterestInterval());
 
-        prepareTableData();
-        var treeView = new PortfolioTreeView(
-                accountDepotsTablePane,
-                List.of(account.getPortfolio()),
-                portfolioManagementTabManager,
-                true
-        );
-        treeView.setTooltip(new Tooltip("Auflistung der Depots, denen dieses Konto als Verrechnungskonto zugeordnet ist."));
-        accountDepotsTablePane.getChildren().setAll(treeView);
+        // Show depots if account is a clearing account
+        if (AccountType.CLEARING_ACCOUNT.equals(account.getType())) {
+            prepareTableData();
+            var treeView = new PortfolioTreeView(
+                    accountDepotsTablePane,
+                    List.of(account.getPortfolio()),
+                    portfolioManagementTabManager,
+                    true
+            );
+            treeView.setTooltip(new Tooltip("Auflistung der Depots, denen dieses Konto als Verrechnungskonto zugeordnet ist."));
+            accountDepotsTablePane.getChildren().setAll(treeView);
+        } else {
+            accountDepotsTablePane.getChildren().clear();
+        }
     }
 
     private void prepareTableData() {
