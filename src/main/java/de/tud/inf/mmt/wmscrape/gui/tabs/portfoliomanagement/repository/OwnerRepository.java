@@ -78,6 +78,24 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     List<Long> findAllByAddressOrTaxInformationIsInvalid();
 
     /**
+     * @return all owners where the address is null or invalid.
+     */
+    @Query(value = "SELECT o.id " +
+            "FROM inhaber o " +
+            "LEFT JOIN inhaber_adresse a ON o.address_id = a.id " +
+            "WHERE a.id IS NULL OR o.address_id IS NULL", nativeQuery = true)
+    List<Long> findAllByAddressIsInvalid();
+
+    /**
+     * @return all owners where the tax information is null or invalid.
+     */
+    @Query(value = "SELECT o.id " +
+            "FROM inhaber o " +
+            "LEFT JOIN inhaber_steuer_informationen t ON o.tax_information_id = t.id " +
+            "WHERE t.id IS NULL OR o.tax_information_id IS NULL", nativeQuery = true)
+    List<Long> findAllByTaxInformationIsInvalid();
+
+    /**
      * @param states pass always {@code State.getValuesAsString()}.
      * @return all owners where the state is not in the given states.
      */
