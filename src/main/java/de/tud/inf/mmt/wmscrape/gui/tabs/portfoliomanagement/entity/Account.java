@@ -258,12 +258,20 @@ public class Account extends FinancialAsset implements Changable {
         return ownerProperty.get();
     }
 
+    public Owner getOriginalOwner() {
+        return owner;
+    }
+
     public void setOwner(Owner owner) {
         ownerProperty.set(owner);
     }
 
     public Portfolio getPortfolio() {
         return portfolioProperty.get();
+    }
+
+    public Portfolio getOriginalPortfolio() {
+        return portfolio;
     }
 
     public void setPortfolio(Portfolio portfolio) {

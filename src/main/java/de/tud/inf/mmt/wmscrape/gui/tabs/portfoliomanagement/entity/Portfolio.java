@@ -142,6 +142,10 @@ public class Portfolio extends FinancialAsset implements Changable {
         return ownerProperty.get();
     }
 
+    public Owner getOriginalOwner() {
+        return owner;
+    }
+
     public void setOwner(Owner owner) {
         ownerProperty.set(owner);
     }
