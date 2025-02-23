@@ -165,6 +165,7 @@ public class PortfolioOverviewController extends EditableView implements Openabl
                 portfolioManagementManager
         );
         portfolioTreeView.setTooltip(new Tooltip("Auflistung der im Portfolio enthaltenen Konten und Depots."));
+        portfolioTreeView.setShowRoot(false);
         portfolioTreeViewPane.getChildren().setAll(portfolioTreeView);
     }
 }
