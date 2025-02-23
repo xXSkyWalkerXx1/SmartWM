@@ -141,7 +141,7 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
             )));
         }
 
-        if (!accountService.reSave(account)) return;
+        if (!accountService.updateAccountNatively(account)) return;
         onCancel();
 
         // Finally, show success-dialog
