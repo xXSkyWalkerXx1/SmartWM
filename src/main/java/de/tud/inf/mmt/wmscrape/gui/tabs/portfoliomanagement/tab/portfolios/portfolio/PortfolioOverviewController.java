@@ -84,6 +84,7 @@ public class PortfolioOverviewController extends EditableView implements Openabl
                 e.printStackTrace();
             }
         }
+        // notice: if you call 'setAll' the last processed/added item seems to be selected
         inputOwner.getItems().setAll(ownerService.getAll());
         loadPortfolioData();
 
@@ -120,7 +121,7 @@ public class PortfolioOverviewController extends EditableView implements Openabl
 
         // If everything is valid, we can save the portfolio
         if (!portfolioService.save(portfolio)) return;
-        // Refresh data
+        // Refresh data and check for inconsistencies
         portfolio = portfolioService.findById(portfolio.getId());
         loadPortfolioData();
 
@@ -137,7 +138,7 @@ public class PortfolioOverviewController extends EditableView implements Openabl
 
         // Load data
         inputPortfolioName.setText(portfolio.getName());
-        inputOwner.getSelectionModel().select(portfolio.getOwner());
+        inputOwner.getSelectionModel().select(portfolio.getOriginalOwner());
         inputState.getSelectionModel().select(portfolio.getState());
         outputCreatedAt.setText(portfolio.getCreatedAt().toLocaleString());
         outputDeactivatedAt.setText(portfolio.getDeactivatedAt() != null ? portfolio.getDeactivatedAt().toLocaleString() : "");
