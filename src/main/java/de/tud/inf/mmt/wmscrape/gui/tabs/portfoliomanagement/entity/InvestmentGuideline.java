@@ -38,7 +38,7 @@ public class InvestmentGuideline implements Changable {
         private BigDecimal maxVolatility = BigDecimal.valueOf(0); // %, within 1 year
         @Column(name = "performance")
         private BigDecimal performance = BigDecimal.valueOf(0); // %, within 1 year
-        @Column(name = "rendite") // change to 'performance_since_buy'
+        @Column(name = "rendite") // 'performance_since_buy'
         private BigDecimal performanceSinceBuy = BigDecimal.valueOf(0); // %, since buy
         @Column(name = "chance_risk_number")
         private BigDecimal chanceRiskNumber = BigDecimal.valueOf(100); // %
