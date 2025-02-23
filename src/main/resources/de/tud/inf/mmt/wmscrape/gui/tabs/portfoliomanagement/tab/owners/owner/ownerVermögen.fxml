@@ -15,7 +15,7 @@
                       <Font name="System Bold" size="38.0" />
                   </font>
               </Label>
-              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hier soll ein Überblick über das Gesamtvermögen des Inhabers gegeben werden" textAlignment="CENTER" wrappingWidth="1000">
+              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hier soll ein Überblick über das Gesamtvermögen des Inhabers bzw. des Portfolios gegeben werden" textAlignment="CENTER" wrappingWidth="1000">
                   <font>
                       <Font size="32.0" />
                   </font>
