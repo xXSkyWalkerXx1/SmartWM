@@ -10,16 +10,14 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementT
 import de.tud.inf.mmt.wmscrape.springdata.SpringIndependentData;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 @Controller
 public class PrimaryTabController {
@@ -46,6 +44,13 @@ public class PrimaryTabController {
     private VisualizationTabController visualizationTabController;
     @Autowired
     private PortfolioManagementTabController portfolioManagementTabController;
+
+    public static final Consumer<Throwable> unknownErrorMsg = throwable -> PrimaryTabManager.showDialog(
+            Alert.AlertType.ERROR,
+            "Unerwarteter Fehler",
+            throwable.getMessage(),
+            null
+    );
 
     /**
      * called when loading the fxml file
