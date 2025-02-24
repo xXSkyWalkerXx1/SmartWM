@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.kontos;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
@@ -13,14 +14,21 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.AccountRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.scene.control.*;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.*;
 
@@ -33,6 +41,9 @@ public class AccountService {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private PortfolioManagementTabController portfolioManagementTabController;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<Account> getAll() {
         try {
@@ -67,16 +78,6 @@ public class AccountService {
                 .getOrDefault(BreadcrumbElementType.ACCOUNT, new HashMap<>());
         if (idMapping.containsKey(id)) id = idMapping.get(id);
         return accountRepository.findById(id).orElseThrow(NoSuchElementException::new);
-    }
-
-    /**
-     * Deletes the account and saves it again, without checking for inconsistencies.
-     * @return true if the account was successfully saved, false otherwise.
-     */
-    @Transactional
-    public boolean reSave(Account account) {
-        deleteById(account.getId());
-        return save(account);
     }
 
     /**
@@ -209,5 +210,79 @@ public class AccountService {
         } catch (ParseException e) {
             throw new RuntimeException("Error while parsing balance and interest-rate. This should not happen here!");
         }
+    }
+
+    /**
+     * Updates the account via native-sql-queries instead of via hibernate.
+     * @return true if the account was successfully updated, false otherwise.
+     */
+    @Transactional
+    @Modifying
+    public boolean updateAccountNatively(@NonNull Account account) {
+        account.onPrePersistOrUpdateOrRemoveEntity();
+
+        // check if there exists an exchange course for the currency
+        try {
+            getLatestExchangeCourse(account.getCurrency());
+        } catch (DataAccessException e) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehler",
+                    String.format(
+                            "Für die Konto-Währung existiert kein Wechselkurs 'eur_%s' zur Umrechnung der Währung.",
+                            account.getCurrency().toString().toLowerCase()
+                    ),
+                    null
+            );
+            return false;
+        }
+
+        // create the query
+        String sqlQuery = "UPDATE pkonto " +
+                "SET balance = :balance, bank_name = :bank_name, created_at = :created_at, currency_code = :currency_code, " +
+                "deactivated_at = :deactivated_at, description = :description, iban = :iban, interest_days = :interest_days, " +
+                "interest_interval = :interest_interval, interest_rate = :interest_rate, konto_number = :konto_number, " +
+                "notice = :notice, state = :state, type = :type, owner_id = :owner_id, portfolio_id = :portfolio_id " +
+                "WHERE id = :id";
+        Query query = entityManager.createNativeQuery(sqlQuery);
+
+        // however, you can ignore the red warnings, because the parameters are set correctly
+        query.setParameter("id", account.getId());
+        query.setParameter("balance", account.getBalanceBigDecimal());
+        query.setParameter("bank_name", account.getBankName());
+        query.setParameter("created_at", new Timestamp(account.getCreatedAt().getTime()));
+        query.setParameter("deactivated_at", account.getDeactivatedAt() == null ? null : new Timestamp(account.getDeactivatedAt().getTime()));
+        query.setParameter("currency_code", account.getCurrency().getCurrencyCode());
+        query.setParameter("description", account.getDescription());
+        query.setParameter("iban", account.getIban());
+        query.setParameter("interest_days", account.getInterestDays());
+        query.setParameter("interest_interval", account.getInterestInterval().name());
+        query.setParameter("interest_rate", account.getInterestRateBigDecimal());
+        query.setParameter("konto_number", account.getKontoNumber());
+        query.setParameter("notice", account.getNotice());
+        query.setParameter("state", account.getState().name());
+        query.setParameter("type", account.getType().name());
+        query.setParameter("owner_id", account.getOwner().getId());
+        query.setParameter("portfolio_id", account.getPortfolio().getId());
+
+        // query to update the account
+        try {
+            int updatedRows = query.executeUpdate();
+            return updatedRows > 0;
+        } catch (PersistenceException e) {
+            if (e.getCause() instanceof ConstraintViolationException) {
+                PrimaryTabManager.showDialog(
+                        Alert.AlertType.ERROR,
+                        "Fehler",
+                        "Das Konto konnte nicht gespeichert werden, da bereits ein Konto mit der selben IBAN oder Kontonummer existiert.",
+                        null
+                );
+            } else {
+                PrimaryTabController.unknownErrorMsg.accept(e);
+            }
+        } catch (Exception e) {
+            PrimaryTabController.unknownErrorMsg.accept(e);
+        }
+        return false;
     }
 }

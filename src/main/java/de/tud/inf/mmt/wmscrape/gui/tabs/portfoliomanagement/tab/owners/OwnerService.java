@@ -1,5 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.owners;
 
+import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
@@ -9,13 +10,20 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.OwnerRepository;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FormatUtils;
 import javafx.scene.control.*;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -25,6 +33,9 @@ public class OwnerService {
     private OwnerRepository ownerRepository;
     @Autowired
     private PortfolioManagementTabController portfolioManagementTabController;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<Owner> getAll(){
         try {
@@ -77,16 +88,6 @@ public class OwnerService {
             );
         }
         return false;
-    }
-
-    /**
-     * Deletes the owner and saves it again.
-     * @return true if the owner was successfully saved, false otherwise.
-     */
-    @Transactional
-    public boolean reSave(Owner owner) {
-        deleteById(owner.getId());
-        return save(owner);
     }
 
     /**
@@ -186,5 +187,138 @@ public class OwnerService {
 
     public OwnerRepository getOwnerRepository() {
         return ownerRepository;
+    }
+
+    /**
+     * Updates the owner via native-sql-queries instead of via hibernate.
+     * @return true if the owner was successfully updated, false otherwise.
+     */
+    @Transactional
+    @Modifying
+    public boolean updateOwnerNatively(@NonNull Owner owner) {
+        owner.onPrePersistOrUpdateOrRemoveEntity();
+        String sqlQuery;
+        List<Long> ids;
+        Query query;
+
+        // region Adress
+        ids = ownerRepository.findAllByAddressIsInvalid();
+
+        if (ids.contains(owner.getId())) {
+            sqlQuery = "INSERT INTO inhaber_adresse (country, location, plz, street, street_number) " +
+                    "VALUES (:country, :location, :plz, :street, :street_number)";
+            query = entityManager.createNativeQuery(sqlQuery);
+        } else {
+            sqlQuery = "UPDATE inhaber_adresse " +
+                    "SET country = :country, location = :location, plz = :plz, street = :street, street_number = :street_number " +
+                    "WHERE id = :id";
+            query = entityManager.createNativeQuery(sqlQuery);
+            query.setParameter("id", owner.getAddress().getId());
+        }
+
+        query.setParameter("country", owner.getAddress().getCountry());
+        query.setParameter("location", owner.getAddress().getLocation());
+        query.setParameter("plz", owner.getAddress().getPlz());
+        query.setParameter("street", owner.getAddress().getStreet());
+        query.setParameter("street_number", owner.getAddress().getStreetNumber());
+
+        try {
+            int insertedRows = query.executeUpdate();
+
+            if (insertedRows > 0) {
+                // update id
+                if (ids.contains(owner.getId())) {
+                    Query idQuery = entityManager.createNativeQuery("SELECT LAST_INSERT_ID()");
+                    Long newId = ((Number) idQuery.getSingleResult()).longValue();
+                    owner.getAddress().setId(newId);
+                }
+            } else {
+                throw new Exception("Die Adresse konnte nicht persistiert werden.");
+            }
+        } catch (Exception e) {
+            PrimaryTabController.unknownErrorMsg.accept(e);
+            return false;
+        }
+        // endregion
+
+        // region Tax Information
+        ids = ownerRepository.findAllByTaxInformationIsInvalid();
+
+        if (ids.contains(owner.getId())) {
+            sqlQuery = "INSERT INTO inhaber_steuer_informationen (capital_gainstax_rate, church_tax_rate, marital_state, " +
+                    "solidarity_surcharge_tax_rate, tax_number, tax_rate) " +
+                    "VALUES (:capital_gains_tax_rate, :church_tax_rate, :marital_state, :solidarity_surcharge_tax_rate, " +
+                    ":tax_number, :tax_rate)";
+            query = entityManager.createNativeQuery(sqlQuery);
+        } else {
+            sqlQuery = "UPDATE inhaber_steuer_informationen " +
+                    "SET capital_gainstax_rate = :capital_gains_tax_rate, church_tax_rate = :church_tax_rate, " +
+                    "marital_state = :marital_state, solidarity_surcharge_tax_rate = :solidarity_surcharge_tax_rate, " +
+                    "tax_number = :tax_number, tax_rate = :tax_rate " +
+                    "WHERE id = :id";
+            query = entityManager.createNativeQuery(sqlQuery);
+            query.setParameter("id", owner.getTaxInformation().getId());
+        }
+
+        query.setParameter("capital_gains_tax_rate", owner.getTaxInformation().getCapitalGainsTaxRateBigDecimal());
+        query.setParameter("church_tax_rate", owner.getTaxInformation().getChurchTaxRateBigDecimal());
+        query.setParameter("marital_state", owner.getTaxInformation().getMaritalState().name());
+        query.setParameter("solidarity_surcharge_tax_rate", owner.getTaxInformation().getSolidaritySurchargeTaxRateBigDecimal());
+        query.setParameter("tax_number", owner.getTaxInformation().getTaxNumber());
+        query.setParameter("tax_rate", owner.getTaxInformation().getTaxRateBigDecimal());
+
+        try {
+            int insertedRows = query.executeUpdate();
+
+            if (insertedRows > 0) {
+                // update id
+                if (ids.contains(owner.getId())) {
+                    Query idQuery = entityManager.createNativeQuery("SELECT LAST_INSERT_ID()");
+                    Long newId = ((Number) idQuery.getSingleResult()).longValue();
+                    owner.getTaxInformation().setId(newId);
+                }
+            } else throw new Exception("Die Steuer-Informationen konnten nicht persistiert werden.");
+        } catch (PersistenceException e) {
+            if (e.getCause() instanceof ConstraintViolationException) {
+                PrimaryTabManager.showDialog(
+                        Alert.AlertType.ERROR,
+                        "Fehler",
+                        "Der Inhaber konnte nicht gespeichert werden, da bereits ein Inhaber mit der selben Steuernummer existiert.",
+                        null
+                );
+            } else PrimaryTabController.unknownErrorMsg.accept(e);
+            return false;
+        } catch (Exception e) {
+            PrimaryTabController.unknownErrorMsg.accept(e);
+            return false;
+        }
+        // endregion
+
+        // region update the owner
+        sqlQuery = "UPDATE inhaber " +
+                "SET aftername = :aftername, created_at = :created_at, deactivated_at = :deactivated_at, forename = :forename, " +
+                "notice = :notice, state = :state, address_id = :address_id, tax_information_id = :tax_information_id " +
+                "WHERE id = :id";
+        query = entityManager.createNativeQuery(sqlQuery);
+
+        query.setParameter("aftername", owner.getAftername());
+        query.setParameter("created_at", new Timestamp(owner.getCreatedAt().getTime()));
+        query.setParameter("deactivated_at", owner.getDeactivatedAt() == null ? null : new Timestamp(owner.getDeactivatedAt().getTime()));
+        query.setParameter("forename", owner.getForename());
+        query.setParameter("notice", owner.getNotice());
+        query.setParameter("state", owner.getState().name());
+        query.setParameter("address_id", owner.getAddress().getId());
+        query.setParameter("tax_information_id", owner.getTaxInformation().getId());
+        query.setParameter("id", owner.getId());
+
+        try {
+            int updatedRows = query.executeUpdate();
+            return updatedRows > 0;
+        } catch (Exception e) {
+            PrimaryTabController.unknownErrorMsg.accept(e);
+        }
+        // endregion
+
+        return false;
     }
 }
