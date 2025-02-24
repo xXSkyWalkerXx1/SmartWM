@@ -135,7 +135,7 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
             )));
         }
 
-        if (!portfolioService.reSave(portfolio)) return;
+        if (!portfolioService.updatePortfolioNatively(portfolio)) return;
         onCancel();
 
         // Finally, show success-dialog
