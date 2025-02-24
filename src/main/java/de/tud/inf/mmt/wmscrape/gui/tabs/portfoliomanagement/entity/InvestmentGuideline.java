@@ -43,25 +43,25 @@ public class InvestmentGuideline implements Changable {
         @Column(name = "chance_risk_number")
         private BigDecimal chanceRiskNumber = BigDecimal.valueOf(100); // %
         @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-        @JoinColumn(name = "child_entry_id") // ToDo: rename to parent_entry_id
+        @JoinColumn(name = "child_entry_id") // parent_entry_id
         private List<Entry> childEntries = new ArrayList<>();
 
         @Transient
-        private final SimpleLongProperty idProperty = new SimpleLongProperty();
+        public final SimpleLongProperty idProperty = new SimpleLongProperty();
         @Transient
-        private final SimpleObjectProperty<InvestmentType> typeProperty = new SimpleObjectProperty<>();
+        public final SimpleObjectProperty<InvestmentType> typeProperty = new SimpleObjectProperty<>();
         @Transient
-        private final SimpleObjectProperty<BigDecimal> assetAllocationProperty = new SimpleObjectProperty<>(assetAllocation);
+        public final SimpleObjectProperty<BigDecimal> assetAllocationProperty = new SimpleObjectProperty<>(assetAllocation);
         @Transient
-        private final SimpleObjectProperty<Integer> maxRiskclassProperty = new SimpleObjectProperty<>(maxRiskclass);
+        public final SimpleObjectProperty<Integer> maxRiskclassProperty = new SimpleObjectProperty<>(maxRiskclass);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> maxVolatilityProperty = new SimpleObjectProperty<>(maxVolatility);
+        public final SimpleObjectProperty<BigDecimal> maxVolatilityProperty = new SimpleObjectProperty<>(maxVolatility);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> performanceProperty = new SimpleObjectProperty<>(performance);
+        public final SimpleObjectProperty<BigDecimal> performanceProperty = new SimpleObjectProperty<>(performance);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> performanceSinceBuyProperty = new SimpleObjectProperty<>(performanceSinceBuy);
+        public final SimpleObjectProperty<BigDecimal> performanceSinceBuyProperty = new SimpleObjectProperty<>(performanceSinceBuy);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> chanceRiskNumberProperty = new SimpleObjectProperty<>(chanceRiskNumber);
+        public final SimpleObjectProperty<BigDecimal> chanceRiskNumberProperty = new SimpleObjectProperty<>(chanceRiskNumber);
 
         @Override
         @PostLoad
@@ -210,21 +210,21 @@ public class InvestmentGuideline implements Changable {
         private BigDecimal emergine_markets = BigDecimal.valueOf(0);
 
         @Transient
-        private final SimpleLongProperty idProperty = new SimpleLongProperty();
+        public final SimpleLongProperty idProperty = new SimpleLongProperty();
         @Transient
-        private final SimpleObjectProperty<BigDecimal> germanyProperty = new SimpleObjectProperty<>(germany);
+        public final SimpleObjectProperty<BigDecimal> germanyProperty = new SimpleObjectProperty<>(germany);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> europeWithoutBrdProperty = new SimpleObjectProperty<>(europe_without_brd);
+        public final SimpleObjectProperty<BigDecimal> europeWithoutBrdProperty = new SimpleObjectProperty<>(europe_without_brd);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> northAmericaWithUsaProperty = new SimpleObjectProperty<>(northamerica_with_usa);
+        public final SimpleObjectProperty<BigDecimal> northAmericaWithUsaProperty = new SimpleObjectProperty<>(northamerica_with_usa);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> asiaWithoutChinaProperty = new SimpleObjectProperty<>(asia_without_china);
+        public final SimpleObjectProperty<BigDecimal> asiaWithoutChinaProperty = new SimpleObjectProperty<>(asia_without_china);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> chinaProperty = new SimpleObjectProperty<>(china);
+        public final SimpleObjectProperty<BigDecimal> chinaProperty = new SimpleObjectProperty<>(china);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> japanProperty = new SimpleObjectProperty<>(japan);
+        public final SimpleObjectProperty<BigDecimal> japanProperty = new SimpleObjectProperty<>(japan);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> emergineMarketsProperty = new SimpleObjectProperty<>(emergine_markets);
+        public final SimpleObjectProperty<BigDecimal> emergineMarketsProperty = new SimpleObjectProperty<>(emergine_markets);
 
         @Override
         @PostLoad
@@ -358,21 +358,21 @@ public class InvestmentGuideline implements Changable {
         private BigDecimal others = BigDecimal.valueOf(0);
 
         @Transient
-        private final SimpleLongProperty idProperty = new SimpleLongProperty();
+        public final SimpleLongProperty idProperty = new SimpleLongProperty();
         @Transient
-        private final SimpleObjectProperty<BigDecimal> euroProperty = new SimpleObjectProperty<>(euro);
+        public final SimpleObjectProperty<BigDecimal> euroProperty = new SimpleObjectProperty<>(euro);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> usdProperty = new SimpleObjectProperty<>(usd);
+        public final SimpleObjectProperty<BigDecimal> usdProperty = new SimpleObjectProperty<>(usd);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> chfProperty = new SimpleObjectProperty<>(chf);
+        public final SimpleObjectProperty<BigDecimal> chfProperty = new SimpleObjectProperty<>(chf);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> gbpProperty = new SimpleObjectProperty<>(gbp);
+        public final SimpleObjectProperty<BigDecimal> gbpProperty = new SimpleObjectProperty<>(gbp);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> yenProperty = new SimpleObjectProperty<>(yen);
+        public final SimpleObjectProperty<BigDecimal> yenProperty = new SimpleObjectProperty<>(yen);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> asiaCurrenciesProperty = new SimpleObjectProperty<>(asia_currencies);
+        public final SimpleObjectProperty<BigDecimal> asiaCurrenciesProperty = new SimpleObjectProperty<>(asia_currencies);
         @Transient
-        private final SimpleObjectProperty<BigDecimal> othersProperty = new SimpleObjectProperty<>(others);
+        public final SimpleObjectProperty<BigDecimal> othersProperty = new SimpleObjectProperty<>(others);
 
         @Override
         @PostLoad
