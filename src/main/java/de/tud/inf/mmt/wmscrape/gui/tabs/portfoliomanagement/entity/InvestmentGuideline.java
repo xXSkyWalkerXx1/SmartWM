@@ -88,6 +88,15 @@ public class InvestmentGuideline implements Changable {
             performance = performanceProperty.get();
             performanceSinceBuy = performanceSinceBuyProperty.get();
             chanceRiskNumber = chanceRiskNumberProperty.get();
+
+            // this will guarantee that the child entries will have the same values as the parent entry
+            childEntries.forEach(entry -> {
+                entry.maxRiskclassProperty.set(maxRiskclass);
+                entry.maxVolatilityProperty.set(maxVolatility);
+                entry.performanceProperty.set(performance);
+                entry.performanceSinceBuyProperty.set(performanceSinceBuy);
+                entry.chanceRiskNumberProperty.set(chanceRiskNumber);
+            });
         }
 
         @Override
