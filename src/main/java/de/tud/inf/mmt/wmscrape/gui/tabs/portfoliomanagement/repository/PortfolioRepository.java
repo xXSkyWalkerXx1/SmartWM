@@ -245,7 +245,10 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "HAVING SUM(gl.asia_without_china) + SUM(gl.china) + SUM(gl.emergine_markets) + SUM(gl.europe_without_brd) + " +
             "SUM(gl.germany) + SUM(gl.japan) + SUM(gl.northamerica_with_usa) IS NULL " +
             "OR SUM(gl.asia_without_china) + SUM(gl.china) + SUM(gl.emergine_markets) + SUM(gl.europe_without_brd) + " +
-            "SUM(gl.germany) + SUM(gl.japan) + SUM(gl.northamerica_with_usa) != 100",
+            "SUM(gl.germany) + SUM(gl.japan) + SUM(gl.northamerica_with_usa) != 100 " +
+            "OR gl.asia_without_china NOT BETWEEN 0 AND 100 OR gl.china NOT BETWEEN 0 AND 100 OR gl.emergine_markets NOT BETWEEN 0 AND 100 " +
+            "OR gl.europe_without_brd NOT BETWEEN 0 AND 100 OR gl.germany NOT BETWEEN 0 AND 100 OR " +
+            "gl.japan NOT BETWEEN 0 AND 100 OR gl.northamerica_with_usa NOT BETWEEN 0 AND 100",
             nativeQuery = true)
     List<Long> findAllBySumOfDivisionByLocationIsNot100();
 
@@ -255,8 +258,9 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "JOIN anlagen_richtlinie_unterteilung_währung gc ON gc.id = g.division_by_currency_id " +
             "GROUP BY p.id " +
             "HAVING SUM(gc.asia_currencies) + SUM(gc.chf) + SUM(gc.euro) + SUM(gc.gbp) + SUM(gc.others) + SUM(gc.usd) + SUM(gc.yen) IS NULL " +
-            "OR SUM(gc.asia_currencies) + SUM(gc.chf) + SUM(gc.euro) + SUM(gc.gbp) + SUM(gc.others) + SUM(gc.usd) + SUM(gc.yen) != 100",
-            nativeQuery = true)
+            "OR SUM(gc.asia_currencies) + SUM(gc.chf) + SUM(gc.euro) + SUM(gc.gbp) + SUM(gc.others) + SUM(gc.usd) + SUM(gc.yen) != 100 " +
+            "OR gc.asia_currencies NOT BETWEEN 0 AND 100 OR gc.chf NOT BETWEEN 0 AND 100 OR gc.euro NOT BETWEEN 0 AND 100 OR gc.gbp NOT BETWEEN 0 AND 100 " +
+            "OR gc.others NOT BETWEEN 0 AND 100 OR gc.usd NOT BETWEEN 0 AND 100 OR gc.yen", nativeQuery = true)
     List<Long> findAllBySumOfDivisionByCurrencyIsNot100();
 
     @Query(value = "SELECT p.id " +
