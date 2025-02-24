@@ -80,8 +80,8 @@ public class PortfolioOverviewController extends EditableView implements Openabl
         if (!portfolio.isChanged()) {
             try {
                 portfolio = portfolioService.findById(portfolio.getId());
-            } catch (NoSuchElementException e) {
-                e.printStackTrace();
+            } catch (NoSuchElementException ignore) {
+                return;
             }
         }
         // notice: if you call 'setAll' the last processed/added item seems to be selected

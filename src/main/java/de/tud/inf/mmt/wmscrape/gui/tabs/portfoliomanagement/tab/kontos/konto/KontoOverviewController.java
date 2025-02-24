@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 public class KontoOverviewController extends EditableView implements Openable {
@@ -154,7 +155,13 @@ public class KontoOverviewController extends EditableView implements Openable {
                 .getKontoOverviewTab()
                 .getProperties()
                 .get(PortfolioManagementTabController.TAB_PROPERTY_ENTITY);
-        if (!account.isChanged()) account = accountService.getAccountById(account.getId());
+        if (!account.isChanged()) {
+            try {
+                account = accountService.getAccountById(account.getId());
+            } catch (NoSuchElementException ignore) {
+                return;
+            }
+        }
         loadAccountData();
 
         // Initialize onUnsavedChangesAction-dialog
