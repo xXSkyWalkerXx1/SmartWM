@@ -2,6 +2,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dial
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.InvestmentGuideline;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.interfaces.Openable;
@@ -33,6 +34,7 @@ public class CreatePortfolioDialog implements Openable {
     @FXML
     ComboBox<Owner> inputOwner;
 
+    protected TreeTableView<InvestmentGuideline.Entry> investmentGuidelineTableTreeTableView;
     @FXML
     AnchorPane commissionSchemeTablePane;
 
@@ -47,10 +49,12 @@ public class CreatePortfolioDialog implements Openable {
         if (portfolio == null) portfolio = new Portfolio();
 
         // Create and show tables
-        commissionSchemeTablePane.getChildren().setAll(new InvestmentGuidelineTable(
+        investmentGuidelineTableTreeTableView = new InvestmentGuidelineTable(
                 commissionSchemeTablePane,
                 portfolio.getInvestmentGuideline().getEntries()
-        ));
+        );
+
+        commissionSchemeTablePane.getChildren().setAll(investmentGuidelineTableTreeTableView);
         commissionSchemeLocationTablePane.getChildren().setAll(TableFactory.createPortfolioDivisionByLocationTable(
                 commissionSchemeLocationTablePane,
                 portfolio.getInvestmentGuideline().getDivisionByLocation()
