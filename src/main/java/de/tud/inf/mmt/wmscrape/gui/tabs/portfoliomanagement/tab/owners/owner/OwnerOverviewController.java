@@ -233,7 +233,7 @@ public class OwnerOverviewController extends EditableView implements Openable {
 
         // If everything is valid, we can save the owner
         if (!ownerService.save(owner)) return;
-        // Refresh data
+        // Check for inconsistencies
         owner = ownerService.getOwnerById(owner.getId());
         loadOwnerData();
 
