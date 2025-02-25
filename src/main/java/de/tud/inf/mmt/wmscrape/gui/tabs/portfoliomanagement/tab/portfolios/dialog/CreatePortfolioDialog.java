@@ -30,17 +30,13 @@ public class CreatePortfolioDialog implements Openable {
 
     @FXML
     TextField inputPortfolioName;
-
     @FXML
     ComboBox<Owner> inputOwner;
-
-    protected TreeTableView<InvestmentGuideline.Entry> investmentGuidelineTableTreeTableView;
     @FXML
     AnchorPane commissionSchemeTablePane;
-
+    protected TreeTableView<InvestmentGuideline.Entry> investmentGuidelineTableTreeTableView;
     @FXML
     AnchorPane commissionSchemeLocationTablePane;
-
     @FXML
     AnchorPane commissionSchemeCurrencyTablePane;
 
