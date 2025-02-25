@@ -4,6 +4,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextInputControl;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.text.ParseException;
 
@@ -42,11 +43,11 @@ public class FieldValidator {
      * @param inputs f.e. TextFields or TextAreas to be validated.
      * @return True, if alls inputs are in range.
      */
-    public static boolean isInRange(float from, float to, float... inputs) {
+    public static boolean isInRange(float from, @Nullable Float to, float... inputs) {
         boolean isValid = true;
 
         for (float input : inputs) {
-            if (input < from || input > to) {
+            if (input < from || (to != null && input > to)) {
                 isValid = false;
                 break;
             }
