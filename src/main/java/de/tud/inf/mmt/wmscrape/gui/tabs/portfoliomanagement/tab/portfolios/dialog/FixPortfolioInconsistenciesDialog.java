@@ -2,6 +2,7 @@ package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dial
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.InvestmentGuideline;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.State;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.repository.PortfolioRepository;
@@ -9,10 +10,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.ComboBoxValidat
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldFormatter;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.FieldValidator;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextInputControl;
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -119,6 +117,36 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
         boolean areComboboxInputsValid = areComboboxInputsValid();
         if (!areTextFieldsValid || !areComboboxInputsValid) return;
 
+        if (!areInvestmentGuidelineEntriesValid()) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehlerhafte Eingabe",
+                    "Die Eingaben für die Anlage-Richtlinien sind fehlerhaft.",
+                    inputPortfolioName
+            );
+            return;
+        }
+
+        if (!areDivisionByLocationInputsValid()) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehlerhafte Eingabe",
+                    "Die Eingaben für die Aufteilung nach Standort sind fehlerhaft.",
+                    inputPortfolioName
+            );
+            return;
+        }
+
+        if (!areDivisionByCurrencyInputsValid()) {
+            PrimaryTabManager.showDialog(
+                    Alert.AlertType.ERROR,
+                    "Fehlerhafte Eingabe",
+                    "Die Eingaben für die Aufteilung nach Währung sind fehlerhaft.",
+                    inputPortfolioName
+            );
+            return;
+        }
+
         if (portfolioService.isInputInvalid(
                 inputPortfolioName, portfolio,
                 (Control) commissionSchemeTablePane.getChildren().get(0)
@@ -146,6 +174,58 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
                 "Portfolio aktualisiert",
                 "Das Portfolio wurde erfolgreich aktualisiert.",
                 inputState
+        );
+    }
+
+    private boolean areInvestmentGuidelineEntriesValid() {
+        boolean isValid = true;
+
+        for (InvestmentGuideline.Entry parentEntry : portfolio.getInvestmentGuideline().getEntries()) {
+             isValid &= FieldValidator.isInRange(
+                     0f,
+                     100f,
+                     parentEntry.getAssetAllocation(), parentEntry.getMaxVolatility()
+             );
+             isValid &= FieldValidator.isInRange(
+                     0f,
+                     12f,
+                     parentEntry.getMaxRiskclass()
+             );
+             isValid &= FieldValidator.isInRange(
+                     0f,
+                     null,
+                     parentEntry.getPerformance(), parentEntry.getPerformanceSinceBuy(), parentEntry.getChanceRiskNumber()
+             );
+
+             // We don't need to check the other values, because they will be updated with the parent entry before persisting.
+             for (InvestmentGuideline.Entry childEntry : parentEntry.getChildEntries()) {
+                    isValid &= FieldValidator.isInRange(
+                            0f,
+                            100f,
+                            childEntry.getAssetAllocation()
+                    );
+             }
+        }
+        return isValid;
+    }
+
+    private boolean areDivisionByLocationInputsValid() {
+        var division = portfolio.getInvestmentGuideline().getDivisionByLocation();
+        return FieldValidator.isInRange(
+                0f,
+                100f,
+                division.getAsia_without_china(), division.getChina(), division.getEmergine_markets(),
+                division.getEurope_without_brd(), division.getGermany(), division.getJapan(), division.getNorthamerica_with_usa()
+        );
+    }
+
+    private boolean areDivisionByCurrencyInputsValid() {
+        var division = portfolio.getInvestmentGuideline().getDivisionByCurrency();
+        return FieldValidator.isInRange(
+                0f,
+                100f,
+                division.getAsiaCurrencies(), division.getChf(), division.getEuro(), division.getGbp(),
+                division.getOthers(), division.getUsd(), division.getYen()
         );
     }
 
