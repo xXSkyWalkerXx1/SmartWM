@@ -123,6 +123,14 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
                 portfolioTreeItem.getChildren().add(depotTreeItem);
             }
 
+            // if there are no accounts or depots, add a dummy item
+            if (portfolio.getAccounts().isEmpty() && portfolio.getDepots().isEmpty()){
+                Portfolio emptyDepotsAndAccountsItem = new Portfolio();
+                emptyDepotsAndAccountsItem.setName("Keine Konten oder Depots vorhanden");
+                TreeItem<Item> emptyDepotsAndAccountsTreeItem = new TreeItem<>(new Item(emptyDepotsAndAccountsItem, true, portfolioManagementManager));
+                portfolioTreeItem.getChildren().add(emptyDepotsAndAccountsTreeItem);
+            }
+
             // finally, add it to root-item
             rootTreeItem.getChildren().add(portfolioTreeItem);
         }
@@ -131,11 +139,15 @@ public class PortfolioTreeView extends TreeView<PortfolioTreeView.Item> {
     private final ChangeListener<TreeItem<Item>> onClickListener = new ChangeListener<>() {
         @Override
         public void changed(ObservableValue<? extends TreeItem<Item>> observableValue, TreeItem<Item> itemTreeItem, TreeItem<Item> t1) {
-            if (t1 == null || t1.equals(rootTreeItem)) return;
+            if (t1 == null) return;
 
-            FinancialAsset selectedAsset = t1.getValue().asset;
+            // Do not navigate to root, because it is not a real asset
+            Item selectedItem = t1.getValue();
+            if (selectedItem.isRoot) return;
 
             // Handle navigation
+            FinancialAsset selectedAsset = selectedItem.asset;
+
             if (selectedAsset instanceof Portfolio) {
                 // If the selected portfolio is already open, do nothing.
                 // Note: this case is used to pretend adding a crumb for the same portfolio.
