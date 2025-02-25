@@ -40,6 +40,8 @@ public class FieldValidator {
 
     /**
      * Checks if input is in the given range.
+     * @param from (inclusive) Lower bound of the range.
+     * @param to (inclusive) Upper bound of the range. Can be null, if there is no upper bound.
      * @param inputs f.e. TextFields or TextAreas to be validated.
      * @return True, if alls inputs are in range.
      */
