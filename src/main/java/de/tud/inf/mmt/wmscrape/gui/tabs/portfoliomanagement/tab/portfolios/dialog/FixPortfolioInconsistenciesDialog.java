@@ -47,6 +47,9 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
         if (portfolio == null) throw new IllegalStateException("Portfolio must be set before initializing dialog.");
         super.initialize();
 
+        // Expand all nodes of the guideline table
+        investmentGuidelineTableTreeTableView.getRoot().getChildren().forEach(child -> child.setExpanded(true));
+
         // Deactivated at should not be before created at
         FieldFormatter.setActivatedAtFormatter(inputCreatedAt);
         FieldFormatter.setDeactivatedAtFormatter(inputCreatedAt, inputDeactivatedAt);
