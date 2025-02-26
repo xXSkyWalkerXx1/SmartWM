@@ -5,6 +5,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Depot;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.BreadcrumbElementType;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.BreadCrumbElement;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -84,14 +85,14 @@ public class Navigator {
 
     /**
      * @param addBreadCrumb only if true, a breadcrumb will be added.
-     * @param breadcrumbElement see {@link BreadcrumbElement#element}
-     * @param type see {@link BreadcrumbElement#type} (can be {@code konto}, {@code depot}, {@code portfolio} or {@code owner})
+     * @param breadcrumbElement see {@link BreadCrumbElement#element}
+     * @param type see {@link BreadCrumbElement#type} (can be {@code konto}, {@code depot}, {@code portfolio} or {@code owner})
      */
     private static void handleBreadcrumb(@NonNull PortfolioManagementTabManager portfolioManagementTabManager,
                                          @Nullable boolean addBreadCrumb,
                                          @NonNull Object breadcrumbElement,
                                          @NonNull BreadcrumbElementType type) {
         if (!addBreadCrumb) return;
-        portfolioManagementTabManager.getPortfolioController().addBreadcrumb(new BreadcrumbElement(breadcrumbElement, type));
+        portfolioManagementTabManager.getPortfolioController().addBreadcrumb(new BreadCrumbElement(breadcrumbElement, type));
     }
 }

@@ -30,6 +30,7 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.Portf
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.dialog.FixPortfolioInconsistenciesDialog;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.tab.portfolios.portfolio.*;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.BreadCrumbBar;
+import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view.BreadCrumbElement;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -40,7 +41,6 @@ import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 
 import static de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController.createSubTab;
 
@@ -508,7 +508,7 @@ public class PortfolioManagementTabController {
     // endregion
 
     // region Add breadcrumbs
-    public void createBreadcrumbInstance(@NonNull BreadcrumbElement element, @NonNull Runnable onLabelClick) {
+    public void createBreadcrumbInstance(@NonNull BreadCrumbElement element, @NonNull Runnable onLabelClick) {
         // add root crumb if no root crumb is present
         if (!breadCrumbBar.hasRootCrumble()) {
             switch (element.type) {
@@ -543,7 +543,7 @@ public class PortfolioManagementTabController {
         breadCrumbBar.addCrumb(element, onLabelClick);
     }
 
-    public void addBreadcrumb(BreadcrumbElement element) {
+    public void addBreadcrumb(BreadCrumbElement element) {
         switch (element.type) {
             case DEPOT -> createBreadcrumbInstance(
                     element,
@@ -572,7 +572,7 @@ public class PortfolioManagementTabController {
         for (int i = 0; i < breadCrumbBar.getItems().size(); i++) {
             org.controlsfx.control.BreadCrumbBar.BreadCrumbButton crumb = (org.controlsfx.control.BreadCrumbBar.BreadCrumbButton)
                     breadCrumbBar.getItems().get(i);
-            BreadcrumbElement userData = (BreadcrumbElement) crumb.getUserData();
+            BreadCrumbElement userData = (BreadCrumbElement) crumb.getUserData();
             if (userData == null) continue;
 
             BreadcrumbElementType crumbType = userData.type;
