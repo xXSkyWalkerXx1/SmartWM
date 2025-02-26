@@ -581,6 +581,7 @@ public class PortfolioManagementTabController {
                     case OWNER -> breadCrumbBar.updateCrumb(crumb, ownerService.getOwnerById(((Owner) userData.element).getId()));
                     case PORTFOLIO -> breadCrumbBar.updateCrumb(crumb, portfolioService.findById(((Portfolio) userData.element).getId()));
                     case ACCOUNT -> breadCrumbBar.updateCrumb(crumb, accountService.getAccountById(((Account) userData.element).getId()));
+                    case DEPOT -> breadCrumbBar.updateCrumb(crumb, userData.element);
                 }
             } catch (NoSuchElementException e) {
                 navigateBackAfterDeletion(userData.element);
