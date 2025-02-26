@@ -1,7 +1,6 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.BreadcrumbElement;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.Navigator;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabManager;
@@ -1073,7 +1072,7 @@ public class TableFactory {
         tableBuilder.addRowContextMenuItem("Details anzeigen", openAccountOverviewAction);
         tableBuilder.addRowContextMenuItem("Transaktionen anzeigen", account -> {
             Navigator.navigateToAccountTransactions(portfolioManagementTabManager, account);
-            portfolioManagementTabManager.getPortfolioController().addBreadcrumb(new BreadcrumbElement(
+            portfolioManagementTabManager.getPortfolioController().addBreadcrumb(new BreadCrumbElement(
                     account,
                     BreadcrumbElementType.ACCOUNT
             ));
