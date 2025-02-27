@@ -27,7 +27,18 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
             "FROM inhaber o " +
             "LEFT JOIN inhaber_steuer_informationen t ON o.tax_information_id = t.id " +
             "WHERE t.tax_number = :taxNumber", nativeQuery = true)
-    List<Long> findByTaxNumber(@Param("taxNumber") String taxNumber);
+    Optional<Long> getOwnerBy(@Param("taxNumber") String taxNumber);
+
+    @Query(value = "SELECT o.id " +
+            "FROM inhaber o " +
+            "JOIN inhaber_steuer_informationen t ON o.tax_information_id = t.id " +
+            "WHERE t.tax_number IN ( " +
+                "SELECT tax_number " +
+                "FROM inhaber_steuer_informationen " +
+                "GROUP BY tax_number " +
+                "HAVING COUNT(*) > 1 " +
+            ")", nativeQuery = true)
+    List<Long> findAllByTaxNumberExistsMultipleTimes();
 
     /**
      * @return all owners as fake owners. A fake owner is an owner with only the id, forename and aftername set (if available).
@@ -62,6 +73,7 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
      */
     default Set<Long> getInconsistentOwnerIds() {
         Set<Long> inconsistentOwnerIds = new HashSet<>();
+        inconsistentOwnerIds.addAll(findAllByTaxNumberExistsMultipleTimes());
         inconsistentOwnerIds.addAll(findAllByAddressOrTaxInformationIsInvalid());
         inconsistentOwnerIds.addAll(findAllByForenameIsNullOrAfternameIsNullOrCreatedAtIsNull());
         inconsistentOwnerIds.addAll(findAllByAddressContainingNullValues());

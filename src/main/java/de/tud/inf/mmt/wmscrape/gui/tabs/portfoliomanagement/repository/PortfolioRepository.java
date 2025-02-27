@@ -25,6 +25,21 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @Query(value = "SELECT p.id FROM portfolio p", nativeQuery = true)
     List<Long> getAllIds();
 
+    @Query(value = "SELECT p.id " +
+            "FROM portfolio p " +
+            "WHERE p.name = :name", nativeQuery = true)
+    Optional<Long> getPortfolioBy(@Param("name") String name);
+
+    @Query(value = "SELECT p.id " +
+            "FROM portfolio p " +
+            "WHERE p.name IN ( " +
+                "SELECT name " +
+                "FROM portfolio " +
+                "GROUP BY name " +
+                "HAVING COUNT(*) > 1 " +
+            ")", nativeQuery = true)
+    List<Long> findAllByNameExistsMultipleTimes();
+
     /**
      * @return all portfolios as fake portfolios. A fake portfolio is a portfolio with only the id and name set (if available).
      */
@@ -54,6 +69,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
      */
     default Set<Long> getInconsistentPortfolioIds() {
         Set<Long> inconsistentPortfolioIds = new HashSet<>();
+        inconsistentPortfolioIds.addAll(findAllByNameExistsMultipleTimes());
         inconsistentPortfolioIds.addAll(findAllByNameIsNullOrCreatedAtIsNull());
         inconsistentPortfolioIds.addAll(findAllByOwnerOrInvestmentguidelineIsInvalid());
         inconsistentPortfolioIds.addAll(findAllByStateNotIn(State.getValuesAsString()));

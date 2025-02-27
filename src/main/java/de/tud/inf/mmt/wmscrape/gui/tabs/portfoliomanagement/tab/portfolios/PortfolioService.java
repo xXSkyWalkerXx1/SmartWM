@@ -79,6 +79,10 @@ public class PortfolioService {
      */
     public boolean save(Portfolio portfolio) {
         try {
+            Optional<Long> id = portfolioRepository.getPortfolioBy(portfolio.getName());
+            if (id.isPresent() && !id.get().equals(portfolio.getId()))
+                throw new DataIntegrityViolationException("");
+
             portfolio.onPrePersistOrUpdateOrRemoveEntity();
             Portfolio persistedPortfolio = portfolioRepository.save(portfolio);
             // Update the owner with the id from the database.
