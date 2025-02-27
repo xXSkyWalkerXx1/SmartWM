@@ -4,6 +4,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -87,7 +88,10 @@ public class TableBuilder<S> {
 
                     {
                         textFieldFormatter.accept(inputField);
-                        inputField.setOnAction(commit -> commitEdit(inputField.getText()));
+                        inputField.setOnAction(commit -> {
+                            commitEdit(inputField.getText());
+                            getTableView().refresh();
+                        });
                     }
 
                     @Override
@@ -111,9 +115,18 @@ public class TableBuilder<S> {
                         super.updateItem(number, empty);
                         if (empty || number == null) {
                             setText(null);
+                            getStyleClass().remove("bad-input");
                         } else {
                             setText(number);
+
+                            inputField.setText(number);
+                            if (inputField.getUserData() == Color.RED) {
+                                getStyleClass().add("bad-input");
+                            } else if (inputField.getUserData() == null) {
+                                getStyleClass().remove("bad-input");
+                            }
                         }
+
                         setGraphic(null);
                     }
                 };
