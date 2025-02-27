@@ -246,6 +246,7 @@ public class KontoOverviewController extends EditableView implements Openable {
                     true
             );
             treeView.setTooltip(new Tooltip("Auflistung der Depots, denen dieses Konto als Verrechnungskonto zugeordnet ist."));
+            treeView.setShowRoot(false);
             accountDepotsTablePane.getChildren().setAll(treeView);
         } else {
             accountDepotsTablePane.getChildren().clear();
