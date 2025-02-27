@@ -113,10 +113,10 @@ public class KontoOverviewController extends EditableView implements Openable {
             }
         });
         inputOwner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) account.setOwner(newValue);
+            if (oldValue != null && newValue != null) account.setOwner(newValue);
         });
         inputPortfolio.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) account.setPortfolio(newValue);
+            if (oldValue != null && newValue != null) account.setPortfolio(newValue);
         });
         inputNotice.textProperty().addListener((observable, oldValue, newValue) -> {
             account.setNotice(newValue);
@@ -223,8 +223,8 @@ public class KontoOverviewController extends EditableView implements Openable {
         inputType.getSelectionModel().select(account.getType());
         inputCurrencyCode.getSelectionModel().select(account.getCurrency());
         inputBalance.setText(FormatUtils.formatFloat((float) account.getBalance()));
-        inputOwner.getSelectionModel().select(account.getOriginalOwner());
-        inputPortfolio.getSelectionModel().select(account.getOriginalPortfolio());
+        inputOwner.getSelectionModel().select(account.getOwner());
+        inputPortfolio.getSelectionModel().select(account.getPortfolio());
         inputNotice.setText(account.getNotice());
         inputState.getSelectionModel().select(account.getState());
         outputCreatedAt.setText(account.getCreatedAt().toLocaleString());

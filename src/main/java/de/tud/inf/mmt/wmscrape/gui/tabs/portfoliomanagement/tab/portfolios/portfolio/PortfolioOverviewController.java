@@ -62,8 +62,12 @@ public class PortfolioOverviewController extends EditableView implements Openabl
         inputPortfolioName.textProperty().addListener((observable, oldValue, newValue) -> {
             portfolio.setName(newValue);
         });
+        /*
+        - newValue is null, if the selection was cleared
+        - oldValue is null, if the the combobox were initialized with items
+         */
         inputOwner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) portfolio.setOwner(newValue);
+            if (oldValue != null && newValue != null) portfolio.setOwner(newValue);
         });
         inputState.valueProperty().addListener((observable, oldValue, newValue) -> {
             portfolio.setState(newValue);
@@ -138,7 +142,7 @@ public class PortfolioOverviewController extends EditableView implements Openabl
 
         // Load data
         inputPortfolioName.setText(portfolio.getName());
-        inputOwner.getSelectionModel().select(portfolio.getOriginalOwner());
+        inputOwner.getSelectionModel().select(portfolio.getOwner());
         inputState.getSelectionModel().select(portfolio.getState());
         outputCreatedAt.setText(portfolio.getCreatedAt().toLocaleString());
         outputDeactivatedAt.setText(portfolio.getDeactivatedAt() != null ? portfolio.getDeactivatedAt().toLocaleString() : "");
