@@ -66,6 +66,10 @@ public class OwnerService {
 
     public boolean save(Owner owner) {
         try {
+            // test before saving
+            if (!ownerRepository.findByTaxNumber(owner.getTaxInformation().getTaxNumber()).isEmpty())
+                throw new DataIntegrityViolationException("");
+
             owner.onPrePersistOrUpdateOrRemoveEntity();
             Owner persistedOwner = ownerRepository.save(owner);
             // Update the owner with the id from the database.
