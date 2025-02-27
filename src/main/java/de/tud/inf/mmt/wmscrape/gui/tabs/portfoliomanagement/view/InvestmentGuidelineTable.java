@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.lang.NonNull;
@@ -254,7 +255,10 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
 
                     {
                         inputFormatter.accept(inputField);
-                        inputField.setOnAction(commit -> commitEdit(inputField.getText()));
+                        inputField.setOnAction(commit -> {
+                            commitEdit(inputField.getText());
+                            getTreeTableView().refresh();
+                        });
                     }
 
                     @Override
@@ -282,8 +286,17 @@ public class InvestmentGuidelineTable extends TreeTableView<InvestmentGuideline.
                         if (empty || number == null) {
                             setText(null);
                             setTooltip(null);
+                            getStyleClass().remove("bad-input");
                         } else {
                             setText(number);
+
+                            inputField.setText(number);
+                            if (inputField.getUserData() == Color.RED) {
+                                getStyleClass().add("bad-input");
+                            } else if (inputField.getUserData() == null) {
+                                getStyleClass().remove("bad-input");
+                            }
+
                             if (getTableRow().getItem().getType().isChild()) {
                                 setTooltip(new Tooltip(String.format(
                                         "Anteil der %s in Relation zum Anteil der %s",
