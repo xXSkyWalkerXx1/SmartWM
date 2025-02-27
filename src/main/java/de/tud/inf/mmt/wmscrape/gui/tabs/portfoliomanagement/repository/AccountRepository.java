@@ -97,6 +97,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query(value = "SELECT a.id " +
             "FROM pkonto a " +
             "WHERE a.currency_code IS NULL OR TRIM(a.currency_code) = '' " +
+            "OR a.description IS NULL OR TRIM(a.description) = '' " +
             "OR a.balance IS NULL " +
             "OR a.bank_name IS NULL OR TRIM(a.bank_name) = '' " +
             "OR a.konto_number IS NULL OR TRIM(a.konto_number) = '' " +

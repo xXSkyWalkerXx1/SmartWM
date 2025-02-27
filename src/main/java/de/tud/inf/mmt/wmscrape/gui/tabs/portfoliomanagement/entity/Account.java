@@ -26,7 +26,7 @@ public class Account extends FinancialAsset implements Changable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)

@@ -165,8 +165,8 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
         inputDeactivatedAt.getEditor().tooltipProperty().unbind();
 
         List<TextInputControl> inputs = new ArrayList<>(List.of(
-                inputBalance, inputCreatedAt.getEditor(), inputCreatedAt.getEditor(), inputBankName, inputIban,
-                inputKontoNumber, inputInterestRate, inputInterestDays
+                inputDescription, inputBalance, inputCreatedAt.getEditor(), inputCreatedAt.getEditor(), inputBankName,
+                inputIban, inputKontoNumber, inputInterestRate, inputInterestDays
         ));
         if (State.DEACTIVATED.equals(inputState.getSelectionModel().getSelectedItem())) {
             inputs.add(inputDeactivatedAt.getEditor());
