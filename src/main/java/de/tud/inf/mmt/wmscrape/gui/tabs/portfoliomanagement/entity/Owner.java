@@ -324,6 +324,8 @@ public class Owner implements Changable {
     private final SimpleStringProperty afternameProperty = new SimpleStringProperty();
     @Transient
     private final SimpleStringProperty noticeProperty = new SimpleStringProperty();
+    @Transient
+    private final ObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
 
     @Override
     @PostLoad
@@ -333,6 +335,7 @@ public class Owner implements Changable {
         forenameProperty.set(forename);
         afternameProperty.set(aftername);
         noticeProperty.set(notice);
+        deactivatedAtProperty.set(deactivatedAt);
     }
 
     @Override
@@ -344,6 +347,7 @@ public class Owner implements Changable {
         forename = forenameProperty.get();
         aftername = afternameProperty.get();
         notice = noticeProperty.get();
+        deactivatedAt = deactivatedAtProperty.get();
     }
 
     @Override
@@ -441,7 +445,7 @@ public class Owner implements Changable {
     }
 
     public void setDeactivatedAt(Date deactivatedAt) {
-        this.deactivatedAt = deactivatedAt;
+        this.deactivatedAtProperty.set(deactivatedAt);
     }
 
     public Address getAddress() {

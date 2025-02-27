@@ -49,6 +49,8 @@ public class Portfolio extends FinancialAsset implements Changable {
     private final ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>();
     @Transient
     private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
+    @Transient
+    private final ObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
 
     @Override
     @PostLoad
@@ -57,6 +59,7 @@ public class Portfolio extends FinancialAsset implements Changable {
         nameProperty.set(name);
         ownerProperty.set(owner);
         stateProperty.set(state);
+        deactivatedAtProperty.set(deactivatedAt);
     }
 
     @Override
@@ -65,6 +68,7 @@ public class Portfolio extends FinancialAsset implements Changable {
         name = nameProperty.get();
         owner = ownerProperty.get();
         state = stateProperty.get();
+        deactivatedAt = deactivatedAtProperty.get();
         investmentGuideline.onPrePersistOrUpdateOrRemoveEntity();
         if (owner != null) owner.onPrePersistOrUpdateOrRemoveEntity();
     }
@@ -197,7 +201,7 @@ public class Portfolio extends FinancialAsset implements Changable {
     }
 
     public void setDeactivatedAt(Date deactivatedAt) {
-        this.deactivatedAt = deactivatedAt;
+        this.deactivatedAtProperty.set(deactivatedAt);
     }
     // endregion
 }

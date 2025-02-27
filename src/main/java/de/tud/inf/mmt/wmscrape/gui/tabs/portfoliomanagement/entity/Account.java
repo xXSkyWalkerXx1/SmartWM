@@ -98,6 +98,8 @@ public class Account extends FinancialAsset implements Changable {
     private final SimpleStringProperty interestDaysProperty = new SimpleStringProperty();
     @Transient
     private final SimpleObjectProperty<InterestInterval> interestIntervalProperty = new SimpleObjectProperty<>();
+    @Transient
+    private final SimpleObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
 
     @Override
     @PostLoad
@@ -117,6 +119,7 @@ public class Account extends FinancialAsset implements Changable {
         interestRateProperty.set(interestRate);
         interestDaysProperty.set(interestDays);
         interestIntervalProperty.set(interestInterval);
+        deactivatedAtProperty.set(deactivatedAt);
     }
 
     @Override
@@ -136,6 +139,7 @@ public class Account extends FinancialAsset implements Changable {
         interestRate = interestRateProperty.get();
         interestDays = interestDaysProperty.get();
         interestInterval = interestIntervalProperty.get();
+        deactivatedAt = deactivatedAtProperty.get();
         // only used to set the ids
         if (owner != null) owner.onPrePersistOrUpdateOrRemoveEntity();
         if (portfolio != null) portfolio.onPrePersistOrUpdateOrRemoveEntity();
@@ -258,20 +262,12 @@ public class Account extends FinancialAsset implements Changable {
         return ownerProperty.get();
     }
 
-    public Owner getOriginalOwner() {
-        return owner;
-    }
-
     public void setOwner(Owner owner) {
         ownerProperty.set(owner);
     }
 
     public Portfolio getPortfolio() {
         return portfolioProperty.get();
-    }
-
-    public Portfolio getOriginalPortfolio() {
-        return portfolio;
     }
 
     public void setPortfolio(Portfolio portfolio) {
@@ -351,7 +347,7 @@ public class Account extends FinancialAsset implements Changable {
     }
 
     public void setDeactivatedAt(Date deactivatedAt) {
-        this.deactivatedAt = deactivatedAt;
+        this.deactivatedAtProperty.set(deactivatedAt);
     }
 
     public List<Depot> getMappedDepots() {
