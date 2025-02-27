@@ -28,21 +28,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query(value = "SELECT k.id " +
             "FROM pkonto k " +
-            "WHERE k.iban IN ( " +
-                "SELECT iban " +
-                "FROM pkonto " +
-                "GROUP BY iban " +
-                "HAVING COUNT(iban) > 1 " +
-            ") OR k.konto_number IN ( " +
-                "SELECT konto_number " +
-                "FROM pkonto " +
-                "GROUP BY konto_number " +
-                "HAVING COUNT(konto_number) > 1 " +
-            ")", nativeQuery = true)
-    List<Long> findAllByIbanOrKontoNumberExistsMultipleTimes();
-
-    @Query(value = "SELECT k.id " +
-            "FROM pkonto k " +
             "WHERE k.iban = :iban", nativeQuery = true)
     Optional<Long> findByIban(@Param("iban") String iban);
 
@@ -90,6 +75,21 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             "LEFT JOIN portfolio p ON a.portfolio_id = p.id " +
             "WHERE o.id IS NULL OR p.id IS NULL OR a.owner_id IS NULL OR a.portfolio_id IS NULL", nativeQuery = true)
     List<Long> findAllByOwnerAndPortfolioIsInvalid();
+
+    @Query(value = "SELECT k.id " +
+            "FROM pkonto k " +
+            "WHERE k.iban IN ( " +
+            "SELECT iban " +
+            "FROM pkonto " +
+            "GROUP BY iban " +
+            "HAVING COUNT(iban) > 1 " +
+            ") OR k.konto_number IN ( " +
+            "SELECT konto_number " +
+            "FROM pkonto " +
+            "GROUP BY konto_number " +
+            "HAVING COUNT(konto_number) > 1 " +
+            ")", nativeQuery = true)
+    List<Long> findAllByIbanOrKontoNumberExistsMultipleTimes();
 
     /**
      * @return all accounts where the currency code, balance, bank name, konto number, interest rate, iban or the created_at date is null or empty.
