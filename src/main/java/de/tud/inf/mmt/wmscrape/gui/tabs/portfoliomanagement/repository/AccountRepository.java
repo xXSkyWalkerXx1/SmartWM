@@ -26,6 +26,31 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query(value = "SELECT a.id FROM pkonto a", nativeQuery = true)
     List<Long> getAllIds();
 
+    @Query(value = "SELECT k.id " +
+            "FROM pkonto k " +
+            "WHERE k.iban IN ( " +
+                "SELECT iban " +
+                "FROM pkonto " +
+                "GROUP BY iban " +
+                "HAVING COUNT(iban) > 1 " +
+            ") OR k.konto_number IN ( " +
+                "SELECT konto_number " +
+                "FROM pkonto " +
+                "GROUP BY konto_number " +
+                "HAVING COUNT(konto_number) > 1 " +
+            ")", nativeQuery = true)
+    List<Long> findAllByIbanOrKontoNumberExistsMultipleTimes();
+
+    @Query(value = "SELECT k.id " +
+            "FROM pkonto k " +
+            "WHERE k.iban = :iban", nativeQuery = true)
+    Optional<Long> findByIban(@Param("iban") String iban);
+
+    @Query(value = "SELECT k.id " +
+            "FROM pkonto k " +
+            "WHERE k.konto_number = :kontoNumber", nativeQuery = true)
+    Optional<Long> findByKontoNumber(@Param("kontoNumber") String kontoNumber);
+
     // region Queries to check for inconsistencies
     /**
      * Fast way to check if any inconsistency in accounts exists.
@@ -40,6 +65,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      */
     default Set<Long> getInconsistentAccountIds() {
         Set<Long> inconsistentAccountIds = new HashSet<>();
+        inconsistentAccountIds.addAll(findAllByIbanOrKontoNumberExistsMultipleTimes());
         inconsistentAccountIds.addAll(findAllByOwnerAndPortfolioIsInvalid());
         inconsistentAccountIds.addAll(findByCurrencyCodeIsNullOrBalanceIsNullOrBankNameIsNullOrKontoNumberIsNullOrInterestRateIsNullOrIbanIsNullOrCreatedAtIsNull());
         inconsistentAccountIds.addAll(findByStateNotInOrTypeNotInOrInterestIntervalNotIn(

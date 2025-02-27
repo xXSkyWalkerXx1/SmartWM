@@ -4,7 +4,6 @@ import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.PrimaryTabManager;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.PortfolioManagementTabController;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Account;
-import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.FinancialAsset;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Owner;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.entity.Portfolio;
 import de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.enums.AccountType;
@@ -17,6 +16,7 @@ import javafx.scene.control.*;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
@@ -129,6 +129,13 @@ public class AccountService {
      */
     public boolean save(Account account) {
         try {
+            Optional<Long> id;
+            id = accountRepository.findByKontoNumber(account.getKontoNumber());
+            if (id.isPresent() && !id.get().equals(account.getId())) throw new TransientDataAccessResourceException("");
+
+            id = accountRepository.findByIban(account.getIban());
+            if (id.isPresent() && !id.get().equals(account.getId())) throw new TransientDataAccessResourceException("");
+
             // check if there exists an exchange course for the currency
             getLatestExchangeCourse(account.getCurrency());
 
