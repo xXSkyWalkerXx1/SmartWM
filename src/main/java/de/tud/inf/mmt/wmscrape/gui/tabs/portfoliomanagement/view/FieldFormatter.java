@@ -1,17 +1,13 @@
 package de.tud.inf.mmt.wmscrape.gui.tabs.portfoliomanagement.view;
 
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 public class FieldFormatter {
 
@@ -64,14 +60,17 @@ public class FieldFormatter {
                 int input = Integer.parseInt(change.getControlNewText());
 
                 if (input >= from && input <= to) {
+                    change.getControl().setUserData(null);
                     return change;
                 } else if (input < from) {
                     change.setText(String.valueOf(from));
                     change.setRange(0, change.getControlText().length());
+                    change.getControl().setUserData(Color.RED);
                     return change;
                 } else {
                     change.setText(String.valueOf(to));
                     change.setRange(0, change.getControlText().length());
+                    change.getControl().setUserData(Color.RED);
                     return change;
                 }
             } catch (NumberFormatException e) {
@@ -124,19 +123,21 @@ public class FieldFormatter {
 
                 if (input >= from && (to == null || input <= to)) {
                     if (changePredicate != null && !changePredicate.test(change)) return null;
+                    change.getControl().setUserData(null);
                     return change;
                 } else if (input < from) {
                     change.setText(FormatUtils.formatFloat(from));
                     change.setRange(0, change.getControlText().length());
+                    change.getControl().setUserData(Color.RED);
                     return change;
                 } else if (to != null && input > to) {
                     change.setText(FormatUtils.formatFloat(to));
                     change.setRange(0, change.getControlText().length());
+                    change.getControl().setUserData(Color.RED);
                     return change;
                 }
-            } catch (Exception e) {
-                return null;
-            }
+            } catch (Exception ignore) {}
+            change.getControl().setUserData(Color.RED);
             return null;
         }));
     }
