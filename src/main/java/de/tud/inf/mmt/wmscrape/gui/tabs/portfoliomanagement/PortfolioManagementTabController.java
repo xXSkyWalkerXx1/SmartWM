@@ -417,8 +417,15 @@ public class PortfolioManagementTabController {
      * @param fromEntity The entity that was deleted.
      */
     public void navigateBackAfterDeletion(@NonNull Object fromEntity) {
-        showPortfolioManagementTabs();
+        if (!primaryTabController.getPrimaryTabPane().getSelectionModel().getSelectedItem().getText().equals("Portfoliomanagement"))
+            return;
 
+        Tab selectedTab = portfolioManagementTabPane.getSelectionModel().getSelectedItem();
+        if (portfoliosTab.equals(selectedTab) || depotTab.equals(selectedTab) || kontoTab.equals(selectedTab) || inhaberTab.equals(selectedTab))
+            return;
+
+        // navigate back to the main-menu of the entity that was deleted
+        showPortfolioManagementTabs();
         if (fromEntity instanceof Owner) {
             portfolioManagementTabPane.getSelectionModel().select(inhaberTab);
         } else if (fromEntity instanceof Portfolio) {
