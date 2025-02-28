@@ -482,5 +482,51 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
         enableForeignKeyChecks();
     }
 
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM anlagen_richtlinie_unterteilung_ort dl " +
+            "WHERE dl.id IN (SELECT g.division_by_location_id " +
+            "FROM portfolio p " +
+            "JOIN anlagen_richtlinie g ON p.investment_guideline_id = g.id " +
+            "WHERE p.id = :id)",
+            nativeQuery = true)
+    void deleteDivisionByLocation(@Param("id") Long portfolioId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM anlagen_richtlinie_unterteilung_währung dc " +
+            "WHERE dc.id IN (SELECT g.division_by_currency_id " +
+            "FROM portfolio p " +
+            "JOIN anlagen_richtlinie g ON p.investment_guideline_id = g.id " +
+            "WHERE p.id = :id)", nativeQuery = true)
+    void deleteDivisionByCurrency(@Param("id") Long portfolioId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE g " +
+            "FROM portfolio p " +
+            "JOIN anlagen_richtlinie g ON g.id = p.investment_guideline_id " +
+            "WHERE p.id = :id", nativeQuery = true)
+    void deleteInvestmentGuideline(@Param("id") Long portfolioId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM portfolio p WHERE p.id = :id", nativeQuery = true)
+    void deletePortfolio(@Param("id") Long portfolioId);
+
+    @Transactional
+    @Modifying
+    default void deleteById(@NonNull @Param("id") Long id) {
+        disableForeignKeyChecks();
+
+        deleteDivisionByLocation(id);
+        deleteDivisionByCurrency(id);
+        deleteInvestmentGuidelineEntries(id);
+        deleteInvestmentGuideline(id);
+        deletePortfolio(id);
+
+        enableForeignKeyChecks();
+    }
+
     // endregion
 }
