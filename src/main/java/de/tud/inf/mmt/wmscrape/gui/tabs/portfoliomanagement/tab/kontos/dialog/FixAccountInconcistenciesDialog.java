@@ -82,9 +82,9 @@ public class FixAccountInconcistenciesDialog extends CreateAccountDialog {
             inputCreatedAt.getEditor().setText(inputCreatedAt.getValue().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
         }
 
-        if (account.getDeactivatedAt() != null) {
+        if (account.deactivatedAtProperty.get() != null) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(account.getDeactivatedAt());
+            calendar.setTime(account.deactivatedAtProperty.get());
             inputDeactivatedAt.setValue(LocalDate.of(
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH) + 1,

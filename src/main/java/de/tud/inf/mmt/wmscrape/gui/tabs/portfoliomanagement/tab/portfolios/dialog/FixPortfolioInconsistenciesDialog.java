@@ -81,9 +81,9 @@ public class FixPortfolioInconsistenciesDialog extends CreatePortfolioDialog {
             inputCreatedAt.getEditor().setText(inputCreatedAt.getValue().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
         }
 
-        if (portfolio.getDeactivatedAt() != null) {
+        if (portfolio.deactivatedAtProperty.get() != null) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(portfolio.getDeactivatedAt());
+            calendar.setTime(portfolio.deactivatedAtProperty.get());
             inputDeactivatedAt.setValue(LocalDate.of(
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH) + 1,
