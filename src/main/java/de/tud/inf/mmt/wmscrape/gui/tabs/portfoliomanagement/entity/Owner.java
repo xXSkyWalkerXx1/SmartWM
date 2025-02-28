@@ -315,17 +315,17 @@ public class Owner implements Changable {
     private Date deactivatedAt;
 
     @Transient
-    private final SimpleLongProperty idProperty = new SimpleLongProperty();
+    public final SimpleLongProperty idProperty = new SimpleLongProperty();
     @Transient
-    private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
+    public final ObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
     @Transient
-    private final SimpleStringProperty forenameProperty = new SimpleStringProperty();
+    public final SimpleStringProperty forenameProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleStringProperty afternameProperty = new SimpleStringProperty();
+    public final SimpleStringProperty afternameProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleStringProperty noticeProperty = new SimpleStringProperty();
+    public final SimpleStringProperty noticeProperty = new SimpleStringProperty();
     @Transient
-    private final ObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
+    public final ObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
 
     @Override
     @PostLoad
