@@ -69,37 +69,37 @@ public class Account extends FinancialAsset implements Changable {
     private Set<Depot> mappedDepots = Collections.emptySet();
 
     @Transient
-    private final SimpleLongProperty idProperty = new SimpleLongProperty();
+    public final SimpleLongProperty idProperty = new SimpleLongProperty();
     @Transient
-    private final SimpleStringProperty descriptionProperty = new SimpleStringProperty();
+    public final SimpleStringProperty descriptionProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleObjectProperty<AccountType> typeProperty = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<AccountType> typeProperty = new SimpleObjectProperty<>();
     @Transient
-    private final SimpleObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
+    public final SimpleObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
     @Transient
-    private final SimpleStringProperty currencyProperty = new SimpleStringProperty();
+    public final SimpleStringProperty currencyProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleObjectProperty<BigDecimal> balanceProperty = new SimpleObjectProperty<>(balance);
+    public final SimpleObjectProperty<BigDecimal> balanceProperty = new SimpleObjectProperty<>(balance);
     @Transient
-    private final SimpleObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>();
     @Transient
-    private final SimpleObjectProperty<Portfolio> portfolioProperty = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<Portfolio> portfolioProperty = new SimpleObjectProperty<>();
     @Transient
-    private final SimpleStringProperty noticeProperty = new SimpleStringProperty();
+    public final SimpleStringProperty noticeProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleStringProperty bankNameProperty = new SimpleStringProperty();
+    public final SimpleStringProperty bankNameProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleStringProperty ibanProperty = new SimpleStringProperty();
+    public final SimpleStringProperty ibanProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleStringProperty kontoNumberProperty = new SimpleStringProperty();
+    public final SimpleStringProperty kontoNumberProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleObjectProperty<BigDecimal> interestRateProperty = new SimpleObjectProperty<>(interestRate);
+    public final SimpleObjectProperty<BigDecimal> interestRateProperty = new SimpleObjectProperty<>(interestRate);
     @Transient
-    private final SimpleStringProperty interestDaysProperty = new SimpleStringProperty();
+    public final SimpleStringProperty interestDaysProperty = new SimpleStringProperty();
     @Transient
-    private final SimpleObjectProperty<InterestInterval> interestIntervalProperty = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<InterestInterval> interestIntervalProperty = new SimpleObjectProperty<>();
     @Transient
-    private final SimpleObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
 
     @Override
     @PostLoad

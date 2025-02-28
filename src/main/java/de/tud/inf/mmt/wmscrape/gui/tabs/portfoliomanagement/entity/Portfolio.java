@@ -42,15 +42,15 @@ public class Portfolio extends FinancialAsset implements Changable {
     private Date deactivatedAt;
 
     @Transient
-    private final SimpleLongProperty idProperty = new SimpleLongProperty();
+    public final SimpleLongProperty idProperty = new SimpleLongProperty();
     @Transient
-    private final SimpleStringProperty nameProperty = new SimpleStringProperty();
+    public final SimpleStringProperty nameProperty = new SimpleStringProperty();
     @Transient
-    private final ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>();
+    public final ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>();
     @Transient
-    private final ObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
+    public final ObjectProperty<State> stateProperty = new SimpleObjectProperty<>(state);
     @Transient
-    private final ObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
+    public final ObjectProperty<Date> deactivatedAtProperty = new SimpleObjectProperty<>();
 
     @Override
     @PostLoad
