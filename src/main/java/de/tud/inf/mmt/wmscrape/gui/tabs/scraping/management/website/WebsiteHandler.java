@@ -263,6 +263,8 @@ public abstract class WebsiteHandler extends Service<Void> {
 
     /**
      * waits for the dom ready state event
+     * ToDo: improve performance - waiting until the state is complete can result in a long waiting time, even if the
+     *      page is already loaded (but only some ressources like google-scripts are still loading)
      */
     protected void waitLoadEvent() {
         try {
@@ -275,11 +277,8 @@ public abstract class WebsiteHandler extends Service<Void> {
             wait.until(webDriver
                     -> driver.executeScript("return document.readyState").equals("complete")
             );
-
-            addToLog("INFO:\tWebseite vollständig geladen.");
         } catch (Exception e) {
             System.out.println(e.getMessage()+" <-> "+e.getCause());
-            addToLog("WARN:\tFehler beim Laden der Webseite, Ladevorgang wird wiederholt.");
         }
     }
 
@@ -353,7 +352,7 @@ public abstract class WebsiteHandler extends Service<Void> {
     }
 
     private void switchToFrame(WebElement frame) {
-        if(frame != null) driver.switchTo().frame(frame); //ToDo: driver.executeScript("window.top = arguments[0];", frame);
+        if(frame != null) driver.switchTo().frame(frame);
         else driver.switchTo().defaultContent();
     }
 
@@ -512,14 +511,26 @@ public abstract class WebsiteHandler extends Service<Void> {
      */
     private List<WebElementInContext> recursiveSearch(SearchContext context, IdentType type, String identifier,
                                                       List<WebElement> iframes, int depth, int parentId) throws InvalidSelectorException {
+        List<WebElementInContext> webElementInContexts;
+
         // nothing found in max depth. return
         if (depth >= IFRAME_SEARCH_DEPTH) return null;
 
-        List<WebElementInContext> webElementInContexts;
-
         // search every iframe
         for (WebElement frame : iframes) {
-            driver.switchTo().frame(frame);
+            // switch to the frame
+            try {
+                driver.switchTo().frame(frame);
+
+                /*
+                Führt zu Stale-Fehler, wenn bspw. ein iFrame nicht mehr existiert
+                driver.executeScript("arguments[0].contentWindow.focus();", frame);
+                 */
+            } catch (StaleElementReferenceException e) {
+                addToLog("WARN:\tEin iFrame konnte nicht geöffnet werden und wird daher ignoriert.\n" +
+                        "      \tDadurch können Elemente in diesem Frame nicht gefunden werden.");
+                continue;
+            }
 
             // look inside the frame
             var webElements = findElementsRelative(context, type, identifier);
