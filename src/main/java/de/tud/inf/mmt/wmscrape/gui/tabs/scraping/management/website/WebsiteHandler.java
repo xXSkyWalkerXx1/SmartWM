@@ -523,12 +523,13 @@ public abstract class WebsiteHandler extends Service<Void> {
                 driver.switchTo().frame(frame);
 
                 /*
-                Führt zu Stale-Fehler, wenn bspw. ein iFrame nicht mehr existiert
+                Zum Beispiel unter WallStreetOnline ist es so, dass durch Skripte nach dem Laden (also readyState == complete)
+                auch iFrames wieder gelöscht werden, wodurch der Stale-Fehler zustande kommt.
+
                 driver.executeScript("arguments[0].contentWindow.focus();", frame);
                  */
             } catch (StaleElementReferenceException e) {
-                addToLog("WARN:\tEin iFrame konnte nicht geöffnet werden und wird daher ignoriert.\n" +
-                        "      \tDadurch können Elemente in diesem Frame nicht gefunden werden.");
+                addToLog("WARN:\tEin iFrame konnte nicht geöffnet werden. Dadurch können Elemente in diesem Frame nicht gefunden werden.");
                 continue;
             }
 
