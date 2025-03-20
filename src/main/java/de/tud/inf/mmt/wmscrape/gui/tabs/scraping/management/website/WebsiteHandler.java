@@ -524,7 +524,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
                 /*
                 Zum Beispiel unter WallStreetOnline ist es so, dass durch Skripte nach dem Laden (also readyState == complete)
-                auch iFrames wieder gelöscht werden, wodurch der Stale-Fehler zustande kommt.
+                auch iFrames wieder gelöscht werden, wodurch der Stale-Fehler zustande kommen kann.
 
                 driver.executeScript("arguments[0].contentWindow.focus();", frame);
                  */
