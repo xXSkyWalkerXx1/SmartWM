@@ -176,7 +176,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
             if (element == null) return false;
 
-            clickElement(element);
+            if (!clickElement(element)) return false;
             waitLoadEvent();
         }
 
@@ -224,7 +224,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
         WebElement loginButton = extractElementFromRoot(website.getLoginButtonIdentType(), website.getLoginButtonIdent());
         if (loginButton == null) return false;
-        clickElement(loginButton);
+        if (!clickElement(loginButton)) return false;
         addToLog("INFO:\tLogin erfolgreich");
         return true;
     }
@@ -571,14 +571,21 @@ public abstract class WebsiteHandler extends Service<Void> {
      */
 
     // only call in respective frame
-    private void clickElement(WebElement element) {
-        if (element == null) return;
+    private boolean clickElement(WebElement element) {
+        if (element == null) return false;
         waitLoadEvent();
         scrollIntoView(element);
         try {
             element.click();
+            return true;
         } catch (Exception e) {
-            driver.executeScript("arguments[0].click();", element);
+            try {
+                driver.executeScript("arguments[0].click();", element);
+                return true;
+            } catch (Exception e2) {
+                addToLog("WARN:\tElement (" + element + ") konnte nicht geklickt werden.");
+                return false;
+            }
         }
     }
 
@@ -642,7 +649,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         WebElement searchInput = extractElementFromRoot(website.getSearchFieldIdentType(), website.getSearchFieldIdent());
         if (searchInput == null) return false;
 
-        clickElement(searchInput);
+        if (!clickElement(searchInput)) return false;
         setText(searchInput, isin);
         waitLoadEvent();
 
@@ -651,8 +658,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         } else {
             WebElement searchButton = extractElementFromRoot(website.getSearchButtonIdentType(), website.getSearchButtonIdent());
             if (searchButton == null) return false;
-
-            clickElement(searchButton);
+            if (!clickElement(searchButton)) return false;
         }
 
         addToLog(String.format("INFO:\tZu Wertpapier-Unterseite von %s (%s) navigiert", isin, securitiesType.getDisplayText()));
@@ -665,8 +671,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         for (String ident : identifiers.getHistoricLinkIdent().split(identDelimiter)) {
              element = extractElementFromRoot(identifiers.getHistoricLinkIdentType(), ident);
             if (element == null) return false;
-
-            clickElement(element);
+            if (!clickElement(element)) return false;
             waitLoadEvent();
         }
 
@@ -762,13 +767,13 @@ public abstract class WebsiteHandler extends Service<Void> {
             // set date for start on browser
             scrollIntoView(dateFromDayElement);
             dateFromDayElement.clear();
-            clickElement(dateFromDayElement);
+            if (!clickElement(dateFromDayElement)) return false;
             setText(dateFromDayElement, dateFrom);
             driver.executeScript("arguments[0].blur()", dateFromDayElement);
 
             // set date for end on browser; don't set if there is nothing set on the config to use the current date
             scrollIntoView(dateUntilDayElement);
-            clickElement(dateUntilDayElement);
+            if (!clickElement(dateUntilDayElement)) return false;
             if (dateUntil != null && !dateUntil.isBlank()) {
                 dateUntilDayElement.clear();
                 setText(dateUntilDayElement, dateUntil);
@@ -787,23 +792,17 @@ public abstract class WebsiteHandler extends Service<Void> {
         if(website.getNotificationDeclineIdent() == null) return true;
 
         WebElement element = extractElementFromRoot(website.getDeclineNotificationIdentType(), website.getNotificationDeclineIdent(), false);
-
         if (element == null) return true;
+        if (!clickElement(element)) return false;
 
-        clickElement(element);
         addToLog("INFO:\tBenachrichtigungen abgelehnt");
-
         return true;
     }
 
     protected boolean loadHistoricData(@NonNull HistoricWebsiteIdentifiers identifiers) {
-        WebElement element = extractElementFromRoot(
-                identifiers.getLoadButtonIdentType(),
-                identifiers.getLoadButtonIdent()
-        );
+        WebElement element = extractElementFromRoot(identifiers.getLoadButtonIdentType(), identifiers.getLoadButtonIdent());
         if (element == null) return false;
-
-        clickElement(element);
+        if (!clickElement(element)) return false;
 
         addToLog("INFO:\tHistorische Daten geladen");
         return true;
@@ -842,13 +841,10 @@ public abstract class WebsiteHandler extends Service<Void> {
     protected boolean nextTablePage(@NonNull HistoricWebsiteIdentifiers identifiers) {
         if (identifiers.getNextPageButtonIdentType() == IdentType.DEAKTIVIERT) return true;
 
-        WebElement element = extractElementFromRoot(
-                identifiers.getNextPageButtonIdentType(),
-                identifiers.getNextPageButtonIdent()
-        );
+        WebElement element = extractElementFromRoot(identifiers.getNextPageButtonIdentType(), identifiers.getNextPageButtonIdent());
         if (element == null) return false;
+        if (!clickElement(element)) return false;
 
-        clickElement(element);
         addToLog("INFO:\tNächste Tabellenseite geladen");
         return true;
     }
