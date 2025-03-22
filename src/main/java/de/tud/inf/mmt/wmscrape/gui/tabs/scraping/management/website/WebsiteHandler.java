@@ -176,7 +176,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
             if (element == null) return false;
 
-            if (!clickElement(element)) return false;
+            if (!clickElement(element, type, ident)) return false;
             waitLoadEvent();
         }
 
@@ -224,7 +224,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
         WebElement loginButton = extractElementFromRoot(website.getLoginButtonIdentType(), website.getLoginButtonIdent());
         if (loginButton == null) return false;
-        if (!clickElement(loginButton)) return false;
+        if (!clickElement(loginButton, website.getLoginButtonIdentType(), website.getLoginButtonIdent())) return false;
         addToLog("INFO:\tLogin erfolgreich");
         return true;
     }
@@ -254,7 +254,7 @@ public abstract class WebsiteHandler extends Service<Void> {
             return false;
         }
 
-        clickElement(logoutButton);
+        clickElement(logoutButton, type, website.getLogoutIdent());
         waitLoadEvent();
 
         addToLog("INFO:\tLogout erfolgreich");
@@ -571,22 +571,33 @@ public abstract class WebsiteHandler extends Service<Void> {
      */
 
     // only call in respective frame
-    private boolean clickElement(WebElement element) {
+    private boolean clickElement(WebElement element, IdentType elIdentType, String elIdent) {
         if (element == null) return false;
+        int tryCount = 0;
+
         waitLoadEvent();
         scrollIntoView(element);
-        try {
-            element.click();
-            return true;
-        } catch (Exception e) {
+
+        while (tryCount < 3) {
             try {
-                driver.executeScript("arguments[0].click();", element);
+                element.click();
                 return true;
-            } catch (Exception e2) {
-                addToLog("WARN:\tElement (" + element + ") konnte nicht geklickt werden.");
-                return false;
+            } catch (Exception e) {
+                try {
+                    driver.executeScript("arguments[0].click();", element);
+                    return true;
+                } catch (Exception e2) {
+                    element = extractElementFromRoot(elIdentType, elIdent, false);
+                }
             }
+            tryCount++;
         }
+
+        if (tryCount == 3) {
+            addToLog("WARN:\tElement (" + element + ") konnte nicht geklickt werden.");
+            return false;
+        }
+        return true;
     }
 
     private void scrollIntoView(WebElement element) {
@@ -649,7 +660,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         WebElement searchInput = extractElementFromRoot(website.getSearchFieldIdentType(), website.getSearchFieldIdent());
         if (searchInput == null) return false;
 
-        if (!clickElement(searchInput)) return false;
+        if (!clickElement(searchInput, website.getSearchFieldIdentType(), website.getSearchFieldIdent())) return false;
         setText(searchInput, isin);
         waitLoadEvent();
 
@@ -658,7 +669,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         } else {
             WebElement searchButton = extractElementFromRoot(website.getSearchButtonIdentType(), website.getSearchButtonIdent());
             if (searchButton == null) return false;
-            if (!clickElement(searchButton)) return false;
+            if (!clickElement(searchButton, website.getSearchButtonIdentType(), website.getSearchButtonIdent())) return false;
         }
 
         addToLog(String.format("INFO:\tZu Wertpapier-Unterseite von %s (%s) navigiert", isin, securitiesType.getDisplayText()));
@@ -671,7 +682,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         for (String ident : identifiers.getHistoricLinkIdent().split(identDelimiter)) {
              element = extractElementFromRoot(identifiers.getHistoricLinkIdentType(), ident);
             if (element == null) return false;
-            if (!clickElement(element)) return false;
+            if (!clickElement(element, identifiers.getHistoricLinkIdentType(), ident)) return false;
             waitLoadEvent();
         }
 
@@ -767,13 +778,24 @@ public abstract class WebsiteHandler extends Service<Void> {
             // set date for start on browser
             scrollIntoView(dateFromDayElement);
             dateFromDayElement.clear();
-            if (!clickElement(dateFromDayElement)) return false;
+
+            if (!clickElement(
+                    dateFromDayElement,
+                    identifiers.getDateFromDayIdentType(),
+                    identifiers.getDateFromDayIdent())
+            ) return false;
+
             setText(dateFromDayElement, dateFrom);
             driver.executeScript("arguments[0].blur()", dateFromDayElement);
 
             // set date for end on browser; don't set if there is nothing set on the config to use the current date
             scrollIntoView(dateUntilDayElement);
-            if (!clickElement(dateUntilDayElement)) return false;
+
+            if (!clickElement(
+                    dateUntilDayElement,
+                    identifiers.getDateUntilDayIdentType(),
+                    identifiers.getDateUntilDayIdent())
+            ) return false;
             if (dateUntil != null && !dateUntil.isBlank()) {
                 dateUntilDayElement.clear();
                 setText(dateUntilDayElement, dateUntil);
@@ -793,7 +815,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
         WebElement element = extractElementFromRoot(website.getDeclineNotificationIdentType(), website.getNotificationDeclineIdent(), false);
         if (element == null) return true;
-        if (!clickElement(element)) return false;
+        if (!clickElement(element, website.getDeclineNotificationIdentType(), website.getNotificationDeclineIdent())) return false;
 
         addToLog("INFO:\tBenachrichtigungen abgelehnt");
         return true;
@@ -802,7 +824,7 @@ public abstract class WebsiteHandler extends Service<Void> {
     protected boolean loadHistoricData(@NonNull HistoricWebsiteIdentifiers identifiers) {
         WebElement element = extractElementFromRoot(identifiers.getLoadButtonIdentType(), identifiers.getLoadButtonIdent());
         if (element == null) return false;
-        if (!clickElement(element)) return false;
+        if (!clickElement(element, identifiers.getLoadButtonIdentType(), identifiers.getLoadButtonIdent())) return false;
 
         addToLog("INFO:\tHistorische Daten geladen");
         return true;
@@ -843,7 +865,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
         WebElement element = extractElementFromRoot(identifiers.getNextPageButtonIdentType(), identifiers.getNextPageButtonIdent());
         if (element == null) return false;
-        if (!clickElement(element)) return false;
+        if (!clickElement(element, identifiers.getNextPageButtonIdentType(), identifiers.getNextPageButtonIdent())) return false;
 
         addToLog("INFO:\tNächste Tabellenseite geladen");
         return true;
