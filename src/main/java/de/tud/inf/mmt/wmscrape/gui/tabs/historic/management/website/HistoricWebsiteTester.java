@@ -117,7 +117,8 @@ public class HistoricWebsiteTester extends WebsiteHandler {
                 declineNotifications();
 
                 if (!acceptCookies()) {
-                    step = 11; return false;
+                    step = 11;
+                    return false;
                 }
                 else {
                     hasAcceptedCookies = true;
@@ -170,10 +171,6 @@ public class HistoricWebsiteTester extends WebsiteHandler {
                     setCountersForNextSecuritiesType();
                     return false;
                 }
-                if(!readPageCountTest(currentIdentifiers)) {
-                    setCountersForNextSecuritiesType();
-                    return false;
-                }
             }
             case 8 -> {
                 declineNotifications();
@@ -181,6 +178,14 @@ public class HistoricWebsiteTester extends WebsiteHandler {
                 if(!setDate(currentIdentifiers)) {
                     setCountersForNextSecuritiesType();
                     return false;
+                }
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException ignore) {}
+
+                if(!readPageCountTest(currentIdentifiers)) {
+                    addToLog("INFO:\tSeitenzahl konnte nicht gelesen werden");
                 }
             }
             case 9 -> {
@@ -254,7 +259,7 @@ public class HistoricWebsiteTester extends WebsiteHandler {
     }
 
     /**
-     * If there is still a dummy to test, it sets {@code step=6} and increases {@code dummiesPointer}, to test the next one
+     * If there is still a dummy to test, it sets {@code step=5} and increases {@code dummiesPointer}, to test the next one
      * on next step, otherwise it sets {@code step=11}.
      */
     private void setCountersForNextSecuritiesType() {
