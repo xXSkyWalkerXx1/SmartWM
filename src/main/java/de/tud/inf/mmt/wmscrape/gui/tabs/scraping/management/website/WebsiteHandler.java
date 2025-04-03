@@ -10,6 +10,7 @@ import javafx.concurrent.Service;
 import javafx.scene.control.TextArea;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.*;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.lang.NonNull;
@@ -17,6 +18,7 @@ import org.springframework.lang.NonNull;
 import java.time.Duration;
 import java.util.*;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public abstract class WebsiteHandler extends Service<Void> {
 
@@ -174,7 +176,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
             if (element == null) return false;
 
-            clickElement(element);
+            if (!clickElement(element, type, ident)) return false;
             waitLoadEvent();
         }
 
@@ -222,7 +224,7 @@ public abstract class WebsiteHandler extends Service<Void> {
 
         WebElement loginButton = extractElementFromRoot(website.getLoginButtonIdentType(), website.getLoginButtonIdent());
         if (loginButton == null) return false;
-        clickElement(loginButton);
+        if (!clickElement(loginButton, website.getLoginButtonIdentType(), website.getLoginButtonIdent())) return false;
         addToLog("INFO:\tLogin erfolgreich");
         return true;
     }
@@ -252,7 +254,7 @@ public abstract class WebsiteHandler extends Service<Void> {
             return false;
         }
 
-        clickElement(logoutButton);
+        clickElement(logoutButton, type, website.getLogoutIdent());
         waitLoadEvent();
 
         addToLog("INFO:\tLogout erfolgreich");
@@ -261,14 +263,22 @@ public abstract class WebsiteHandler extends Service<Void> {
 
     /**
      * waits for the dom ready state event
+     * ToDo: improve performance - waiting until the state is complete can result in a long waiting time, even if the
+     *      page is already loaded (but only some ressources like google-scripts are still loading)
      */
     protected void waitLoadEvent() {
         try {
-            // sleep otherwise it possibly checks the current side which is ready bcs. it takes some time to respond
-            Thread.sleep(2500);
-            wait.until(webDriver -> driver.executeScript("return document.readyState").equals("complete"));
+            FluentWait<FirefoxDriver> wait = new FluentWait<>(driver)
+                    .withTimeout(Duration.ofSeconds(10))
+                    .pollingEvery(Duration.ofMillis(300))
+                    .ignoring(ElementNotInteractableException.class)
+                    .ignoring(NoSuchElementException.class);
+
+            wait.until(webDriver
+                    -> driver.executeScript("return document.readyState").equals("complete")
+            );
         } catch (Exception e) {
-            System.out.println(e.getMessage()+" "+ e.getCause());
+            System.out.println(e.getMessage()+" <-> "+e.getCause());
         }
     }
 
@@ -501,14 +511,27 @@ public abstract class WebsiteHandler extends Service<Void> {
      */
     private List<WebElementInContext> recursiveSearch(SearchContext context, IdentType type, String identifier,
                                                       List<WebElement> iframes, int depth, int parentId) throws InvalidSelectorException {
+        List<WebElementInContext> webElementInContexts;
+
         // nothing found in max depth. return
         if (depth >= IFRAME_SEARCH_DEPTH) return null;
 
-        List<WebElementInContext> webElementInContexts;
-
         // search every iframe
         for (WebElement frame : iframes) {
-            driver.switchTo().frame(frame);
+            // switch to the frame
+            try {
+                driver.switchTo().frame(frame);
+
+                /*
+                Zum Beispiel unter WallStreetOnline ist es so, dass durch Skripte nach dem Laden (also readyState == complete)
+                auch iFrames wieder gelöscht werden, wodurch der Stale-Fehler zustande kommen kann.
+
+                driver.executeScript("arguments[0].contentWindow.focus();", frame);
+                 */
+            } catch (StaleElementReferenceException e) {
+                addToLog("WARN:\tEin iFrame konnte nicht geöffnet werden. Dadurch können Elemente in diesem Frame nicht gefunden werden.");
+                continue;
+            }
 
             // look inside the frame
             var webElements = findElementsRelative(context, type, identifier);
@@ -548,22 +571,66 @@ public abstract class WebsiteHandler extends Service<Void> {
      */
 
     // only call in respective frame
-    private void clickElement(WebElement element) {
-        if(element == null) return;
+    private boolean clickElement(WebElement element, IdentType elIdentType, String elIdent) {
+        if (element == null) return false;
+        int tryCount = 0;
 
-        try {
-            element.click();
-        } catch (Exception e) {
-            // We bypass any issue (it's probably because of a staled element) by clicking it via a java-script, because
-            // this uses the identifier (entered in website-config) instead of the reference generated by the webdriver.
-            driver.executeScript(
-                    "arguments[0].scrollIntoView({behavior: 'instant', block: 'center', inline: 'center'});",
-                    element
-            );
-            driver.executeScript(
-                    "arguments[0].click()",
-                    element
-            );
+        waitLoadEvent();
+        scrollIntoView(element);
+
+        while (tryCount < 3) {
+            try {
+                element.click();
+                return true;
+            } catch (Exception e) {
+                try {
+                    driver.executeScript("arguments[0].click();", element);
+                    return true;
+                } catch (Exception e2) {
+                    element = extractElementFromRoot(elIdentType, elIdent, false);
+                }
+            }
+            tryCount++;
+        }
+
+        if (tryCount == 3) {
+            addToLog("WARN:\tElement (" + element + ") konnte nicht geklickt werden.");
+            return false;
+        }
+        return true;
+    }
+
+    private void scrollIntoView(WebElement element) {
+        int attempts = 0;
+        int maxAttempts = 5;
+
+        while (attempts < maxAttempts) {
+            try {
+                boolean isVisible = (Boolean) ((JavascriptExecutor) driver).executeScript(
+                        "var elem = arguments[0],                 " +
+                                "  box = elem.getBoundingClientRect(),    " +
+                                "  cx = box.left + box.width / 2,         " +
+                                "  cy = box.top + box.height / 2,         " +
+                                "  e = document.elementFromPoint(cx, cy); " +
+                                "for (; e; e = e.parentElement) {         " +
+                                "  if (e === elem)                        " +
+                                "    return true;                         " +
+                                "}                                        " +
+                                "return false;                            "
+                        , element);
+
+                if (!isVisible) {
+                    driver.executeScript("arguments[0].scrollIntoView({behavior: 'instant', block: 'center', inline: 'center'});", element);
+                }
+                break;
+            } catch (Exception e) {
+                addToLog("WARN:\tFehler beim Scrollen. Versuch, um 500 Pixel zu scrollen.");
+                ((JavascriptExecutor) driver).executeScript("window.scrollBy(0, 500);");
+                attempts++;
+            }
+        }
+        if (attempts == maxAttempts) {
+            addToLog("ERROR:\tMaximale Anzahl von Versuchen erreicht. Element konnte nicht gescrollt werden.");
         }
     }
 
@@ -593,7 +660,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         WebElement searchInput = extractElementFromRoot(website.getSearchFieldIdentType(), website.getSearchFieldIdent());
         if (searchInput == null) return false;
 
-        clickElement(searchInput);
+        if (!clickElement(searchInput, website.getSearchFieldIdentType(), website.getSearchFieldIdent())) return false;
         setText(searchInput, isin);
         waitLoadEvent();
 
@@ -602,8 +669,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         } else {
             WebElement searchButton = extractElementFromRoot(website.getSearchButtonIdentType(), website.getSearchButtonIdent());
             if (searchButton == null) return false;
-
-            clickElement(searchButton);
+            if (!clickElement(searchButton, website.getSearchButtonIdentType(), website.getSearchButtonIdent())) return false;
         }
 
         addToLog(String.format("INFO:\tZu Wertpapier-Unterseite von %s (%s) navigiert", isin, securitiesType.getDisplayText()));
@@ -616,8 +682,7 @@ public abstract class WebsiteHandler extends Service<Void> {
         for (String ident : identifiers.getHistoricLinkIdent().split(identDelimiter)) {
              element = extractElementFromRoot(identifiers.getHistoricLinkIdentType(), ident);
             if (element == null) return false;
-
-            clickElement(element);
+            if (!clickElement(element, identifiers.getHistoricLinkIdentType(), ident)) return false;
             waitLoadEvent();
         }
 
@@ -711,18 +776,31 @@ public abstract class WebsiteHandler extends Service<Void> {
             var dateUntil = website.getDateUntil();
 
             // set date for start on browser
+            scrollIntoView(dateFromDayElement);
             dateFromDayElement.clear();
-            clickElement(dateFromDayElement);
+
+            if (!clickElement(
+                    dateFromDayElement,
+                    identifiers.getDateFromDayIdentType(),
+                    identifiers.getDateFromDayIdent())
+            ) return false;
+
             setText(dateFromDayElement, dateFrom);
             driver.executeScript("arguments[0].blur()", dateFromDayElement);
 
             // set date for end on browser; don't set if there is nothing set on the config to use the current date
+            scrollIntoView(dateUntilDayElement);
+
+            if (!clickElement(
+                    dateUntilDayElement,
+                    identifiers.getDateUntilDayIdentType(),
+                    identifiers.getDateUntilDayIdent())
+            ) return false;
             if (dateUntil != null && !dateUntil.isBlank()) {
                 dateUntilDayElement.clear();
-                clickElement(dateUntilDayElement);
                 setText(dateUntilDayElement, dateUntil);
-                driver.executeScript("arguments[0].blur()", dateUntilDayElement);
             }
+            driver.executeScript("arguments[0].blur()", dateUntilDayElement);
 
             addToLog("INFO:\tDatum gesetzt");
             return true;
@@ -736,23 +814,17 @@ public abstract class WebsiteHandler extends Service<Void> {
         if(website.getNotificationDeclineIdent() == null) return true;
 
         WebElement element = extractElementFromRoot(website.getDeclineNotificationIdentType(), website.getNotificationDeclineIdent(), false);
-
         if (element == null) return true;
+        if (!clickElement(element, website.getDeclineNotificationIdentType(), website.getNotificationDeclineIdent())) return false;
 
-        clickElement(element);
         addToLog("INFO:\tBenachrichtigungen abgelehnt");
-
         return true;
     }
 
     protected boolean loadHistoricData(@NonNull HistoricWebsiteIdentifiers identifiers) {
-        WebElement element = extractElementFromRoot(
-                identifiers.getLoadButtonIdentType(),
-                identifiers.getLoadButtonIdent()
-        );
+        WebElement element = extractElementFromRoot(identifiers.getLoadButtonIdentType(), identifiers.getLoadButtonIdent());
         if (element == null) return false;
-
-        clickElement(element);
+        if (!clickElement(element, identifiers.getLoadButtonIdentType(), identifiers.getLoadButtonIdent())) return false;
 
         addToLog("INFO:\tHistorische Daten geladen");
         return true;
@@ -791,13 +863,10 @@ public abstract class WebsiteHandler extends Service<Void> {
     protected boolean nextTablePage(@NonNull HistoricWebsiteIdentifiers identifiers) {
         if (identifiers.getNextPageButtonIdentType() == IdentType.DEAKTIVIERT) return true;
 
-        WebElement element = extractElementFromRoot(
-                identifiers.getNextPageButtonIdentType(),
-                identifiers.getNextPageButtonIdent()
-        );
+        WebElement element = extractElementFromRoot(identifiers.getNextPageButtonIdentType(), identifiers.getNextPageButtonIdent());
         if (element == null) return false;
+        if (!clickElement(element, identifiers.getNextPageButtonIdentType(), identifiers.getNextPageButtonIdent())) return false;
 
-        clickElement(element);
         addToLog("INFO:\tNächste Tabellenseite geladen");
         return true;
     }
